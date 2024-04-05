@@ -1,24 +1,21 @@
 package com.ring.ring
 
-import Greeting
-import SERVER_PORT
+import com.ring.ring.plugin.configureCors
+import com.ring.ring.plugin.configureSerialization
+import com.ring.ring.plugin.configureStatusPages
+import com.ring.ring.router.configureRouting
 import io.ktor.server.application.Application
-import io.ktor.server.application.call
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
-import io.ktor.server.response.respondText
-import io.ktor.server.routing.get
-import io.ktor.server.routing.routing
 
 fun main() {
-    embeddedServer(Netty, port = SERVER_PORT, host = "0.0.0.0", module = Application::module)
+    embeddedServer(Netty, port = 8081, host = "0.0.0.0", module = Application::module)
         .start(wait = true)
 }
 
 fun Application.module() {
-    routing {
-        get("/") {
-            call.respondText("Ktor: ${Greeting().greet()}")
-        }
-    }
+    configureSerialization()
+    configureCors()
+    configureStatusPages()
+    configureRouting()
 }
