@@ -21,6 +21,7 @@ dependencies {
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.ktor.server.html.builder)
     implementation(libs.ktor.server.sessions)
+    implementation(libs.ktor.auth.jwt)
     implementation(libs.ktor.server.status.pages)
     implementation(libs.ktor.server.cors)
     implementation(libs.kotlinx.datetime)

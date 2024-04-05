@@ -11,7 +11,7 @@ import io.ktor.server.application.ApplicationCall
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 
-class TodoRestApiController(
+class TodoController(
     private val createTodo: CreateTodo = CreateTodo(),
     private val getTodo: GetTodo = GetTodo(),
     private val getTodoList: GetTodoList = GetTodoList(),

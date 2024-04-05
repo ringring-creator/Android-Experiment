@@ -1,7 +1,6 @@
-package com.ring.ring.usecase.session
+package com.ring.ring.usecase.user
 
 import com.ring.ring.data.User
-import com.ring.ring.data.repository.SessionRepository
 import com.ring.ring.data.repository.UserRepository
 import com.ring.ring.di.DataModules
 import com.ring.ring.exception.LoginFailureException
@@ -10,13 +9,20 @@ import kotlinx.serialization.Serializable
 
 class Login(
     private val userRepository: UserRepository = DataModules.userRepository,
-    private val sessionRepository: SessionRepository = DataModules.sessionRepository,
 ) : UseCase<Login.Req, Login.Res>() {
     override suspend fun execute(req: Req): Res {
-        val userId = userRepository.loadId(req.user.toUser())
+        val user = req.user.toUser().let {
+            it.copy(password = Cipher.hashWithSHA256(it.password))
+        }
+        val userId = userRepository.loadId(user)
             ?: throw LoginFailureException(message = "Id is not found.")
-        val session = sessionRepository.save(userId)
-        return Res(session.userId, session.credential)
+
+        return Res(userId, generateJwtToken(user))
+    }
+
+    private fun generateJwtToken(user: User): String {
+        return JwtProvider.createJWT(user)
+            ?: throw LoginFailureException(message = "Cannot generate JWT Token")
     }
 
     @Serializable
@@ -39,6 +45,6 @@ class Login(
     @Serializable
     data class Res(
         val userId: Long,
-        val credential: String,
+        val token: String,
     ) : UseCase.Res
 }

@@ -10,7 +10,9 @@ class SignUp(
     private val repository: UserRepository = DataModules.userRepository,
 ) : UseCase<SignUp.Req, SignUp.Res>() {
     override suspend fun execute(req: Req): Res {
-        val user = req.user.toUser()
+        val user = req.user.toUser().let {
+            it.copy(password = Cipher.hashWithSHA256(it.password))
+        }
         repository.save(user = user)
         return Res()
     }

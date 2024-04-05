@@ -4,23 +4,20 @@ import com.ring.ring.data.Todo
 import com.ring.ring.data.repository.TodoRepository
 import com.ring.ring.di.DataModules
 import com.ring.ring.usecase.UseCase
-import com.ring.ring.usecase.session.ValidateSession
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
 class GetTodoList(
-    private val validateSession: ValidateSession = ValidateSession(),
     private val repository: TodoRepository = DataModules.todoRepository,
 ) : UseCase<GetTodoList.Req, GetTodoList.Res>() {
     override suspend fun execute(req: Req): Res {
-        validateSession(req.session)
-        val todoList = repository.list(req.session.userId)
+        val todoList = repository.list(req.userId)
         return Res(todoList = todoList.map { it.toGetTodoListItem() })
     }
 
     @Serializable
     data class Req(
-        val session: ValidateSession.ReqSession,
+        val userId: Long,
     ) : UseCase.Req
 
     @Serializable

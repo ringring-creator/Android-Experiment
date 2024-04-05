@@ -3,10 +3,8 @@ package com.ring.ring.di
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import com.ring.ring.data.db.DeadlineAdapter
-import com.ring.ring.data.db.SessionDataSource
 import com.ring.ring.data.db.TodoDataSource
 import com.ring.ring.data.db.UserDataSource
-import com.ring.ring.data.repository.SessionRepository
 import com.ring.ring.data.repository.TodoRepository
 import com.ring.ring.data.repository.UserRepository
 import data.db.LocalDb
@@ -18,8 +16,6 @@ object DataModules {
     val todoRepository = createTodoRepository()
     val userRepository = createUserRepository()
     val userDataSource = createUserDataSource()
-    val sessionRepository = createSessionRepository()
-    val sessionDataSource = createSessionDataSource()
 
     private fun createTodoRepository(): TodoRepository = TodoRepository(
         dataSource = createTodoDataSource()
@@ -35,14 +31,6 @@ object DataModules {
 
     private fun createUserDataSource(): UserDataSource = UserDataSource(
         queries = db.userQueries
-    )
-
-    private fun createSessionRepository(): SessionRepository = SessionRepository(
-        dataSource = createSessionDataSource()
-    )
-
-    private fun createSessionDataSource(): SessionDataSource = SessionDataSource(
-        queries = db.sessionQueries
     )
 
     private fun createDb() = LocalDb(

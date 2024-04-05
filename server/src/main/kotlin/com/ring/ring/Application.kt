@@ -1,5 +1,6 @@
 package com.ring.ring
 
+import com.ring.ring.plugin.configureAuthentication
 import com.ring.ring.plugin.configureCors
 import com.ring.ring.plugin.configureSerialization
 import com.ring.ring.plugin.configureStatusPages
@@ -14,6 +15,7 @@ fun main() {
 }
 
 fun Application.module() {
+    configureAuthentication()
     configureSerialization()
     configureCors()
     configureStatusPages()
