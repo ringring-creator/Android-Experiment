@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="email_address">Email address</string>
+    <string name="login">Login</string>
+    <string name="sign_up">Sign up</string>
+    <string name="password">Password</string>
+</resources>

@@ -12,19 +12,6 @@ kotlin {
             }
         }
     }
-
-    sourceSets {
-        androidMain.dependencies {
-            implementation(libs.compose.ui.tooling.preview)
-            implementation(libs.androidx.activity.compose)
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material)
-            implementation(compose.material3)
-            implementation(compose.ui)
-            implementation(compose.components.uiToolingPreview)
-        }
-    }
 }
 
 android {
@@ -56,7 +43,21 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    composeOptions {
+        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
+    }
+    buildFeatures {
+        compose = true
+    }
     dependencies {
+        implementation(libs.compose.ui.tooling.preview)
+        implementation(libs.androidx.activity.compose)
+        implementation(compose.runtime)
+        implementation(compose.foundation)
+        implementation(compose.material)
+        implementation(compose.material3)
+        implementation(compose.ui)
         debugImplementation(libs.compose.ui.tooling)
+        debugImplementation(libs.compose.ui.tooling.preview)
     }
 }
