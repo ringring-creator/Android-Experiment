@@ -1,4 +1,4 @@
-package login
+package com.ring.ring.login
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 

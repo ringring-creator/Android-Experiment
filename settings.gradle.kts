@@ -20,3 +20,4 @@ dependencyResolutionManagement {
 
 include(":android")
 include(":server")
+include(":android:feature:login")

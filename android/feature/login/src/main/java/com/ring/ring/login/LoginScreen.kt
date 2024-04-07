@@ -1,4 +1,4 @@
-package login
+package com.ring.ring.login
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,6 +18,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,7 +30,38 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import com.ring.ring.R
+import androidx.hilt.navigation.compose.hiltViewModel
+
+@Composable
+fun LoginScreen(
+    toTodoListScreen: () -> Unit,
+    toSignUpScreen: () -> Unit,
+    viewModel: LoginViewModel = hiltViewModel(),
+) {
+    val uiState = rememberLoginUiState(viewModel)
+
+    LoginScreen(
+        uiState = uiState,
+        updater = viewModel,
+        toSignUpScreen = toSignUpScreen,
+    )
+
+    LaunchedEffect(Unit) {
+        viewModel.loginFinishedEvent.collect {
+            toTodoListScreen()
+        }
+    }
+}
+
+@Composable
+private fun rememberLoginUiState(viewModel: LoginViewModel): LoginUiState {
+    val email by viewModel.email.collectAsState()
+    val password by viewModel.password.collectAsState()
+    return LoginUiState(
+        email = email,
+        password = password,
+    )
+}
 
 data class LoginUiState(
     val email: String,
@@ -45,7 +79,7 @@ interface LoginUiUpdater {
 fun LoginScreen(
     uiState: LoginUiState,
     updater: LoginUiUpdater,
-    toSignUpScreen: () -> Unit
+    toSignUpScreen: () -> Unit,
 ) {
     Scaffold(
         topBar = { TopAppBar(title = { Text(stringResource(R.string.login)) }) }
@@ -78,7 +112,7 @@ private fun Content(
         Spacer(Modifier.height(8.dp))
         LoginButton { updater.login() }
         Spacer(Modifier.height(16.dp))
-        SignUpText({})
+        SignUpText(toSignUpScreen = toSignUpScreen)
     }
 }
 
