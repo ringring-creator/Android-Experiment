@@ -53,6 +53,7 @@ dependencies {
 
     debugImplementation(libs.bundles.compose.ui.tool)
 
+    testImplementation(projects.android.core.network)
     testImplementation(libs.junit)
     testImplementation(libs.compose.ui.test.junit)
     testImplementation(libs.robolectric)

@@ -71,3 +71,12 @@ android {
 kapt {
     correctErrorTypes = true
 }
+
+tasks.register("allTests") {
+    dependsOn(
+        "testDebugUnitTest",
+        "feature:login:testDebugUnitTest",
+        "core:network:testDebugUnitTest",
+//        "connectedAndroidTest",
+    )
+}

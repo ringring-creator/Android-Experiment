@@ -1,8 +1,8 @@
 package com.ring.ring.login
 
-import com.ring.ring.login.fake.FakeLoginNetworkDataSource
 import com.ring.ring.login.fake.FakeUserLocalDataSource
 import com.ring.ring.network.LoginRequest
+import com.ring.ring.network.fake.FakeLoginNetworkDataSource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
