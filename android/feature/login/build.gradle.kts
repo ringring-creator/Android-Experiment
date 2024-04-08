@@ -70,6 +70,8 @@ dependencies {
     testImplementation(libs.compose.ui.test.junit)
     testImplementation(libs.robolectric)
     testImplementation(libs.hilt.android.testing)
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
+
 }
 
 kapt {

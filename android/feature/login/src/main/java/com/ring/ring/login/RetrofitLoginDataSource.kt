@@ -13,10 +13,10 @@ import javax.inject.Singleton
 class RetrofitLoginDataSource @Inject constructor(
     networkJson: Json,
     okhttpCallFactory: Call.Factory,
+    baseUrl: String = BuildConfig.BACKEND_URL
 ) : LoginNetworkDataSource {
-    private val BASE_URL: String = BuildConfig.BACKEND_URL
     private val networkApi = Retrofit.Builder()
-        .baseUrl(BASE_URL)
+        .baseUrl(baseUrl)
         .callFactory(okhttpCallFactory)
         .addConverterFactory(
             networkJson.asConverterFactory("application/json".toMediaType()),

@@ -62,7 +62,7 @@ class LoginViewModelTest {
         advanceUntilIdle()
 
 
-        val expect = networkDataSource.login(LoginRequest("dummy", "dummy"))
+        val expect = networkDataSource.login(LoginRequest(LoginRequest.Account("dummy", "dummy")))
 
 
         val actual = localDataSource.getUser()
