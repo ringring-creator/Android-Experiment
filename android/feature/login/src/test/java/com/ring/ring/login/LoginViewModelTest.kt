@@ -65,10 +65,10 @@ class LoginViewModelTest {
         val expect = networkDataSource.login(LoginRequest("dummy", "dummy"))
 
 
-        val user = localDataSource.getUser().value
-        assertThat(user.userId, equalTo(expect.userId))
-        assertThat(user.email, equalTo(expectedEmail))
-        assertThat(user.token, equalTo(expect.token))
+        val actual = localDataSource.getUser().value
+        assertThat(actual.userId, equalTo(expect.userId))
+        assertThat(actual.email, equalTo(expectedEmail))
+        assertThat(actual.token, equalTo(expect.token))
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

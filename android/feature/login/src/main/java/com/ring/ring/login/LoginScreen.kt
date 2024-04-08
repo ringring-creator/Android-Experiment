@@ -28,7 +28,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 
@@ -39,10 +38,11 @@ fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
     val uiState = rememberLoginUiState(viewModel)
+    val updater = toUpdater(viewModel)
 
     LoginScreen(
         uiState = uiState,
-        updater = viewModel,
+        updater = updater,
         toSignUpScreen = toSignUpScreen,
     )
 
@@ -52,6 +52,12 @@ fun LoginScreen(
         }
     }
 }
+
+private fun toUpdater(viewModel: LoginViewModel) = LoginUiUpdater(
+    setEmail = viewModel::setEmail,
+    setPassword = viewModel::setPassword,
+    login = viewModel::login,
+)
 
 @Composable
 private fun rememberLoginUiState(viewModel: LoginViewModel): LoginUiState {
@@ -68,15 +74,15 @@ data class LoginUiState(
     val password: String,
 )
 
-interface LoginUiUpdater {
-    fun setEmail(email: String)
-    fun setPassword(password: String)
-    fun login()
-}
+data class LoginUiUpdater(
+    val setEmail: (email: String) -> Unit,
+    val setPassword: (password: String) -> Unit,
+    val login: () -> Unit,
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(
+internal fun LoginScreen(
     uiState: LoginUiState,
     updater: LoginUiUpdater,
     toSignUpScreen: () -> Unit,
@@ -107,8 +113,8 @@ private fun Content(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        EmailTextField(uiState.email, updater::setEmail)
-        PasswordTextField(uiState.password, updater::setPassword)
+        EmailTextField(uiState.email, updater.setEmail)
+        PasswordTextField(uiState.password, updater.setPassword)
         Spacer(Modifier.height(8.dp))
         LoginButton { updater.login() }
         Spacer(Modifier.height(16.dp))
@@ -176,18 +182,8 @@ private fun LoginButton(login: () -> Unit) {
     }
 }
 
-
-@Preview(showSystemUi = true, apiLevel = 34)
+@Preview
 @Composable
-private fun PreviewLoginScreen(
-    @PreviewParameter(LoginScreenPreviewParameterProvider::class) uiState: LoginUiState
-) {
-    LoginScreen(
-        uiState = uiState,
-        updater = object : LoginUiUpdater {
-            override fun setEmail(email: String) {}
-            override fun setPassword(password: String) {}
-            override fun login() {}
-        }
-    ) {}
+private fun Preview() {
+    PreviewLoginScreen()
 }
