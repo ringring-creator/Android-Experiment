@@ -1,4 +1,4 @@
-package com.ring.ring.login
+package com.ring.ring.network
 
 import retrofit2.http.Body
 import retrofit2.http.POST

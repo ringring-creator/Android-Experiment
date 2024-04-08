@@ -7,13 +7,15 @@ plugins {
 }
 
 android {
-    namespace = "com.ring.ring.login"
+    namespace = "com.ring.ring.network"
     compileSdk = 34
 
     defaultConfig {
         minSdk = 24
 
+        buildConfigField("String", "BACKEND_URL", "\"http://localhost:8081\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
     }
 
     buildTypes {
@@ -29,35 +31,25 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
-    }
     kotlinOptions {
         jvmTarget = "1.8"
     }
     buildFeatures {
         buildConfig = true
-        compose = true
     }
     testOptions.unitTests.isIncludeAndroidResources = true
 }
 
 dependencies {
-    implementation(projects.android.core.network)
-    implementation(libs.bundles.compose)
-    implementation(libs.bundles.room)
-    kapt(libs.room.compiler)
-    implementation(libs.bundles.datastore)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.bundles.retrofit)
     implementation(libs.bundles.hilt)
     kapt(libs.hilt.compiler)
 
-    debugImplementation(libs.bundles.compose.ui.tool)
-
     testImplementation(libs.junit)
-    testImplementation(libs.compose.ui.test.junit)
-    testImplementation(libs.robolectric)
     testImplementation(libs.hilt.android.testing)
     testImplementation(libs.squareup.okhttp3.mockwebserver)
+    testImplementation(libs.kotlinx.coroutines.test)
 }
 
 kapt {

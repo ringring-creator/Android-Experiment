@@ -2,6 +2,7 @@ package com.ring.ring.login
 
 import com.ring.ring.login.fake.FakeLoginNetworkDataSource
 import com.ring.ring.login.fake.FakeUserLocalDataSource
+import com.ring.ring.network.LoginRequest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -62,7 +63,14 @@ class LoginViewModelTest {
         advanceUntilIdle()
 
 
-        val expect = networkDataSource.login(LoginRequest(LoginRequest.Account("dummy", "dummy")))
+        val expect = networkDataSource.login(
+            LoginRequest(
+                LoginRequest.Account(
+                    "dummy",
+                    "dummy"
+                )
+            )
+        )
 
 
         val actual = localDataSource.getUser()

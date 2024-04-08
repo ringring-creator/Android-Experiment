@@ -4,13 +4,8 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
-import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
-import com.ring.ring.login.BuildConfig
 import com.ring.ring.login.DataStoreUserDataSource
 import com.ring.ring.login.DefaultUserRepository
-import com.ring.ring.login.LoginNetworkDataSource
-import com.ring.ring.login.RetrofitLoginDataSource
-import com.ring.ring.login.RetrofitNetworkApi
 import com.ring.ring.login.UserLocalDataSource
 import com.ring.ring.login.UserRepository
 import dagger.Module
@@ -18,12 +13,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import kotlinx.serialization.json.Json
-import okhttp3.Call
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
 import javax.inject.Singleton
 
 
@@ -40,12 +29,6 @@ object DataModules {
 
     @Provides
     @Singleton
-    fun providesLoginNetworkDataSource(
-        networkDataSource: RetrofitLoginDataSource
-    ): LoginNetworkDataSource = networkDataSource
-
-    @Provides
-    @Singleton
     fun providesUserLocalDataSource(
         localDataSource: DataStoreUserDataSource
     ): UserLocalDataSource = localDataSource
@@ -57,40 +40,4 @@ object DataModules {
     fun providesUserPreferencesDataStore(
         @ApplicationContext context: Context,
     ): DataStore<Preferences> = context.userDataStore
-
-    @Provides
-    @Singleton
-    fun providesNetworkJson() = Json {
-        ignoreUnknownKeys = true
-    }
-
-    @Provides
-    @Singleton
-    fun providesRetrofitNetworkApi(
-        networkJson: Json,
-        okhttpCallFactory: Call.Factory,
-    ): RetrofitNetworkApi = Retrofit.Builder()
-        .baseUrl(BuildConfig.BACKEND_URL)
-        .callFactory(okhttpCallFactory)
-        .addConverterFactory(
-            networkJson.asConverterFactory("application/json".toMediaType()),
-        )
-        .build()
-        .create(
-            RetrofitNetworkApi::
-            class.java
-        )
-
-    @Provides
-    @Singleton
-    fun providesOkHttpCallFactory(): Call.Factory = OkHttpClient.Builder()
-        .addInterceptor(
-            HttpLoggingInterceptor()
-                .apply {
-                    if (BuildConfig.DEBUG) {
-                        setLevel(HttpLoggingInterceptor.Level.BODY)
-                    }
-                },
-        )
-        .build()
 }

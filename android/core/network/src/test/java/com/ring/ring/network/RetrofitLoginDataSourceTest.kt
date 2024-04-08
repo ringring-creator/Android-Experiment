@@ -1,4 +1,4 @@
-package com.ring.ring.login
+package com.ring.ring.network
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.coroutines.test.runTest
@@ -57,7 +57,14 @@ class RetrofitLoginDataSourceTest {
         mockWebServer.enqueue(response)
 
         //when
-        val actual = subject.login(LoginRequest(LoginRequest.Account("", "")))
+        val actual = subject.login(
+            LoginRequest(
+                LoginRequest.Account(
+                    "",
+                    ""
+                )
+            )
+        )
 
         //then
         assertThat(actual.userId, equalTo(expectedUserId))
@@ -76,7 +83,14 @@ class RetrofitLoginDataSourceTest {
         //when
         val email = "fakeEmail"
         val password = "fakePassword"
-        subject.login(LoginRequest(LoginRequest.Account(email, password)))
+        subject.login(
+            LoginRequest(
+                LoginRequest.Account(
+                    email,
+                    password
+                )
+            )
+        )
 
         //then
         val request = mockWebServer.takeRequest()

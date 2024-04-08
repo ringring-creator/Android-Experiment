@@ -1,11 +1,7 @@
 package com.ring.ring.login.fake
 
-import com.ring.ring.login.LoginNetworkDataSource
-import com.ring.ring.login.LoginRequest
-import com.ring.ring.login.LoginResponse
-
-class FakeLoginNetworkDataSource : LoginNetworkDataSource {
-    override suspend fun login(request: LoginRequest): LoginResponse {
-        return LoginResponse(1L, "fakeToken")
+class FakeLoginNetworkDataSource : com.ring.ring.network.LoginNetworkDataSource {
+    override suspend fun login(request: com.ring.ring.network.LoginRequest): com.ring.ring.network.LoginResponse {
+        return com.ring.ring.network.LoginResponse(1L, "fakeToken")
     }
 }

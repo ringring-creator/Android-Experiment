@@ -58,19 +58,13 @@ android {
     dependencies {
         implementation(projects.android.feature.login)
 
-        implementation(libs.androidx.activity.compose)
-        implementation(libs.compose.runtime)
-        implementation(libs.compose.foundation)
-        implementation(libs.compose.material)
-        implementation(libs.compose.material3)
-        implementation(libs.compose.ui)
-        debugImplementation(libs.compose.ui.tooling)
-        debugImplementation(libs.compose.ui.tooling.preview)
-        implementation(libs.hilt.android.core)
-        implementation(libs.androidx.hilt.navigation.compose)
+        implementation(libs.bundles.compose)
+        implementation(libs.bundles.hilt)
         configurations.getByName("kapt").dependencies.add(
             libs.hilt.compiler.get()
         )
+
+        debugImplementation(libs.bundles.compose.ui.tool)
     }
 }
 

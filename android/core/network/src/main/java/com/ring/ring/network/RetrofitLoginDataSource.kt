@@ -1,4 +1,4 @@
-package com.ring.ring.login
+package com.ring.ring.network
 
 import javax.inject.Inject
 import javax.inject.Singleton
