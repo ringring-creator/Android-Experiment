@@ -47,7 +47,6 @@ fun NavGraphBuilder.loginScreen(
     }
 }
 
-
 @Composable
 internal fun LoginScreen(
     toTodoListScreen: () -> Unit,

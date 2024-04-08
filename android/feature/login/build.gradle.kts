@@ -44,34 +44,21 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.activity.compose)
-    implementation(libs.compose.runtime)
-    implementation(libs.compose.foundation)
-    implementation(libs.compose.material)
-    implementation(libs.compose.material3)
-    implementation(libs.compose.ui)
-    implementation(libs.retrofit.core)
-    implementation(libs.retrofit.kotlin.serialization)
-    implementation(libs.kotlinx.serialization.json)
-    implementation(libs.okhttp.logging)
-    implementation(libs.room.ktx)
-    implementation(libs.room.runtime)
+    implementation(libs.bundles.compose)
+    implementation(libs.bundles.retrofit)
+    implementation(libs.bundles.room)
     kapt(libs.room.compiler)
-    implementation(libs.androidx.dataStore.core)
-    implementation(libs.androidx.dataStore.preference)
-    implementation(libs.hilt.android.core)
-    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.bundles.datastore)
+    implementation(libs.bundles.hilt)
     kapt(libs.hilt.compiler)
 
-    debugImplementation(libs.compose.ui.tooling)
-    debugImplementation(libs.compose.ui.tooling.preview)
+    debugImplementation(libs.bundles.compose.ui.tool)
 
     testImplementation(libs.junit)
     testImplementation(libs.compose.ui.test.junit)
     testImplementation(libs.robolectric)
     testImplementation(libs.hilt.android.testing)
-    testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
-
+    testImplementation(libs.squareup.okhttp3.mockwebserver)
 }
 
 kapt {

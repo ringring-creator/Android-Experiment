@@ -20,6 +20,7 @@ hilt-navigation-compose = "1.2.0"
 kotlinx-serialization-json = "1.6.3"
 room = "2.6.1"
 androidx-data-store = "1.0.0"
+mockwebserver = "4.12.0"
 
 # Server
 ktor = "2.3.9"
@@ -33,6 +34,7 @@ junitVersion = "1.1.5"
 espressoCore = "3.5.1"
 appcompat = "1.6.1"
 material = "1.11.0"
+materialVersion = "1.11.0"
 
 [libraries]
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
@@ -63,6 +65,7 @@ androidx-dataStore-preference = { group = "androidx.datastore", name = "datastor
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-test-core = { group = "androidx.test", name = "core", version.ref = "coreKtx" }
 androidx-test-core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "coreKtx" }
+squareup-okhttp3-mockwebserver = { group = "com.squareup.okhttp3", name = "mockwebserver", version.ref = "mockwebserver" }
 
 # Sever
 ktor-server-core = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
@@ -82,6 +85,39 @@ junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "materialVersion" }
+
+[bundles]
+compose = [
+    "androidx-activity-compose",
+    "compose-foundation",
+    "compose-runtime",
+    "compose-material",
+    "compose-material3",
+    "compose-ui",
+]
+compose-ui-tool = [
+    "compose-ui-tooling",
+    "compose-ui-tooling-preview",
+]
+retrofit = [
+    "retrofit-core",
+    "retrofit-kotlin-serialization",
+    "kotlinx-serialization-json",
+    "okhttp-logging",
+]
+room = [
+    "room-ktx",
+    "room-runtime",
+]
+datastore = [
+    'androidx-dataStore-core',
+    'androidx-dataStore-preference',
+]
+hilt = [
+    "hilt-android-core",
+    "androidx-hilt-navigation-compose",
+]
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
