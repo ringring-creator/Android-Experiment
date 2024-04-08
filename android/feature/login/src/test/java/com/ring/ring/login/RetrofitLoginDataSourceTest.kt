@@ -1,37 +1,42 @@
 package com.ring.ring.login
 
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.After
-
 import org.junit.Before
 import org.junit.Test
+import retrofit2.Retrofit
 
 class RetrofitLoginDataSourceTest {
     private lateinit var subject: RetrofitLoginDataSource
 
     private val mockWebServer = MockWebServer()
 
+    private val json = Json { ignoreUnknownKeys = true }
+    private val okHttpClient = OkHttpClient.Builder().build()
+
     @Before
     fun setUp() {
         mockWebServer.start()
+        val networkApi = Retrofit.Builder()
+            .baseUrl(mockWebServer.url("/").toString())
+            .callFactory(okHttpClient)
+            .addConverterFactory(
+                json.asConverterFactory("application/json".toMediaType()),
+            )
+            .build()
+            .create(RetrofitNetworkApi::class.java)
+
         subject = RetrofitLoginDataSource(
-            networkJson = Json {
-                ignoreUnknownKeys = true
-            },
-            okhttpCallFactory = OkHttpClient.Builder()
-                .addInterceptor(
-                    HttpLoggingInterceptor().apply { setLevel(HttpLoggingInterceptor.Level.BODY) },
-                )
-                .build(),
-            baseUrl = mockWebServer.url("/").toString(),
+            networkApi = networkApi,
         )
     }
 

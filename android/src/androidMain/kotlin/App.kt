@@ -1,10 +1,21 @@
 import androidx.compose.runtime.Composable
-import com.ring.ring.login.LoginScreen
-import com.ring.ring.theme.AndroidExperimentTheme
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
+import com.ring.ring.login.LOGIN_ROUTE
+import com.ring.ring.login.loginScreen
 
 @Composable
-fun App() {
-    AndroidExperimentTheme {
-        LoginScreen({}, {})
+fun App(
+    navController: NavHostController = rememberNavController()
+) {
+    NavHost(
+        navController,
+        startDestination = LOGIN_ROUTE,
+    ) {
+        loginScreen(
+            toTodoListScreen = {},
+            toSignUpScreen = {},
+        )
     }
 }

@@ -30,9 +30,26 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
+
+const val LOGIN_ROUTE = "LoginRoute"
+
+fun NavGraphBuilder.loginScreen(
+    toTodoListScreen: () -> Unit,
+    toSignUpScreen: () -> Unit,
+) {
+    composable(LOGIN_ROUTE) {
+        LoginScreen(
+            toTodoListScreen = toTodoListScreen,
+            toSignUpScreen = toSignUpScreen,
+        )
+    }
+}
+
 
 @Composable
-fun LoginScreen(
+internal fun LoginScreen(
     toTodoListScreen: () -> Unit,
     toSignUpScreen: () -> Unit,
     viewModel: LoginViewModel = hiltViewModel(),
