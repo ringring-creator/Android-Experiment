@@ -5,7 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -28,14 +28,14 @@ class DataStoreUserDataSource @Inject constructor(
         }
     }
 
-    override suspend fun getUser(): Flow<User?> {
+    override suspend fun getUser(): User? {
         return dataStore.data.map {
             User(
                 userId = it[USER_ID_KEY] ?: return@map null,
                 email = it[EMAIL_KEY] ?: return@map null,
                 token = it[TOKEN_KEY] ?: return@map null,
             )
-        }
+        }.first()
     }
 
     companion object {

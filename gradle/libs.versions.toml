@@ -28,7 +28,7 @@ sqldelight = "2.0.1"
 
 # Common
 kotlinx-datetime = "0.6.0-RC.2"
-coreKtx = "1.12.0"
+coreKtx = "1.14.0"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
 appcompat = "1.6.1"
@@ -60,6 +60,9 @@ room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 androidx-dataStore-core = { group = "androidx.datastore", name = "datastore", version.ref = "androidx-data-store" }
 androidx-dataStore-preference = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "androidx-data-store" }
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-test-core = { group = "androidx.test", name = "core", version.ref = "coreKtx" }
+androidx-test-core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "coreKtx" }
 
 # Sever
 ktor-server-core = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
@@ -75,7 +78,6 @@ ktor-auth-jwt = { module = "io.ktor:ktor-server-auth-jwt", version.ref = "ktor" 
 ktor-server-cors = { group = "io.ktor", name = "ktor-server-cors", version.ref = "ktor" }
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 sqlite-driver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
-androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }

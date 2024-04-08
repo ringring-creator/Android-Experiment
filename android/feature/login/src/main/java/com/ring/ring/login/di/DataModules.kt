@@ -23,8 +23,6 @@ import okhttp3.logging.HttpLoggingInterceptor
 import javax.inject.Singleton
 
 
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore("settings")
-
 @Module
 @InstallIn(SingletonComponent::class)
 object DataModules {
@@ -48,11 +46,13 @@ object DataModules {
         localDataSource: DataStoreUserDataSource
     ): UserLocalDataSource = localDataSource
 
+    private val Context.userDataStore: DataStore<Preferences> by preferencesDataStore("user-settings")
+
     @Provides
     @Singleton
     fun providesUserPreferencesDataStore(
         @ApplicationContext context: Context,
-    ): DataStore<Preferences> = context.dataStore
+    ): DataStore<Preferences> = context.userDataStore
 
     @Provides
     @Singleton

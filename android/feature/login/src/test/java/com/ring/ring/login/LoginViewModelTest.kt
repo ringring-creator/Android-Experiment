@@ -65,7 +65,7 @@ class LoginViewModelTest {
         val expect = networkDataSource.login(LoginRequest("dummy", "dummy"))
 
 
-        val actual = localDataSource.getUser().value
+        val actual = localDataSource.getUser()
         assertThat(actual.userId, equalTo(expect.userId))
         assertThat(actual.email, equalTo(expectedEmail))
         assertThat(actual.token, equalTo(expect.token))

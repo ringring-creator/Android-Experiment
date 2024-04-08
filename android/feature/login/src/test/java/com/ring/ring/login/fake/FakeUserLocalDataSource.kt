@@ -3,7 +3,6 @@ package com.ring.ring.login.fake
 import com.ring.ring.login.User
 import com.ring.ring.login.UserLocalDataSource
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 
 class FakeUserLocalDataSource : UserLocalDataSource {
     private var user = MutableStateFlow(User(0L, "", ""))
@@ -11,5 +10,5 @@ class FakeUserLocalDataSource : UserLocalDataSource {
         this.user.value = user
     }
 
-    override suspend fun getUser() = user.asStateFlow()
+    override suspend fun getUser() = user.value
 }
