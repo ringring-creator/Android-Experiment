@@ -11,9 +11,13 @@ class SignUpViewModel : ViewModel() {
     val password = _password.asStateFlow()
 
     fun setEmail(email: String) {
+        if (this.email.value == email) return
+        _email.value = email
     }
 
     fun setPassword(password: String) {
+        if (this.password.value == password) return
+        _password.value = password
     }
 
     fun signUp() {
