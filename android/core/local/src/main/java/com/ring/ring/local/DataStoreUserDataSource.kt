@@ -1,4 +1,4 @@
-package com.ring.ring.login
+package com.ring.ring.local
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences

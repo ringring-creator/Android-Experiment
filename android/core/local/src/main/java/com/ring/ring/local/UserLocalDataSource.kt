@@ -1,4 +1,4 @@
-package com.ring.ring.login
+package com.ring.ring.local
 
 interface UserLocalDataSource {
     suspend fun save(user: User)

@@ -77,6 +77,7 @@ tasks.register("allTests") {
         "testDebugUnitTest",
         "feature:login:testDebugUnitTest",
         "core:network:testDebugUnitTest",
+        "core:local:testDebugUnitTest",
 //        "connectedAndroidTest",
     )
 }

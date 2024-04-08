@@ -1,6 +1,5 @@
 package com.ring.ring.login
 
-import com.ring.ring.login.fake.FakeUserLocalDataSource
 import com.ring.ring.network.LoginRequest
 import com.ring.ring.network.fake.FakeLoginNetworkDataSource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -25,7 +24,7 @@ class LoginViewModelTest {
     val mainDispatcherRule = MainDispatcherRule(StandardTestDispatcher())
 
     private val networkDataSource = FakeLoginNetworkDataSource()
-    private val localDataSource = FakeUserLocalDataSource()
+    private val localDataSource = com.ring.ring.local.fake.FakeUserLocalDataSource()
 
     @Before
     fun setUp() {

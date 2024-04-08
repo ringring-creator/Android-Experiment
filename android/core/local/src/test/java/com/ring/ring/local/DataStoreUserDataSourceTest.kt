@@ -1,4 +1,4 @@
-package com.ring.ring.login
+package com.ring.ring.local
 
 import android.content.Context
 import androidx.datastore.core.DataStore
