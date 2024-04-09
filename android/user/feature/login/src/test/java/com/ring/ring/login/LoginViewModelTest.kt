@@ -69,7 +69,7 @@ class LoginViewModelTest {
         //when
         val expect = networkDataSource.login(
             LoginRequest(
-                LoginRequest.Account(
+                LoginRequest.Credentials(
                     "dummy",
                     "dummy"
                 )

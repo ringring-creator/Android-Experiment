@@ -59,7 +59,7 @@ class RetrofitLoginDataSourceTest {
         //when
         val actual = subject.login(
             LoginRequest(
-                LoginRequest.Account(
+                LoginRequest.Credentials(
                     "",
                     ""
                 )
@@ -85,7 +85,7 @@ class RetrofitLoginDataSourceTest {
         val password = "fakePassword"
         subject.login(
             LoginRequest(
-                LoginRequest.Account(
+                LoginRequest.Credentials(
                     email,
                     password
                 )
