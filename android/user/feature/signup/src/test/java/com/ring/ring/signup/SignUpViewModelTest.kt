@@ -16,42 +16,116 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
+
 @OptIn(ExperimentalCoroutinesApi::class)
 class SignUpViewModelTest {
     private lateinit var subject: SignUpViewModel
 
+    private var networkDataSource = FakeUserNetworkDataSource()
+
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule(StandardTestDispatcher())
 
-    private val networkDataSource = FakeUserNetworkDataSource()
-
     @Before
     fun setUp() {
-        subject = SignUpViewModel(
-            userRepository = SignUpUserRepository(
-                networkDataSource = networkDataSource,
-            )
-        )
+        setupSignUpViewModel()
     }
 
     @Test
-    fun setEmail() {
+    fun `setEmail when email is valid format`() {
         //given,when
-        val expect = "fake-email"
-        subject.setEmail(expect)
+        val value = "fake-email@gmail.com"
+        val expect = SignUpUiState.Email(value, isError = false, visibleSupportingText = false)
+        subject.setEmail(value)
 
         //then
         assertThat(subject.email.value, equalTo(expect))
     }
 
     @Test
-    fun setPassword() {
+    fun `setEmail when email is invalid format`() {
         //given,when
-        val expect = "fake-password"
-        subject.setPassword(expect)
+        val value = "fake-email"
+        val expect = SignUpUiState.Email(value, isError = true, visibleSupportingText = true)
+        subject.setEmail(value)
 
         //then
-        assertThat(subject.password.value, equalTo(expect))
+        assertThat(subject.email.value, equalTo(expect))
+    }
+
+    @Test
+    fun `setPassword when password is valid`() {
+        //given,when
+        val value = "Fake-password123"
+        subject.setPassword(value)
+
+        //then
+        val expected = SignUpUiState.Password(
+            input = value,
+            isError = false,
+            visibleSupportingText = false,
+        )
+        assertThat(subject.password.value, equalTo(expected))
+    }
+
+    @Test
+    fun `setPassword set isError and visibleSupportText to true when password is less than 8 characters`() {
+        //given,when
+        val value = "fake-p"
+        subject.setPassword(value)
+
+        //then
+        val expected = SignUpUiState.Password(
+            input = value,
+            isError = true,
+            visibleSupportingText = true,
+        )
+        assertThat(subject.password.value, equalTo(expected))
+    }
+
+    @Test
+    fun `setPassword set isError and visibleSupportText to true when password has no number`() {
+        //given,when
+        val value = "fake-pFda"
+        subject.setPassword(value)
+
+        //then
+        val expected = SignUpUiState.Password(
+            input = value,
+            isError = true,
+            visibleSupportingText = true,
+        )
+        assertThat(subject.password.value, equalTo(expected))
+    }
+
+    @Test
+    fun `setPassword set isError and visibleSupportText to true when password has no uppercase`() {
+        //given,when
+        val value = "fake-pfda1"
+        subject.setPassword(value)
+
+        //then
+        val expected = SignUpUiState.Password(
+            input = value,
+            isError = true,
+            visibleSupportingText = true,
+        )
+        assertThat(subject.password.value, equalTo(expected))
+    }
+
+    @Test
+    fun `setPassword set isError and visibleSupportText to true when password has no lowercase`() {
+        //given,when
+        val value = "FAKE-PFDA1"
+        subject.setPassword(value)
+
+        //then
+        val expected = SignUpUiState.Password(
+            input = value,
+            isError = true,
+            visibleSupportingText = true,
+        )
+        assertThat(subject.password.value, equalTo(expected))
     }
 
     @Test
@@ -61,10 +135,13 @@ class SignUpViewModelTest {
         advanceUntilIdle()
 
         //then
-        assertThat(networkDataSource.calledSignUpParameter!!.email, equalTo(subject.email.value))
+        assertThat(
+            networkDataSource.calledSignUpParameter!!.email,
+            equalTo(subject.email.value.input)
+        )
         assertThat(
             networkDataSource.calledSignUpParameter!!.password,
-            equalTo(subject.password.value)
+            equalTo(subject.password.value.input)
         )
     }
 
@@ -82,5 +159,31 @@ class SignUpViewModelTest {
 
         //then
         assertThat(wasCalled, `is`(true))
+    }
+
+    @Test
+    fun `signUp send signUpFailedEvent when sign up failed`() = runTest {
+        //given
+        networkDataSource = FakeUserNetworkDataSource(isSimulateError = true)
+        setupSignUpViewModel()
+        var wasCalled = false
+        TestScope(UnconfinedTestDispatcher()).launch {
+            subject.signUpFailedEvent.collect { wasCalled = true }
+        }
+
+        //when
+        subject.signUp()
+        advanceUntilIdle()
+
+        //then
+        assertThat(wasCalled, `is`(true))
+    }
+
+    private fun setupSignUpViewModel() {
+        subject = SignUpViewModel(
+            userRepository = SignUpUserRepository(
+                networkDataSource = networkDataSource,
+            ),
+        )
     }
 }

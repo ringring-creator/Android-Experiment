@@ -16,17 +16,19 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
@@ -47,55 +49,37 @@ fun NavGraphBuilder.signUpScreen(
 @Composable
 internal fun SignUpScreen(
     viewModel: SignUpViewModel = hiltViewModel(),
+    snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
     toLoginScreen: () -> Unit,
 ) {
+    val context = LocalContext.current
+
     SignUpScreen(
         uiState = rememberSignUpUiState(viewModel = viewModel),
         updater = toUpdater(viewModel),
+        snackBarHostState = snackBarHostState,
         toLoginScreen = toLoginScreen,
     )
 
     LaunchedEffect(Unit) {
-        viewModel.signUpFinishedEvent.collect {
-            toLoginScreen()
+        viewModel.signUpFinishedEvent.collect { toLoginScreen() }
+    }
+    LaunchedEffect(Unit) {
+        viewModel.signUpFailedEvent.collect {
+            snackBarHostState.showSnackbar(
+                message = context.getString(R.string.failed_to_sign_up),
+                withDismissAction = true,
+            )
         }
     }
 }
-
-@Composable
-private fun rememberSignUpUiState(
-    viewModel: SignUpViewModel,
-): SignUpUiState {
-    val email by viewModel.email.collectAsState()
-    val password by viewModel.password.collectAsState()
-    return SignUpUiState(
-        email = email,
-        password = password,
-    )
-}
-
-private fun toUpdater(viewModel: SignUpViewModel) = SignUpUiUpdater(
-    setEmail = viewModel::setEmail,
-    setPassword = viewModel::setPassword,
-    signUp = viewModel::signUp,
-)
-
-data class SignUpUiState(
-    val email: String,
-    val password: String,
-)
-
-data class SignUpUiUpdater(
-    val setEmail: (email: String) -> Unit,
-    val setPassword: (password: String) -> Unit,
-    val signUp: () -> Unit,
-)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun SignUpScreen(
     uiState: SignUpUiState,
     updater: SignUpUiUpdater,
+    snackBarHostState: SnackbarHostState,
     toLoginScreen: () -> Unit,
 ) {
     Scaffold(
@@ -109,6 +93,7 @@ internal fun SignUpScreen(
                 }
             )
         },
+        snackbarHost = { SnackbarHost(snackBarHostState) }
     ) { paddingValues ->
         Content(
             modifier = Modifier.padding(paddingValues),
@@ -140,14 +125,20 @@ private fun Content(
 
 @Composable
 private fun EmailTextField(
-    email: String,
+    email: SignUpUiState.Email,
     setEmail: (String) -> Unit
 ) {
     OutlinedTextField(
-        value = email,
+        value = email.input,
         onValueChange = setEmail,
         label = { Text(stringResource(R.string.email)) },
         modifier = Modifier.fillMaxWidth(),
+        isError = email.isError,
+        supportingText = {
+            if (email.visibleSupportingText) {
+                Text(stringResource(R.string.email_address_is_invalid))
+            }
+        },
         singleLine = true,
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
     )
@@ -155,14 +146,21 @@ private fun EmailTextField(
 
 @Composable
 private fun PasswordTextField(
-    password: String,
+    password: SignUpUiState.Password,
     setPassword: (String) -> Unit,
 ) {
     OutlinedTextField(
-        value = password,
+        value = password.input,
         onValueChange = setPassword,
         label = { Text(stringResource(R.string.password)) },
         singleLine = true,
+        isError = password.isError,
+        supportingText = {
+            if (password.visibleSupportingText) {
+                Text(stringResource(R.string.password_is_invalid))
+            }
+        },
+        visualTransformation = PasswordVisualTransformation(),
         modifier = Modifier.fillMaxWidth(),
     )
 }
@@ -173,10 +171,4 @@ private fun SignUpButton(signUp: () -> Unit) {
         onClick = signUp,
         modifier = Modifier.fillMaxWidth()
     ) { Text(stringResource(R.string.sign_up)) }
-}
-
-@Preview
-@Composable
-private fun Preview() {
-    PreviewSignUpScreen()
 }

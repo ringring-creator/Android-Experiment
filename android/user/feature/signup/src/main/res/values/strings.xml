@@ -3,4 +3,7 @@
     <string name="sign_up">Sign Up</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
+    <string name="email_address_is_invalid">Your email address is invalid</string>
+    <string name="password_is_invalid">Password must be at least 8 characters.\nContain at least one number.\nContain at least one uppercase letter and one lowercase letter.</string>
+    <string name="failed_to_sign_up">Failed to sign up</string>
 </resources>
