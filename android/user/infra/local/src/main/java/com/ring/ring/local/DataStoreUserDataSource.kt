@@ -10,17 +10,11 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
-data class User(
-    val userId: Long,
-    val email: String,
-    val token: String,
-)
-
 @Singleton
 class DataStoreUserDataSource @Inject constructor(
     private val dataStore: DataStore<Preferences>
 ) : UserLocalDataSource {
-    override suspend fun save(user: User) {
+    override suspend fun save(user: LocalUser) {
         dataStore.edit {
             it[USER_ID_KEY] = user.userId
             it[EMAIL_KEY] = user.email
@@ -28,9 +22,9 @@ class DataStoreUserDataSource @Inject constructor(
         }
     }
 
-    override suspend fun getUser(): User? {
+    override suspend fun getUser(): LocalUser? {
         return dataStore.data.map {
-            User(
+            LocalUser(
                 userId = it[USER_ID_KEY] ?: return@map null,
                 email = it[EMAIL_KEY] ?: return@map null,
                 token = it[TOKEN_KEY] ?: return@map null,

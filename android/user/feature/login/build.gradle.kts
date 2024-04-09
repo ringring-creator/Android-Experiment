@@ -51,7 +51,7 @@ dependencies {
     implementation(libs.bundles.hilt)
     kapt(libs.hilt.compiler)
 
-    debugImplementation(libs.bundles.compose.ui.tool)
+    implementation(libs.bundles.compose.ui.tool)
 
     testImplementation(projects.android.infra.test)
     testImplementation(projects.android.user.infra.test)

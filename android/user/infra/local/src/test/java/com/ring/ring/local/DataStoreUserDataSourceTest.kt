@@ -46,7 +46,7 @@ class DataStoreUserDataSourceTest {
     @Test
     fun `get user data saved`() = runTest {
         //given
-        val expected = User(
+        val expected = LocalUser(
             userId = 1L,
             email = "fakeEmail",
             token = "fakeToken",

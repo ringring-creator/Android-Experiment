@@ -31,7 +31,7 @@ class LoginViewModelTest {
     @Before
     fun setUp() {
         subject = LoginViewModel(
-            userRepository = DefaultUserRepository(
+            userRepository = LoginUserRepository(
                 networkDataSource = networkDataSource,
                 localDataSource = localDataSource,
             )
@@ -40,30 +40,33 @@ class LoginViewModelTest {
 
     @Test
     fun setEmail() {
+        //given,when
         val expect = "fake-email"
         subject.setEmail(expect)
 
-
+        //then
         assertThat(subject.email.value, equalTo(expect))
     }
 
     @Test
     fun setPassword() {
+        //given,when
         val expect = "fake-password"
         subject.setPassword(expect)
 
-
+        //then
         assertThat(subject.password.value, equalTo(expect))
     }
 
     @Test
     fun `login save user from networkDataSource`() = runTest {
+        //given
         val expectedEmail = "fakeEmail"
         subject.setEmail(expectedEmail)
         subject.login()
         advanceUntilIdle()
 
-
+        //when
         val expect = networkDataSource.login(
             LoginRequest(
                 LoginRequest.Account(
@@ -73,7 +76,7 @@ class LoginViewModelTest {
             )
         )
 
-
+        //then
         val actual = localDataSource.getUser()
         assertThat(actual.userId, equalTo(expect.userId))
         assertThat(actual.email, equalTo(expectedEmail))
@@ -83,16 +86,17 @@ class LoginViewModelTest {
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `login send loginFinishedEvent`() = runTest {
+        //given
         var wasCalled = false
         TestScope(UnconfinedTestDispatcher()).launch {
             subject.loginFinishedEvent.collect { wasCalled = true }
         }
 
-
+        //when
         subject.login()
         advanceUntilIdle()
 
-
+        //then
         assertThat(wasCalled, `is`(true))
     }
 }
