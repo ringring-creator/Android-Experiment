@@ -19,8 +19,10 @@ dependencyResolutionManagement {
 }
 
 include(":android")
-include(":server")
 include(":android:user:feature:login")
 include(":android:user:feature:signup")
 include(":android:user:infra:network")
 include(":android:user:infra:local")
+include(":android:user:infra:test")
+include(":android:infra:test")
+include(":server")

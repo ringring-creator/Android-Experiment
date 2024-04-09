@@ -1,4 +1,4 @@
-package com.ring.ring.local.fake
+package com.ring.ring.test.fake
 
 import kotlinx.coroutines.flow.MutableStateFlow
 

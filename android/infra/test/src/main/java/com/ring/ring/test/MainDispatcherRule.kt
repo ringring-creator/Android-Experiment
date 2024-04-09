@@ -1,4 +1,4 @@
-package com.ring.ring.login
+package com.ring.ring.test
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
