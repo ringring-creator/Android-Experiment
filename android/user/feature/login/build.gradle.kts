@@ -43,8 +43,8 @@ android {
 }
 
 dependencies {
-    implementation(projects.android.core.network)
-    implementation(projects.android.core.local)
+    implementation(projects.android.user.infra.network)
+    implementation(projects.android.user.infra.local)
     implementation(libs.bundles.compose)
     implementation(libs.bundles.room)
     kapt(libs.room.compiler)

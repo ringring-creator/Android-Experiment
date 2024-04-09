@@ -56,7 +56,7 @@ android {
         compose = true
     }
     dependencies {
-        implementation(projects.android.feature.login)
+        implementation(projects.android.user.feature.login)
 
         implementation(libs.bundles.compose)
         implementation(libs.bundles.hilt)
@@ -75,9 +75,9 @@ kapt {
 tasks.register("allTests") {
     dependsOn(
         "testDebugUnitTest",
-        "feature:login:testDebugUnitTest",
-        "core:network:testDebugUnitTest",
-        "core:local:testDebugUnitTest",
+        "user:feature:login:testDebugUnitTest",
+        "user:infra:network:testDebugUnitTest",
+        "user:infra:local:testDebugUnitTest",
 //        "connectedAndroidTest",
     )
 }

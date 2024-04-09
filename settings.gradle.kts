@@ -20,7 +20,7 @@ dependencyResolutionManagement {
 
 include(":android")
 include(":server")
-include(":android:feature:login")
-include(":android:feature:signup")
-include(":android:core:network")
-include(":android:core:local")
+include(":android:user:feature:login")
+include(":android:user:feature:signup")
+include(":android:user:infra:network")
+include(":android:user:infra:local")
