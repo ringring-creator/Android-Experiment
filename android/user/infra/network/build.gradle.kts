@@ -13,7 +13,7 @@ android {
     defaultConfig {
         minSdk = 24
 
-        buildConfigField("String", "BACKEND_URL", "\"http://localhost:8081\"")
+        buildConfigField("String", "BACKEND_URL", "\"http://10.0.2.2:8081\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }

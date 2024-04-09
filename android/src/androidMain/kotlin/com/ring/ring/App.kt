@@ -6,6 +6,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.ring.ring.login.LOGIN_ROUTE
 import com.ring.ring.login.loginScreen
+import com.ring.ring.signup.SIGN_UP_ROUTE
+import com.ring.ring.signup.signUpScreen
 
 @Composable
 fun App(
@@ -17,7 +19,8 @@ fun App(
     ) {
         loginScreen(
             toTodoListScreen = {},
-            toSignUpScreen = {},
+            toSignUpScreen = { navController.navigate(SIGN_UP_ROUTE) },
         )
+        signUpScreen(popBackStack = navController::popBackStack)
     }
 }

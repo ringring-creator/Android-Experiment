@@ -19,6 +19,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -34,11 +35,11 @@ import androidx.navigation.compose.composable
 const val SIGN_UP_ROUTE = "SignUpRoute"
 
 fun NavGraphBuilder.signUpScreen(
-    toLoginScreen: () -> Unit,
+    popBackStack: () -> Unit,
 ) {
     composable(SIGN_UP_ROUTE) {
         SignUpScreen(
-            toLoginScreen = toLoginScreen,
+            toLoginScreen = popBackStack,
         )
     }
 }
@@ -53,6 +54,12 @@ internal fun SignUpScreen(
         updater = toUpdater(viewModel),
         toLoginScreen = toLoginScreen,
     )
+
+    LaunchedEffect(Unit) {
+        viewModel.signUpFinishedEvent.collect {
+            toLoginScreen()
+        }
+    }
 }
 
 @Composable

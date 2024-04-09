@@ -57,6 +57,7 @@ android {
     }
     dependencies {
         implementation(projects.android.user.feature.login)
+        implementation(projects.android.user.feature.signup)
 
         implementation(libs.bundles.compose)
         implementation(libs.bundles.hilt)
