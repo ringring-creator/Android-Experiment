@@ -31,7 +31,7 @@ class LoginViewModelTest {
     @Before
     fun setUp() {
         subject = LoginViewModel(
-            userRepository = LoginUserRepository(
+            userRepository = LoginRepository(
                 networkDataSource = networkDataSource,
                 localDataSource = localDataSource,
             )

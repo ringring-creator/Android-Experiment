@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val userRepository: LoginUserRepository
+    private val userRepository: LoginRepository
 ) : ViewModel() {
     private val _email = MutableStateFlow("")
     val email = _email.asStateFlow()

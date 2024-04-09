@@ -181,7 +181,7 @@ class SignUpViewModelTest {
 
     private fun setupSignUpViewModel() {
         subject = SignUpViewModel(
-            userRepository = SignUpUserRepository(
+            userRepository = SignUpRepository(
                 networkDataSource = networkDataSource,
             ),
         )

@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 internal class SignUpViewModel @Inject constructor(
-    private val userRepository: SignUpUserRepository,
+    private val userRepository: SignUpRepository,
 ) : ViewModel() {
     private val _email = MutableStateFlow(initEmail)
     val email = _email.asStateFlow()

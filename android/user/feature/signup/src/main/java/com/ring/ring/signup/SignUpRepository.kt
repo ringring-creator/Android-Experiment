@@ -4,7 +4,7 @@ import com.ring.ring.network.SignUpRequest
 import com.ring.ring.network.UserNetworkDataSource
 import javax.inject.Inject
 
-class SignUpUserRepository @Inject constructor(
+class SignUpRepository @Inject constructor(
     private val networkDataSource: UserNetworkDataSource,
 ) {
     suspend fun signUp(email: String, password: String) {

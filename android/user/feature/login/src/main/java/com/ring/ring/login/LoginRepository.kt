@@ -7,7 +7,7 @@ import com.ring.ring.network.LoginRequest.Credentials
 import com.ring.ring.network.UserNetworkDataSource
 import javax.inject.Inject
 
-class LoginUserRepository @Inject constructor(
+class LoginRepository @Inject constructor(
     private val networkDataSource: UserNetworkDataSource,
     private val localDataSource: UserLocalDataSource,
 ) {
