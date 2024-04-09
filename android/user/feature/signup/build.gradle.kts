@@ -43,13 +43,16 @@ android {
 }
 
 dependencies {
+    implementation(projects.android.user.infra.network)
+    implementation(projects.android.user.infra.local)
     implementation(libs.bundles.compose)
     implementation(libs.bundles.hilt)
     kapt(libs.hilt.compiler)
     debugImplementation(libs.bundles.compose.ui.tool)
 
     implementation(libs.androidx.appcompat)
-    testImplementation(libs.junit)
+    testImplementation(projects.android.infra.test)
+    testImplementation(projects.android.user.infra.test)
     testImplementation(libs.junit)
     testImplementation(libs.compose.ui.test.junit)
     testImplementation(libs.robolectric)

@@ -1,3 +1,5 @@
+package com.ring.ring
+
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost

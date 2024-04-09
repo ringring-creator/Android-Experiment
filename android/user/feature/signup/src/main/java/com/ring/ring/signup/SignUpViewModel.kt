@@ -1,10 +1,15 @@
 package com.ring.ring.signup
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SignUpViewModel : ViewModel() {
+class SignUpViewModel @Inject constructor(
+    private val userRepository: SignUpUserRepository,
+) : ViewModel() {
     private val _email: MutableStateFlow<String> = MutableStateFlow("")
     val email = _email.asStateFlow()
     private val _password: MutableStateFlow<String> = MutableStateFlow("")
@@ -21,5 +26,8 @@ class SignUpViewModel : ViewModel() {
     }
 
     fun signUp() {
+        viewModelScope.launch {
+            userRepository.signUp(email.value, password.value)
+        }
     }
 }

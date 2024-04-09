@@ -15,8 +15,8 @@ import org.junit.Before
 import org.junit.Test
 import retrofit2.Retrofit
 
-class RetrofitLoginDataSourceTest {
-    private lateinit var subject: RetrofitLoginDataSource
+class RetrofitUserDataSourceTest {
+    private lateinit var subject: RetrofitUserDataSource
 
     private val mockWebServer = MockWebServer()
 
@@ -33,9 +33,9 @@ class RetrofitLoginDataSourceTest {
                 json.asConverterFactory("application/json".toMediaType()),
             )
             .build()
-            .create(RetrofitNetworkApi::class.java)
+            .create(RetrofitUserNetworkApi::class.java)
 
-        subject = RetrofitLoginDataSource(
+        subject = RetrofitUserDataSource(
             networkApi = networkApi,
         )
     }
@@ -57,14 +57,7 @@ class RetrofitLoginDataSourceTest {
         mockWebServer.enqueue(response)
 
         //when
-        val actual = subject.login(
-            LoginRequest(
-                LoginRequest.Credentials(
-                    "",
-                    ""
-                )
-            )
-        )
+        val actual = subject.login(LoginRequest(LoginRequest.Credentials("", "")))
 
         //then
         assertThat(actual.userId, equalTo(expectedUserId))
@@ -85,10 +78,7 @@ class RetrofitLoginDataSourceTest {
         val password = "fakePassword"
         subject.login(
             LoginRequest(
-                LoginRequest.Credentials(
-                    email,
-                    password
-                )
+                LoginRequest.Credentials(email, password)
             )
         )
 
@@ -98,5 +88,29 @@ class RetrofitLoginDataSourceTest {
         assertThat(body.contains("\"email\":\"$email\""), `is`(true))
         assertThat(body.contains("\"password\":\"$password\""), `is`(true))
         assertThat(request.path, equalTo("/user/login"))
+    }
+
+    @Test
+    fun `signUp request correct parameters`() = runTest {
+        //given
+        val response = MockResponse()
+            .setResponseCode(200)
+        mockWebServer.enqueue(response)
+
+        //when
+        val email = "fakeEmail"
+        val password = "fakePassword"
+        subject.signUp(
+            SignUpRequest(
+                SignUpRequest.Credentials(email, password)
+            )
+        )
+
+        //then
+        val request = mockWebServer.takeRequest()
+        val body = request.body.readUtf8()
+        assertThat(body.contains("\"email\":\"$email\""), `is`(true))
+        assertThat(body.contains("\"password\":\"$password\""), `is`(true))
+        assertThat(request.path, equalTo("/user/signup"))
     }
 }

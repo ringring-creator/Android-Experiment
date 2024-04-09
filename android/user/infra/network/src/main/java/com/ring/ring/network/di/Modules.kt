@@ -2,9 +2,9 @@ package com.ring.ring.network.di
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.ring.ring.network.BuildConfig
-import com.ring.ring.network.LoginNetworkDataSource
-import com.ring.ring.network.RetrofitLoginDataSource
-import com.ring.ring.network.RetrofitNetworkApi
+import com.ring.ring.network.RetrofitUserDataSource
+import com.ring.ring.network.RetrofitUserNetworkApi
+import com.ring.ring.network.UserNetworkDataSource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,8 +24,8 @@ object Modules {
     @Provides
     @Singleton
     fun providesLoginNetworkDataSource(
-        networkApi: RetrofitNetworkApi
-    ): LoginNetworkDataSource = RetrofitLoginDataSource(
+        networkApi: RetrofitUserNetworkApi
+    ): UserNetworkDataSource = RetrofitUserDataSource(
         networkApi = networkApi
     )
 
@@ -40,14 +40,14 @@ object Modules {
     fun providesRetrofitNetworkApi(
         networkJson: Json,
         okhttpCallFactory: Call.Factory,
-    ): RetrofitNetworkApi = Retrofit.Builder()
+    ): RetrofitUserNetworkApi = Retrofit.Builder()
         .baseUrl(BuildConfig.BACKEND_URL)
         .callFactory(okhttpCallFactory)
         .addConverterFactory(
             networkJson.asConverterFactory("application/json".toMediaType()),
         )
         .build()
-        .create(RetrofitNetworkApi::class.java)
+        .create(RetrofitUserNetworkApi::class.java)
 
 
     @Provides
