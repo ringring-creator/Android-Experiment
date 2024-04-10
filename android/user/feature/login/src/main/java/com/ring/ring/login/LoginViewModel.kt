@@ -3,6 +3,7 @@ package com.ring.ring.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,6 +22,12 @@ class LoginViewModel @Inject constructor(
 
     private val _loginFinishedEvent = Channel<Unit>()
     val loginFinishedEvent = _loginFinishedEvent.receiveAsFlow()
+    private val _loginFailedEvent = Channel<Unit>()
+    val loginFailedEvent = _loginFailedEvent.receiveAsFlow()
+
+    private val handler = CoroutineExceptionHandler { _, _ ->
+        _loginFailedEvent.trySend(Unit)
+    }
 
     fun setEmail(email: String) {
         if (this.email.value == email) return
@@ -33,7 +40,7 @@ class LoginViewModel @Inject constructor(
     }
 
     fun login() {
-        viewModelScope.launch {
+        viewModelScope.launch(handler) {
             userRepository.login(email.value, password.value)
             _loginFinishedEvent.trySend(Unit)
         }

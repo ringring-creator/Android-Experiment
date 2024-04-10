@@ -1,5 +1,6 @@
 package com.ring.ring.login
 
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -12,8 +13,10 @@ import androidx.compose.ui.tooling.preview.Preview
 internal fun PreviewLoginScreen() {
     LoginScreen(
         uiState = value,
-        updater = updater
-    ) {}
+        updater = updater,
+        snackBarHostState = SnackbarHostState(),
+        toSignUpScreen = {},
+    )
 }
 
 private val value: LoginUiState = LoginUiState(

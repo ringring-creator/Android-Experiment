@@ -52,8 +52,6 @@ internal fun SignUpScreen(
     snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
     toLoginScreen: () -> Unit,
 ) {
-    val context = LocalContext.current
-
     SignUpScreen(
         uiState = rememberSignUpUiState(viewModel = viewModel),
         updater = toUpdater(viewModel),
@@ -64,6 +62,7 @@ internal fun SignUpScreen(
     LaunchedEffect(Unit) {
         viewModel.signUpFinishedEvent.collect { toLoginScreen() }
     }
+    val context = LocalContext.current
     LaunchedEffect(Unit) {
         viewModel.signUpFailedEvent.collect {
             snackBarHostState.showSnackbar(

@@ -25,17 +25,12 @@ class LoginViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule(StandardTestDispatcher())
 
-    private val networkDataSource = FakeUserNetworkDataSource()
-    private val localDataSource = FakeUserLocalDataSource()
+    private var networkDataSource = FakeUserNetworkDataSource()
+    private var localDataSource = FakeUserLocalDataSource()
 
     @Before
     fun setUp() {
-        subject = LoginViewModel(
-            userRepository = LoginRepository(
-                networkDataSource = networkDataSource,
-                localDataSource = localDataSource,
-            )
-        )
+        setupSubject()
     }
 
     @Test
@@ -98,5 +93,33 @@ class LoginViewModelTest {
 
         //then
         assertThat(wasCalled, `is`(true))
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `login send loginFailedEvent when login failed`() = runTest {
+        //given
+        networkDataSource = FakeUserNetworkDataSource(isSimulateError = true)
+        setupSubject()
+        var wasCalled = false
+        TestScope(UnconfinedTestDispatcher()).launch {
+            subject.loginFailedEvent.collect { wasCalled = true }
+        }
+
+        //when
+        subject.login()
+        advanceUntilIdle()
+
+        //then
+        assertThat(wasCalled, `is`(true))
+    }
+
+    private fun setupSubject() {
+        subject = LoginViewModel(
+            userRepository = LoginRepository(
+                networkDataSource = networkDataSource,
+                localDataSource = localDataSource,
+            )
+        )
     }
 }

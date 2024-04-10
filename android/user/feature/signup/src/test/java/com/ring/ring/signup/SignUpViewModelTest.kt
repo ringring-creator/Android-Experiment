@@ -28,7 +28,7 @@ class SignUpViewModelTest {
 
     @Before
     fun setUp() {
-        setupSignUpViewModel()
+        setupSubject()
     }
 
     @Test
@@ -165,7 +165,7 @@ class SignUpViewModelTest {
     fun `signUp send signUpFailedEvent when sign up failed`() = runTest {
         //given
         networkDataSource = FakeUserNetworkDataSource(isSimulateError = true)
-        setupSignUpViewModel()
+        setupSubject()
         var wasCalled = false
         TestScope(UnconfinedTestDispatcher()).launch {
             subject.signUpFailedEvent.collect { wasCalled = true }
@@ -179,7 +179,7 @@ class SignUpViewModelTest {
         assertThat(wasCalled, `is`(true))
     }
 
-    private fun setupSignUpViewModel() {
+    private fun setupSubject() {
         subject = SignUpViewModel(
             userRepository = SignUpRepository(
                 networkDataSource = networkDataSource,

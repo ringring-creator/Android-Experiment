@@ -15,15 +15,19 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -50,6 +54,7 @@ fun NavGraphBuilder.loginScreen(
 internal fun LoginScreen(
     toTodoListScreen: () -> Unit,
     toSignUpScreen: () -> Unit,
+    snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
     val uiState = rememberLoginUiState(viewModel)
@@ -58,12 +63,22 @@ internal fun LoginScreen(
     LoginScreen(
         uiState = uiState,
         updater = updater,
+        snackBarHostState = snackBarHostState,
         toSignUpScreen = toSignUpScreen,
     )
 
     LaunchedEffect(Unit) {
         viewModel.loginFinishedEvent.collect {
             toTodoListScreen()
+        }
+    }
+    val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        viewModel.loginFailedEvent.collect {
+            snackBarHostState.showSnackbar(
+                message = context.getString(R.string.failed_to_login),
+                withDismissAction = true,
+            )
         }
     }
 }
@@ -100,10 +115,12 @@ data class LoginUiUpdater(
 internal fun LoginScreen(
     uiState: LoginUiState,
     updater: LoginUiUpdater,
+    snackBarHostState: SnackbarHostState,
     toSignUpScreen: () -> Unit,
 ) {
     Scaffold(
-        topBar = { TopAppBar(title = { Text(stringResource(R.string.login)) }) }
+        topBar = { TopAppBar(title = { Text(stringResource(R.string.login)) }) },
+        snackbarHost = { SnackbarHost(snackBarHostState) }
     ) { paddingValues ->
         Content(
             modifier = Modifier.padding(paddingValues),
