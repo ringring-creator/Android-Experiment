@@ -2,9 +2,9 @@ package com.ring.ring.network.di
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.ring.ring.network.BuildConfig
-import com.ring.ring.network.RetrofitUserDataSource
 import com.ring.ring.network.RetrofitUserNetworkApi
 import com.ring.ring.network.UserNetworkDataSource
+import com.ring.ring.network.UserRetrofitDataSource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,7 +25,7 @@ object Modules {
     @Singleton
     fun providesLoginNetworkDataSource(
         networkApi: RetrofitUserNetworkApi
-    ): UserNetworkDataSource = RetrofitUserDataSource(
+    ): UserNetworkDataSource = UserRetrofitDataSource(
         networkApi = networkApi
     )
 

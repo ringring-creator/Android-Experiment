@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
-import com.ring.ring.local.DataStoreUserDataSource
+import com.ring.ring.local.UserDataStoreDataSource
 import com.ring.ring.local.UserLocalDataSource
 import dagger.Module
 import dagger.Provides
@@ -20,7 +20,7 @@ object Modules {
     @Provides
     @Singleton
     fun providesUserLocalDataSource(
-        localDataSource: DataStoreUserDataSource
+        localDataSource: UserDataStoreDataSource
     ): UserLocalDataSource = localDataSource
 
     private val Context.userDataStore: DataStore<Preferences> by preferencesDataStore("user-settings")

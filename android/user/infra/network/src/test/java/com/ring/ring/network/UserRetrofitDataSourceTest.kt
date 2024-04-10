@@ -15,8 +15,8 @@ import org.junit.Before
 import org.junit.Test
 import retrofit2.Retrofit
 
-class RetrofitUserDataSourceTest {
-    private lateinit var subject: RetrofitUserDataSource
+class UserRetrofitDataSourceTest {
+    private lateinit var subject: UserRetrofitDataSource
 
     private val mockWebServer = MockWebServer()
 
@@ -35,7 +35,7 @@ class RetrofitUserDataSourceTest {
             .build()
             .create(RetrofitUserNetworkApi::class.java)
 
-        subject = RetrofitUserDataSource(
+        subject = UserRetrofitDataSource(
             networkApi = networkApi,
         )
     }

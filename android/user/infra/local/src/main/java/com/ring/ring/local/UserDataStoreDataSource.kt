@@ -12,7 +12,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class DataStoreUserDataSource @Inject constructor(
+class UserDataStoreDataSource @Inject constructor(
     private val dataStore: DataStore<Preferences>,
     private val logger: Logger,
 ) : UserLocalDataSource {

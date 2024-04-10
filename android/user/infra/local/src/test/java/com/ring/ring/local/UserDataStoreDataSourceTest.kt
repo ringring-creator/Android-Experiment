@@ -26,8 +26,8 @@ import java.io.IOException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
-class DataStoreUserDataSourceTest {
-    private lateinit var subject: DataStoreUserDataSource
+class UserDataStoreDataSourceTest {
+    private lateinit var subject: UserDataStoreDataSource
 
     private val context: Context = ApplicationProvider.getApplicationContext()
     private lateinit var dataSource: DataStore<Preferences>
@@ -106,7 +106,7 @@ class DataStoreUserDataSourceTest {
     }
 
     private fun setupSubject() {
-        subject = DataStoreUserDataSource(
+        subject = UserDataStoreDataSource(
             dataStore = dataSource,
             logger = logger,
         )

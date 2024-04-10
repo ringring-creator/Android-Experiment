@@ -5,7 +5,7 @@ import javax.inject.Singleton
 
 
 @Singleton
-class RetrofitUserDataSource @Inject constructor(
+class UserRetrofitDataSource @Inject constructor(
     private val networkApi: RetrofitUserNetworkApi,
 ) : UserNetworkDataSource {
     override suspend fun login(request: LoginRequest): LoginResponse {
