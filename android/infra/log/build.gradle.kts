@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.ring.ring.local"
+    namespace = "com.ring.ring.log"
     compileSdk = 34
 
     defaultConfig {
@@ -32,20 +32,17 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
-    testOptions.unitTests.isIncludeAndroidResources = true
 }
 
 dependencies {
-    implementation(projects.android.infra.test)
-    implementation(projects.android.infra.log)
     implementation(libs.bundles.hilt)
     kapt(libs.hilt.compiler)
-    implementation(libs.bundles.datastore)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
     testImplementation(libs.junit)
-    testImplementation(libs.robolectric)
-    testImplementation(libs.hilt.android.testing)
-    testImplementation(libs.kotlinx.coroutines.test)
-    testImplementation("io.mockk:mockk:1.13.10")
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
 }
 
 kapt {
