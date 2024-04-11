@@ -12,7 +12,10 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
 import okhttp3.Call
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
+import javax.inject.Qualifier
 import javax.inject.Singleton
 
 @Module
@@ -29,8 +32,8 @@ object Modules {
     @Provides
     @Singleton
     fun providesRetrofitNetworkApi(
-        networkJson: Json,
-        okhttpCallFactory: Call.Factory,
+        @TodoJson networkJson: Json,
+        @TodoOkHttp okhttpCallFactory: Call.Factory,
     ): RetrofitTodoNetworkApi = Retrofit.Builder()
         .baseUrl(BuildConfig.BACKEND_URL)
         .callFactory(okhttpCallFactory)
@@ -40,4 +43,32 @@ object Modules {
         .build()
         .create(RetrofitTodoNetworkApi::class.java)
 
+    @Qualifier
+    @Retention(AnnotationRetention.BINARY)
+    annotation class TodoJson
+
+    @Provides
+    @Singleton
+    @TodoJson
+    fun providesNetworkJson() = Json {
+        ignoreUnknownKeys = true
+    }
+
+    @Qualifier
+    @Retention(AnnotationRetention.BINARY)
+    annotation class TodoOkHttp
+
+    @Provides
+    @Singleton
+    @TodoOkHttp
+    fun providesOkHttpCallFactory(): Call.Factory = OkHttpClient.Builder()
+        .addInterceptor(
+            HttpLoggingInterceptor()
+                .apply {
+                    if (BuildConfig.DEBUG) {
+                        setLevel(HttpLoggingInterceptor.Level.BODY)
+                    }
+                },
+        )
+        .build()
 }

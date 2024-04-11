@@ -41,7 +41,7 @@ android {
 }
 
 dependencies {
-    implementation(projects.android.infra.di)
+//    implementation(projects.android.infra.di)
     implementation(libs.androidx.activity.compose)
     implementation(libs.bundles.retrofit)
     implementation(libs.bundles.hilt)
