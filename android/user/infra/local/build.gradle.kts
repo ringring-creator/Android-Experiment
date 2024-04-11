@@ -45,7 +45,7 @@ dependencies {
     testImplementation(libs.robolectric)
     testImplementation(libs.hilt.android.testing)
     testImplementation(libs.kotlinx.coroutines.test)
-    testImplementation("io.mockk:mockk:1.13.10")
+    testImplementation(libs.mockk)
 }
 
 kapt {

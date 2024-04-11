@@ -91,4 +91,24 @@ class TodoRetrofitDataSourceTest {
         assertThat(request.getHeader("Authorization"), equalTo("Bearer $token"))
         assertThat(request.path, equalTo("/todo/list"))
     }
+
+    @Test
+    fun `editDone request correct parameters`() = runTest {
+        //given
+        val response = MockResponse()
+            .setResponseCode(200)
+        mockWebServer.enqueue(response)
+
+        //when
+        val token = "fakeToken"
+        val userId = 1L
+        subject.list(request = ListRequest(userId = userId), token)
+
+        //then
+        val request = mockWebServer.takeRequest()
+        val body = request.body.readUtf8()
+        assertThat(body.contains("\"userId\":$userId"), CoreMatchers.`is`(true))
+        assertThat(request.getHeader("Authorization"), equalTo("Bearer $token"))
+        assertThat(request.path, equalTo("/todo/list"))
+    }
 }

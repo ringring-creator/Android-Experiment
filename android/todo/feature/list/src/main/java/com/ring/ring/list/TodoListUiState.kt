@@ -3,6 +3,7 @@ package com.ring.ring.list
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import com.ring.ring.local.LocalTodo
 
 internal data class TodoListUiState(
     val todoList: List<Todo>
@@ -12,6 +13,15 @@ internal data class TodoListUiState(
         val title: String,
         val done: Boolean,
         val deadline: String,
+    )
+}
+
+internal fun LocalTodo.toTodo(): TodoListUiState.Todo? {
+    return TodoListUiState.Todo(
+        id = id ?: return null,
+        title = title,
+        done = done,
+        deadline = DateUtil.format(deadline),
     )
 }
 

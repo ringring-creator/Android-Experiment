@@ -2,43 +2,40 @@ package com.ring.ring.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ring.ring.local.UserLocalDataSource
-import com.ring.ring.network.ListRequest
+import com.ring.ring.local.LocalTodo
 import com.ring.ring.network.ListResponse
-import com.ring.ring.network.TodoNetworkDataSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
+import javax.inject.Inject
 
 @HiltViewModel
-internal class TodoListViewModel(
-    private val networkDataSource: TodoNetworkDataSource,
-    private val userLocalDataSource: UserLocalDataSource,
+internal class TodoListViewModel @Inject constructor(
+    private val todoRepository: TodoRepository,
 ) : ViewModel() {
     private val _todoList = MutableStateFlow(emptyList<TodoListUiState.Todo>())
     val todoList = _todoList.asStateFlow()
 
     fun fetchTodoList() {
         viewModelScope.launch {
-            val user = userLocalDataSource.getUser()!!
-            _todoList.value =
-                networkDataSource.list(ListRequest(user.userId), user.token).todoList.map {
-                    convert(it)
-                }
+            _todoList.value = todoRepository.list()
         }
-    }
-
-    private fun convert(todo: ListResponse.Todo): TodoListUiState.Todo {
-        return TodoListUiState.Todo(
-            id = todo.id,
-            title = todo.title,
-            done = todo.done,
-            deadline = todo.deadline.toString(),
-        )
     }
 
     fun toggleDone(todoId: Long) {
         TODO("Not yet implemented")
     }
+}
+
+fun ListResponse.Todo.toLocalTodo(): LocalTodo {
+    return LocalTodo(
+        id = id,
+        title = title,
+        description = description,
+        done = done,
+        deadline = deadline.atStartOfDayIn(TimeZone.currentSystemDefault()),
+    )
 }

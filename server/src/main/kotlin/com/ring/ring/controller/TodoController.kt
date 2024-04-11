@@ -50,6 +50,8 @@ class TodoController(
     }
 
     suspend fun editDone(call: ApplicationCall) {
+        //Todo
+        //val user = call.principal<User>()
         val req = call.receive<EditTodoDone.Req>()
         editTodoDone(req = req)
         call.respond(HttpStatusCode.OK)

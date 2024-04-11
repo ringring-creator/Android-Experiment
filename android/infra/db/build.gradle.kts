@@ -6,13 +6,14 @@ plugins {
 }
 
 android {
-    namespace = "com.ring.ring.login"
+    namespace = "com.ring.ring.db"
     compileSdk = 34
 
     defaultConfig {
         minSdk = 24
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
     }
 
     buildTypes {
@@ -28,35 +29,22 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
-    }
     kotlinOptions {
         jvmTarget = "1.8"
     }
-    buildFeatures {
-        buildConfig = true
-        compose = true
-    }
-    testOptions.unitTests.isIncludeAndroidResources = true
 }
 
 dependencies {
-    implementation(projects.android.user.infra.network)
-    implementation(projects.android.user.infra.local)
-    implementation(libs.bundles.compose)
     implementation(libs.bundles.room)
     kapt(libs.room.compiler)
     implementation(libs.bundles.hilt)
     kapt(libs.hilt.compiler)
-    implementation(libs.bundles.compose.ui.tool)
-
-    testImplementation(projects.android.infra.test)
-    testImplementation(projects.android.user.infra.test)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.kotlinx.datetime)
     testImplementation(libs.junit)
-    testImplementation(libs.compose.ui.test.junit)
-    testImplementation(libs.robolectric)
-    testImplementation(libs.hilt.android.testing)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
 }
 
 kapt {

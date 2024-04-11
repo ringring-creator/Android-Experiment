@@ -34,6 +34,7 @@ android {
 
 dependencies {
     implementation(projects.android.todo.infra.network)
+    implementation(projects.android.todo.infra.local)
     implementation(libs.androidx.core.ktx)
     implementation(libs.kotlinx.datetime)
     implementation(libs.junit)
