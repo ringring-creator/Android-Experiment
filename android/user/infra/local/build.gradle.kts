@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.ring.ring.local"
+    namespace = "com.ring.ring.user.infra.local"
     compileSdk = 34
 
     defaultConfig {

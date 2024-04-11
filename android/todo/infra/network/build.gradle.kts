@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.ring.ring.network"
+    namespace = "com.ring.ring.todo.infra.network"
     compileSdk = 34
 
     defaultConfig {
@@ -41,6 +41,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.android.infra.di)
     implementation(libs.androidx.activity.compose)
     implementation(libs.bundles.retrofit)
     implementation(libs.bundles.hilt)

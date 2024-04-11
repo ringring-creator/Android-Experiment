@@ -56,6 +56,7 @@ android {
         compose = true
     }
     dependencies {
+        implementation(projects.android.todo.feature.list)
         implementation(projects.android.user.feature.login)
         implementation(projects.android.user.feature.signup)
 

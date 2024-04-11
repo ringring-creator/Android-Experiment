@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.ring.ring.log"
+    namespace = "com.ring.ring.infra.log"
     compileSdk = 34
 
     defaultConfig {

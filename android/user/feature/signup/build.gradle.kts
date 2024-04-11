@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.ring.ring.signup"
+    namespace = "com.ring.ring.user.feature.signup"
     compileSdk = 34
 
     defaultConfig {

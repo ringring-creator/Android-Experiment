@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.ring.ring.test"
+    namespace = "com.ring.ring.infra.test"
     compileSdk = 34
 
     defaultConfig {

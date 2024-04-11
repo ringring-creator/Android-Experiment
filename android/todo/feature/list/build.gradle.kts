@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.ring.ring.list"
+    namespace = "com.ring.ring.todo.feature.list"
     compileSdk = 34
 
     defaultConfig {

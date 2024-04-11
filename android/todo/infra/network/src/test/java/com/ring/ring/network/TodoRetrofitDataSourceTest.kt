@@ -1,6 +1,10 @@
 package com.ring.ring.network
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import com.ring.ring.todo.infra.network.EditDoneRequest
+import com.ring.ring.todo.infra.network.ListRequest
+import com.ring.ring.todo.infra.network.RetrofitTodoNetworkApi
+import com.ring.ring.todo.infra.network.TodoRetrofitDataSource
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -90,5 +94,27 @@ class TodoRetrofitDataSourceTest {
         assertThat(body.contains("\"userId\":$userId"), CoreMatchers.`is`(true))
         assertThat(request.getHeader("Authorization"), equalTo("Bearer $token"))
         assertThat(request.path, equalTo("/todo/list"))
+    }
+
+    @Test
+    fun `editDone request correct parameters`() = runTest {
+        //given
+        val response = MockResponse()
+            .setResponseCode(200)
+        mockWebServer.enqueue(response)
+
+        //when
+        val token = "fakeToken"
+        val done = true
+        val todoId = 1L
+        subject.editDone(request = EditDoneRequest(todoId = todoId, done = done), token)
+
+        //then
+        val request = mockWebServer.takeRequest()
+        val body = request.body.readUtf8()
+        assertThat(body.contains("\"todoId\":$todoId"), CoreMatchers.`is`(true))
+        assertThat(body.contains("\"done\":$done"), CoreMatchers.`is`(true))
+        assertThat(request.getHeader("Authorization"), equalTo("Bearer $token"))
+        assertThat(request.path, equalTo("/todo/editdone"))
     }
 }
