@@ -34,7 +34,7 @@ class TodoController(
     suspend fun list(call: ApplicationCall) {
         val req = call.receive<GetTodoList.Req>()
         val res = getTodoList(req = req)
-        call.respond(HttpStatusCode.OK, res.todoList)
+        call.respond(HttpStatusCode.OK, res)
     }
 
     suspend fun edit(call: ApplicationCall) {

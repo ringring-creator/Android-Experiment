@@ -1,9 +1,9 @@
 package com.ring.ring.login
 
 import com.ring.ring.network.LoginRequest
+import com.ring.ring.test.FakeUserLocalDataSource
 import com.ring.ring.test.FakeUserNetworkDataSource
 import com.ring.ring.test.MainDispatcherRule
-import com.ring.ring.test.fake.FakeUserLocalDataSource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher

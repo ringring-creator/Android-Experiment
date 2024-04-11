@@ -19,7 +19,6 @@ class UserRetrofitDataSourceTest {
     private lateinit var subject: UserRetrofitDataSource
 
     private val mockWebServer = MockWebServer()
-
     private val json = Json { ignoreUnknownKeys = true }
     private val okHttpClient = OkHttpClient.Builder().build()
 

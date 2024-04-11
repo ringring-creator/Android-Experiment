@@ -3,18 +3,17 @@ plugins {
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.hilt)
     alias(libs.plugins.kapt)
-    //Todo remove
-    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
-    namespace = "com.ring.ring.login"
+    namespace = "com.ring.ring.list"
     compileSdk = 34
 
     defaultConfig {
         minSdk = 24
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
     }
 
     buildTypes {
@@ -33,32 +32,34 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
     }
+    buildFeatures {
+        compose = true
+    }
     kotlinOptions {
         jvmTarget = "1.8"
-    }
-    buildFeatures {
-        buildConfig = true
-        compose = true
     }
     testOptions.unitTests.isIncludeAndroidResources = true
 }
 
 dependencies {
-    implementation(projects.android.user.infra.network)
+    implementation(projects.android.todo.infra.network)
     implementation(projects.android.user.infra.local)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
     implementation(libs.bundles.compose)
     implementation(libs.bundles.room)
     kapt(libs.room.compiler)
     implementation(libs.bundles.hilt)
     kapt(libs.hilt.compiler)
     implementation(libs.bundles.compose.ui.tool)
+    implementation(libs.kotlinx.datetime)
 
     testImplementation(projects.android.infra.test)
+    testImplementation(projects.android.todo.infra.test)
     testImplementation(projects.android.user.infra.test)
     testImplementation(libs.junit)
-    testImplementation(libs.compose.ui.test.junit)
-    testImplementation(libs.robolectric)
-    testImplementation(libs.hilt.android.testing)
+    testImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(libs.androidx.junit)
 }
 
 kapt {

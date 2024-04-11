@@ -99,12 +99,12 @@ private fun rememberLoginUiState(viewModel: LoginViewModel): LoginUiState {
     )
 }
 
-data class LoginUiState(
+internal data class LoginUiState(
     val email: String,
     val password: String,
 )
 
-data class LoginUiUpdater(
+internal data class LoginUiUpdater(
     val setEmail: (email: String) -> Unit,
     val setPassword: (password: String) -> Unit,
     val login: () -> Unit,

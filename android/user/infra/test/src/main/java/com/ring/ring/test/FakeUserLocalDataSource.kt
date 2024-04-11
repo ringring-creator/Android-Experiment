@@ -1,10 +1,11 @@
-package com.ring.ring.test.fake
+package com.ring.ring.test
 
+import com.ring.ring.local.LocalUser
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class FakeUserLocalDataSource : com.ring.ring.local.UserLocalDataSource {
-    private var user = MutableStateFlow(com.ring.ring.local.LocalUser(0L, "", ""))
-    override suspend fun save(user: com.ring.ring.local.LocalUser) {
+    private var user = MutableStateFlow(LocalUser(0L, "", ""))
+    override suspend fun save(user: LocalUser) {
         this.user.value = user
     }
 
