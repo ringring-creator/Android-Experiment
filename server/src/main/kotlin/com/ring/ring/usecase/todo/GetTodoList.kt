@@ -4,7 +4,7 @@ import com.ring.ring.data.Todo
 import com.ring.ring.data.repository.TodoRepository
 import com.ring.ring.di.DataModules
 import com.ring.ring.usecase.UseCase
-import kotlinx.datetime.LocalDate
+import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
 class GetTodoList(
@@ -30,7 +30,7 @@ class GetTodoList(
             val title: String,
             val description: String,
             val done: Boolean,
-            val deadline: LocalDate,
+            val deadline: Instant,
             val userId: Long,
         )
     }

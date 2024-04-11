@@ -1,6 +1,6 @@
 package com.ring.ring.network
 
-import kotlinx.datetime.LocalDate
+import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -13,7 +13,8 @@ data class ListResponse(
         val title: String,
         val description: String,
         val done: Boolean,
-        val deadline: LocalDate,
+        @Serializable(with = InstantSerializer::class)
+        val deadline: Instant,
         val userId: Long,
     )
 }

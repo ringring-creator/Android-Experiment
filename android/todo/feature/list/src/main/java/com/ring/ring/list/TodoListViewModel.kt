@@ -8,8 +8,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atStartOfDayIn
 import javax.inject.Inject
 
 @HiltViewModel
@@ -36,6 +34,6 @@ fun ListResponse.Todo.toLocalTodo(): LocalTodo {
         title = title,
         description = description,
         done = done,
-        deadline = deadline.atStartOfDayIn(TimeZone.currentSystemDefault()),
+        deadline = deadline,
     )
 }

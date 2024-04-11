@@ -11,7 +11,7 @@ import androidx.compose.ui.tooling.preview.Preview
 )
 @Composable
 internal fun PreviewSignUpScreen() {
-    WrapSignUpScreen(uiState = uiState)
+    SignUpScreen(uiState = uiState)
 }
 
 @Preview(
@@ -21,7 +21,7 @@ internal fun PreviewSignUpScreen() {
 )
 @Composable
 internal fun PreviewSignUpScreenWhenEmailInvalid() {
-    WrapSignUpScreen(
+    SignUpScreen(
         uiState = uiState.copy(
             email = SignUpUiState.Email("test", true, true)
         ),
@@ -35,7 +35,7 @@ internal fun PreviewSignUpScreenWhenEmailInvalid() {
 )
 @Composable
 internal fun PreviewSignUpScreenWhenPasswordInvalid() {
-    WrapSignUpScreen(
+    SignUpScreen(
         uiState = uiState.copy(
             password = SignUpUiState.Password("test", true, true)
         )
@@ -43,7 +43,7 @@ internal fun PreviewSignUpScreenWhenPasswordInvalid() {
 }
 
 @Composable
-private fun WrapSignUpScreen(uiState: SignUpUiState) {
+private fun SignUpScreen(uiState: SignUpUiState) {
     SignUpScreen(
         uiState = uiState,
         updater = updater,

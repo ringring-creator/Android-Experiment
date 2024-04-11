@@ -51,7 +51,7 @@ class TodoListViewModelTest {
         assertThat(firstElement.id, equalTo(1))
         assertThat(firstElement.title, equalTo("fakeTitle"))
         assertThat(firstElement.done, equalTo(false))
-        assertThat(firstElement.deadline, equalTo("2024-01-01"))
+        assertThat(firstElement.deadline, equalTo("2024-01-01T00:00:00Z"))
     }
 
     @Test
@@ -70,8 +70,7 @@ class TodoListViewModelTest {
         assertThat(firstElement.title, equalTo(expected.title))
         assertThat(firstElement.description, equalTo(expected.description))
         assertThat(firstElement.done, equalTo(expected.done))
-        //Todo
-//        assertThat(firstElement.deadline, equalTo(expected.deadline))
+        assertThat(firstElement.deadline, equalTo(expected.deadline))
     }
 
     @Test

@@ -3,7 +3,7 @@ package com.ring.ring.test
 import com.ring.ring.network.ListRequest
 import com.ring.ring.network.ListResponse
 import com.ring.ring.network.TodoNetworkDataSource
-import kotlinx.datetime.LocalDate
+import kotlinx.datetime.Instant
 
 class FakeTodoNetworkDataSource(
     private val isSimulateError: Boolean = false,
@@ -21,7 +21,7 @@ class FakeTodoNetworkDataSource(
             "fakeTitle",
             "fakeDescription",
             false,
-            LocalDate(2024, 1, 1),
+            Instant.parse("2024-01-01T00:00:00Z"),
             1L,
         ),
         ListResponse.Todo(
@@ -29,7 +29,7 @@ class FakeTodoNetworkDataSource(
             "fakeTitle2",
             "fakeDescription2",
             true,
-            LocalDate(2024, 12, 31),
+            Instant.parse("2024-12-31T00:00:00Z"),
             1L,
         ),
     )

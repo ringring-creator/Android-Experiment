@@ -1,6 +1,6 @@
 package com.ring.ring.data
 
-import kotlinx.datetime.LocalDate
+import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -9,6 +9,6 @@ data class Todo(
     val title: String,
     val description: String,
     val done: Boolean,
-    val deadline: LocalDate,
+    val deadline: Instant,
     val userId: Long,
 )

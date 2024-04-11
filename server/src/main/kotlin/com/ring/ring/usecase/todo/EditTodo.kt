@@ -5,7 +5,7 @@ import com.ring.ring.data.repository.TodoRepository
 import com.ring.ring.di.DataModules
 import com.ring.ring.exception.BadRequestException
 import com.ring.ring.usecase.UseCase
-import kotlinx.datetime.LocalDate
+import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
 class EditTodo(
@@ -26,7 +26,7 @@ class EditTodo(
             val title: String,
             val description: String,
             val done: Boolean,
-            val deadline: LocalDate,
+            val deadline: Instant,
             val userId: Long,
         )
 

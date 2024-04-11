@@ -4,15 +4,15 @@ import app.cash.sqldelight.ColumnAdapter
 import com.ring.ring.data.Todo
 import data.db.TodoQueries
 import data.db.TodoTable
-import kotlinx.datetime.LocalDate
+import kotlinx.datetime.Instant
 
-class DeadlineAdapter : ColumnAdapter<LocalDate, String> {
-    override fun decode(databaseValue: String): LocalDate {
-        return LocalDate.parse(databaseValue)
+class DeadlineAdapter : ColumnAdapter<Instant, Long> {
+    override fun decode(databaseValue: Long): Instant {
+        return Instant.fromEpochMilliseconds(databaseValue)
     }
 
-    override fun encode(value: LocalDate): String {
-        return value.toString()
+    override fun encode(value: Instant): Long {
+        return value.toEpochMilliseconds()
     }
 }
 

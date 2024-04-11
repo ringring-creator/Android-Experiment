@@ -1,12 +1,12 @@
 import kotlin.Boolean;
-import kotlinx.datetime.LocalDate;
+import kotlinx.datetime.Instant;
 
 CREATE TABLE TodoTable(
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,
     description TEXT NOT NULL,
     done INTEGER AS Boolean NOT NULL,
-    deadline TEXT AS LocalDate NOT NULL,
+    deadline INTEGER AS Instant NOT NULL,
     userId INTEGER NOT NULL,
     FOREIGN KEY (userId)
     REFERENCES UserTable(id)
