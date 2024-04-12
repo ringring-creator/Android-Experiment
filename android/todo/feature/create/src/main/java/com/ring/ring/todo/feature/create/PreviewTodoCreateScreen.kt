@@ -21,6 +21,21 @@ internal fun PreviewTodoCreateScreen() {
     apiLevel = 34,
 )
 @Composable
+internal fun PreviewTodoCreateScreenWithLongText() {
+    CreateTodoScreen(
+        value.copy(
+            title = "fakeTitle".repeat(20),
+            description = "fakeDescription".repeat(20)
+        )
+    )
+}
+
+@Preview(
+    group = "normal scenario",
+    showSystemUi = true,
+    apiLevel = 34,
+)
+@Composable
 internal fun PreviewTodoCreateScreenShowDatePicker() {
     CreateTodoScreen(value.copy(isShowDatePicker = true))
 }

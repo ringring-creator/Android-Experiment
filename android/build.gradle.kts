@@ -75,18 +75,3 @@ dependencies {
 kapt {
     correctErrorTypes = true
 }
-
-tasks.register("allTests") {
-    dependsOn(
-        "testDebugUnitTest",
-        "todo:feature:list:testDebugUnitTest",
-        "todo:feature:create:testDebugUnitTest",
-        "todo:infra:network:testDebugUnitTest",
-        "todo:infra:local:testDebugUnitTest",
-        "user:feature:login:testDebugUnitTest",
-        "user:feature:signup:testDebugUnitTest",
-        "user:infra:network:testDebugUnitTest",
-        "user:infra:local:testDebugUnitTest",
-//        "connectedAndroidTest",
-    )
-}
