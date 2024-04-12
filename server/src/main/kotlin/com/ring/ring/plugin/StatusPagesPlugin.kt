@@ -1,5 +1,6 @@
 package com.ring.ring.plugin
 
+import com.ring.ring.exception.AuthorizationException
 import com.ring.ring.exception.BadRequestException
 import com.ring.ring.exception.LoginFailureException
 import com.ring.ring.exception.NotLoggedInException
@@ -27,7 +28,7 @@ fun Application.configureStatusPages() {
                     )
                 }
 
-                is NotLoggedInException -> {
+                is NotLoggedInException, is AuthorizationException -> {
                     call.respondText(
                         text = "403: ${cause.message}",
                         status = HttpStatusCode.Forbidden

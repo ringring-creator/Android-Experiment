@@ -42,6 +42,9 @@ class TodoDataSource(private val queries: TodoQueries) {
 
     fun delete(id: Long) = queries.delete(id)
 
+    fun verifyTodoOwner(todoId: Long, userId: Long): Boolean =
+        queries.verifyTodoOwner(todoId, userId).executeAsOne()
+
     private fun insert(todo: Todo) = queries.insert(
         title = todo.title,
         description = todo.description,

@@ -3,7 +3,6 @@ package com.ring.ring.todo.infra.test
 import com.ring.ring.todo.infra.network.TodoNetworkDataSource
 import com.ring.ring.todo.infra.network.dto.CreateRequest
 import com.ring.ring.todo.infra.network.dto.EditDoneRequest
-import com.ring.ring.todo.infra.network.dto.ListRequest
 import com.ring.ring.todo.infra.network.dto.ListResponse
 import kotlinx.datetime.Instant
 
@@ -36,9 +35,9 @@ class FakeTodoNetworkDataSource(
         ),
     )
 
-    override suspend fun list(request: ListRequest, token: String): ListResponse {
+    override suspend fun list(token: String): ListResponse {
         if (isSimulateError) throw Exception()
-        if (request.userId != parameter.userId || token != parameter.token) throw Exception()
+        if (token != parameter.token) throw Exception()
 
         return ListResponse(
             todoList = listResponse

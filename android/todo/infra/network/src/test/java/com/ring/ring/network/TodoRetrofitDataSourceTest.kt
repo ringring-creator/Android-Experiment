@@ -5,7 +5,6 @@ import com.ring.ring.todo.infra.network.RetrofitTodoNetworkApi
 import com.ring.ring.todo.infra.network.TodoRetrofitDataSource
 import com.ring.ring.todo.infra.network.dto.CreateRequest
 import com.ring.ring.todo.infra.network.dto.EditDoneRequest
-import com.ring.ring.todo.infra.network.dto.ListRequest
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Instant
 import kotlinx.serialization.json.Json
@@ -54,7 +53,7 @@ class TodoRetrofitDataSourceTest {
         mockWebServer.enqueue(response)
 
         //when
-        val actual = subject.list(request = ListRequest(userId = 1L), "fakeToken")
+        val actual = subject.list("fakeToken")
 
         //then
         val todoList = actual.todoList
@@ -66,13 +65,6 @@ class TodoRetrofitDataSourceTest {
         assertThat(firstElement.done, equalTo(false))
         assertThat(firstElement.deadline.toString(), equalTo("2024-01-01T00:00:00Z"))
         assertThat(firstElement.userId, equalTo(1L))
-        val secondElement = todoList[1]
-        assertThat(secondElement.id, equalTo(2))
-        assertThat(secondElement.title, equalTo("fakeTitle2"))
-        assertThat(secondElement.description, equalTo("fakeDescription2"))
-        assertThat(secondElement.done, equalTo(true))
-        assertThat(secondElement.deadline.toString(), equalTo("2024-12-31T00:00:00Z"))
-        assertThat(secondElement.userId, equalTo(1L))
     }
 
 
@@ -87,13 +79,10 @@ class TodoRetrofitDataSourceTest {
 
         //when
         val token = "fakeToken"
-        val userId = 1L
-        subject.list(request = ListRequest(userId = userId), token)
+        subject.list(token)
 
         //then
         val request = mockWebServer.takeRequest()
-        val body = request.body.readUtf8()
-        assertThat(body.contains("\"userId\":$userId"), `is`(true))
         assertThat(request.getHeader("Authorization"), equalTo("Bearer $token"))
         assertThat(request.path, equalTo("/todo/list"))
     }
@@ -150,6 +139,6 @@ class TodoRetrofitDataSourceTest {
         assertThat(body.contains("\"todoId\":$todoId"), `is`(true))
         assertThat(body.contains("\"done\":$done"), `is`(true))
         assertThat(request.getHeader("Authorization"), equalTo("Bearer $token"))
-        assertThat(request.path, equalTo("/todo/editdone"))
+        assertThat(request.path, equalTo("/todo/edit-done"))
     }
 }

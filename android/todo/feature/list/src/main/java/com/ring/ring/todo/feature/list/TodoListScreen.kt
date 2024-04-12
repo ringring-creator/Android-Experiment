@@ -13,8 +13,6 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -105,7 +103,6 @@ internal fun TodoListScreen(
     snackBarHostState: SnackbarHostState,
 ) {
     Scaffold(
-//        topBar = { TodoNavBar(toMyPageScreen) },
         snackbarHost = { SnackbarHost(snackBarHostState) },
         floatingActionButton = {
             FloatingActionButton(onClick = toCreateTodoScreen) {
@@ -141,28 +138,6 @@ private fun Content(
 //                toEditTodoScreen,
                 todo,
                 updater,
-            )
-        }
-    }
-}
-
-@Composable
-private fun TodoNavBar(
-    toMyPageScreen: () -> Unit,
-) {
-    NavigationBar {
-        NavigationBar {
-            NavigationRailItem(
-                icon = { },
-                label = { Text("Todo") },
-                selected = true,
-                onClick = {}
-            )
-            NavigationRailItem(
-                icon = { },
-                label = { Text("My Page") },
-                selected = false,
-                onClick = toMyPageScreen
             )
         }
     }

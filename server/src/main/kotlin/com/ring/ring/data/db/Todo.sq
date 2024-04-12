@@ -40,3 +40,7 @@ WHERE id = :id;
 delete:
 DELETE FROM TodoTable
 WHERE id = :id;
+
+verifyTodoOwner:
+SELECT Count(userId) == 1 FROM TodoTable
+WHERE id = :todoId AND userId = :userId;

@@ -27,4 +27,8 @@ class TodoRepository(
     suspend fun delete(id: Long) = withContext(Dispatchers.IO) {
         dataSource.delete(id = id)
     }
+
+    suspend fun verifyTodoOwner(todoId: Long, userId: Long) = withContext(Dispatchers.IO) {
+        dataSource.verifyTodoOwner(todoId, userId)
+    }
 }

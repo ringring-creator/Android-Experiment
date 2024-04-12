@@ -4,7 +4,6 @@ import com.ring.ring.todo.infra.local.LocalTodo
 import com.ring.ring.todo.infra.local.TodoLocalDataSource
 import com.ring.ring.todo.infra.network.TodoNetworkDataSource
 import com.ring.ring.todo.infra.network.dto.EditDoneRequest
-import com.ring.ring.todo.infra.network.dto.ListRequest
 import com.ring.ring.todo.infra.network.dto.ListResponse
 import com.ring.ring.user.infra.local.UserLocalDataSource
 import javax.inject.Inject
@@ -18,7 +17,7 @@ internal class TodoRepository @Inject constructor(
         return try {
             val user = userLocalDataSource.getUser()!!
             val fetchedTodoList = networkDataSource
-                .list(ListRequest(user.userId), user.token)
+                .list(user.token)
                 .todoList
             localDataSource.upsert(fetchedTodoList.map(ListResponse.Todo::toLocalTodo))
             fetchedTodoList.map { convert(it) }

@@ -33,26 +33,41 @@ class TodoController(
     }
 
     suspend fun get(call: ApplicationCall) {
-        val req = call.receive<GetTodo.Req>()
-        val res = getTodo(req = req)
+        val res = getTodo(
+            req = GetTodo.Req(
+                body = call.receive<GetTodo.Req.Body>(),
+                email = receiveEmail(call),
+            )
+        )
         call.respond(HttpStatusCode.OK, res.todo)
     }
 
     suspend fun list(call: ApplicationCall) {
-        val req = call.receive<GetTodoList.Req>()
-        val res = getTodoList(req = req)
+        val res = getTodoList(
+            req = GetTodoList.Req(
+                email = receiveEmail(call),
+            )
+        )
         call.respond(HttpStatusCode.OK, res)
     }
 
     suspend fun edit(call: ApplicationCall) {
-        val req = call.receive<EditTodo.Req>()
-        editTodo(req = req)
+        editTodo(
+            req = EditTodo.Req(
+                todo = call.receive<EditTodo.Req.ReqTodo>(),
+                email = receiveEmail(call)
+            )
+        )
         call.respond(HttpStatusCode.OK)
     }
 
     suspend fun delete(call: ApplicationCall) {
-        val req = call.receive<DeleteTodo.Req>()
-        deleteTodo(req = req)
+        deleteTodo(
+            req = DeleteTodo.Req(
+                body = call.receive<DeleteTodo.Req.Body>(),
+                email = receiveEmail(call)
+            )
+        )
         call.respond(HttpStatusCode.OK)
     }
 
