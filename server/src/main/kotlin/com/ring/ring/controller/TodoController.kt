@@ -1,5 +1,6 @@
 package com.ring.ring.controller
 
+import com.ring.ring.exception.NotLoggedInException
 import com.ring.ring.usecase.todo.CreateTodo
 import com.ring.ring.usecase.todo.DeleteTodo
 import com.ring.ring.usecase.todo.EditTodo
@@ -8,6 +9,8 @@ import com.ring.ring.usecase.todo.GetTodo
 import com.ring.ring.usecase.todo.GetTodoList
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
+import io.ktor.server.auth.jwt.JWTPrincipal
+import io.ktor.server.auth.principal
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 
@@ -20,8 +23,12 @@ class TodoController(
     private val editTodoDone: EditTodoDone = EditTodoDone(),
 ) {
     suspend fun create(call: ApplicationCall) {
-        val req = call.receive<CreateTodo.Req>()
-        createTodo(req = req)
+        createTodo(
+            req = CreateTodo.Req(
+                todo = call.receive<CreateTodo.Req.ReqTodo>(),
+                email = receiveEmail(call),
+            )
+        )
         call.respond(HttpStatusCode.OK)
     }
 
@@ -50,10 +57,13 @@ class TodoController(
     }
 
     suspend fun editDone(call: ApplicationCall) {
-        //Todo
-        //val user = call.principal<User>()
         val req = call.receive<EditTodoDone.Req>()
         editTodoDone(req = req)
         call.respond(HttpStatusCode.OK)
+    }
+
+    private fun receiveEmail(call: ApplicationCall): String {
+        val principal = call.principal<JWTPrincipal>() ?: throw NotLoggedInException()
+        return principal.payload.getClaim("email").asString()
     }
 }

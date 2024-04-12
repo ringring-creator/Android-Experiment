@@ -55,19 +55,21 @@ android {
         buildConfig = true
         compose = true
     }
-    dependencies {
-        implementation(projects.android.todo.feature.list)
-        implementation(projects.android.user.feature.login)
-        implementation(projects.android.user.feature.signup)
+}
 
-        implementation(libs.bundles.compose)
-        implementation(libs.bundles.hilt)
-        configurations.getByName("kapt").dependencies.add(
-            libs.hilt.compiler.get()
-        )
+dependencies {
+    implementation(projects.android.todo.feature.list)
+    implementation(projects.android.todo.feature.create)
+    implementation(projects.android.user.feature.login)
+    implementation(projects.android.user.feature.signup)
 
-        debugImplementation(libs.bundles.compose.ui.tool)
-    }
+    implementation(libs.bundles.compose)
+    implementation(libs.bundles.hilt)
+    configurations.getByName("kapt").dependencies.add(
+        libs.hilt.compiler.get()
+    )
+
+    debugImplementation(libs.bundles.compose.ui.tool)
 }
 
 kapt {
@@ -78,6 +80,7 @@ tasks.register("allTests") {
     dependsOn(
         "testDebugUnitTest",
         "todo:feature:list:testDebugUnitTest",
+        "todo:feature:create:testDebugUnitTest",
         "todo:infra:network:testDebugUnitTest",
         "todo:infra:local:testDebugUnitTest",
         "user:feature:login:testDebugUnitTest",

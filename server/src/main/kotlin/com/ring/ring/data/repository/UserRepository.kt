@@ -17,6 +17,10 @@ class UserRepository(
         dataSource.loadId(user)
     }
 
+    suspend fun loadId(email: String): Long? = withContext(Dispatchers.IO) {
+        dataSource.loadId(email)
+    }
+
     suspend fun save(user: User) = withContext(Dispatchers.IO) {
         dataSource.upsert(user = user)
     }

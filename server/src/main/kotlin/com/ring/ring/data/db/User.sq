@@ -11,6 +11,10 @@ SELECT * FROM UserTable;
 selectById:
 SELECT * FROM UserTable WHERE id = :id;
 
+selectIdByEmail:
+SELECT id FROM UserTable
+WHERE email = :email;
+
 selectIdByEmailAndPassword:
 SELECT id FROM UserTable
 WHERE email = :email AND password = :password;

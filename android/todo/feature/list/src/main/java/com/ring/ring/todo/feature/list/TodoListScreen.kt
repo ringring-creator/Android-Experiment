@@ -18,6 +18,7 @@ import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -28,9 +29,11 @@ import androidx.navigation.compose.composable
 const val TODO_LIST_ROUTE = "TodoListRoute"
 
 fun NavGraphBuilder.todoListScreen(
+    toCreateTodoScreen: () -> Unit,
 ) {
     composable(TODO_LIST_ROUTE) {
         TodoListScreen(
+            toCreateTodoScreen = toCreateTodoScreen,
         )
     }
 }
@@ -39,6 +42,7 @@ fun NavGraphBuilder.todoListScreen(
 @Composable
 internal fun TodoListScreen(
     viewModel: TodoListViewModel = hiltViewModel(),
+    toCreateTodoScreen: () -> Unit,
 ) {
     val uiState = rememberTodoListUiState(viewModel = viewModel)
     val updater = toUpdater(viewModel = viewModel)
@@ -46,14 +50,19 @@ internal fun TodoListScreen(
     TodoListScreen(
         uiState = uiState,
         updater = updater,
+        toCreateTodoScreen = toCreateTodoScreen,
     )
+
+    LaunchedEffect(Unit) {
+        viewModel.fetchTodoList()
+    }
 }
 
 @Composable
 internal fun TodoListScreen(
     uiState: TodoListUiState,
     updater: TodoListUiUpdater,
-//    toCreateTodoScreen: () -> Unit,
+    toCreateTodoScreen: () -> Unit,
 //    toEditTodoScreen: (Long) -> Unit,
 //    toMyPageScreen: () -> Unit,
 //    snackBarHostState: SnackbarHostState,
@@ -62,7 +71,7 @@ internal fun TodoListScreen(
 //        topBar = { TodoNavBar(toMyPageScreen) },
 //        snackbarHost = { SnackbarHost(snackBarHostState) },
         floatingActionButton = {
-            FloatingActionButton(onClick = {}) {
+            FloatingActionButton(onClick = toCreateTodoScreen) {
                 Icon(Icons.Filled.Add, contentDescription = null)
             }
         }

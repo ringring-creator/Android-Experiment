@@ -2,7 +2,7 @@ package com.ring.ring.todo.feature.list
 
 import com.ring.ring.infra.test.MainDispatcherRule
 import com.ring.ring.todo.infra.local.LocalTodo
-import com.ring.ring.todo.infra.network.EditDoneRequest
+import com.ring.ring.todo.infra.network.dto.EditDoneRequest
 import com.ring.ring.todo.infra.test.FakeTodoLocalDataSource
 import com.ring.ring.todo.infra.test.FakeTodoNetworkDataSource
 import com.ring.ring.user.infra.local.LocalUser

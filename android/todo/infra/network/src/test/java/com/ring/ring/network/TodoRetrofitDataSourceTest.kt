@@ -1,18 +1,20 @@
 package com.ring.ring.network
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
-import com.ring.ring.todo.infra.network.EditDoneRequest
-import com.ring.ring.todo.infra.network.ListRequest
 import com.ring.ring.todo.infra.network.RetrofitTodoNetworkApi
 import com.ring.ring.todo.infra.network.TodoRetrofitDataSource
+import com.ring.ring.todo.infra.network.dto.CreateRequest
+import com.ring.ring.todo.infra.network.dto.EditDoneRequest
+import com.ring.ring.todo.infra.network.dto.ListRequest
 import kotlinx.coroutines.test.runTest
+import kotlinx.datetime.Instant
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -91,9 +93,42 @@ class TodoRetrofitDataSourceTest {
         //then
         val request = mockWebServer.takeRequest()
         val body = request.body.readUtf8()
-        assertThat(body.contains("\"userId\":$userId"), CoreMatchers.`is`(true))
+        assertThat(body.contains("\"userId\":$userId"), `is`(true))
         assertThat(request.getHeader("Authorization"), equalTo("Bearer $token"))
         assertThat(request.path, equalTo("/todo/list"))
+    }
+
+    @Test
+    fun `create request correct parameters`() = runTest {
+        //given
+        val response = MockResponse()
+            .setResponseCode(200)
+        mockWebServer.enqueue(response)
+
+        //when
+        val token = "fakeToken"
+        val title = "fakeTitle"
+        val description = "fakeDescription"
+        val done = false
+        val deadline = Instant.parse("2024-01-01T00:00:00Z")
+        subject.create(
+            request = CreateRequest(
+                title, description, done, deadline
+            ), token
+        )
+
+        //then
+        val request = mockWebServer.takeRequest()
+        val body = request.body.readUtf8()
+        assertThat(body.contains("\"title\":\"$title\""), `is`(true))
+        assertThat(body.contains("\"description\":\"$description\""), `is`(true))
+        assertThat(body.contains("\"done\":$done"), `is`(true))
+        assertThat(
+            body.contains("\"deadline\":${deadline.toEpochMilliseconds()}"),
+            `is`(true)
+        )
+        assertThat(request.getHeader("Authorization"), equalTo("Bearer $token"))
+        assertThat(request.path, equalTo("/todo/create"))
     }
 
     @Test
@@ -112,8 +147,8 @@ class TodoRetrofitDataSourceTest {
         //then
         val request = mockWebServer.takeRequest()
         val body = request.body.readUtf8()
-        assertThat(body.contains("\"todoId\":$todoId"), CoreMatchers.`is`(true))
-        assertThat(body.contains("\"done\":$done"), CoreMatchers.`is`(true))
+        assertThat(body.contains("\"todoId\":$todoId"), `is`(true))
+        assertThat(body.contains("\"done\":$done"), `is`(true))
         assertThat(request.getHeader("Authorization"), equalTo("Bearer $token"))
         assertThat(request.path, equalTo("/todo/editdone"))
     }

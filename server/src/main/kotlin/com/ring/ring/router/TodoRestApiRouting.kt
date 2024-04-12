@@ -17,7 +17,7 @@ fun Route.todoRouting(
             post("list") { controller.list(call) }
             post("edit") { controller.edit(call) }
             post("delete") { controller.delete(call) }
-            post("editDone") { controller.editDone(call) }
+            post("edit-done") { controller.editDone(call) }
         }
     }
 }

@@ -17,6 +17,10 @@ class UserDataSource(
         .selectIdByEmailAndPassword(user.email, user.password)
         .executeAsOneOrNull()
 
+    fun loadId(email: String): Long? = queries
+        .selectIdByEmail(email)
+        .executeAsOneOrNull()
+
     fun upsert(user: User) {
         if (user.id == null) {
             insert(user = user)

@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.ring.ring.todo.feature.list"
+    namespace = "com.ring.ring.todo.feature.create"
     compileSdk = 34
 
     defaultConfig {
@@ -45,9 +45,9 @@ dependencies {
     implementation(projects.android.todo.infra.network)
     implementation(projects.android.todo.infra.local)
     implementation(projects.android.user.infra.local)
+    implementation(libs.bundles.compose)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
-    implementation(libs.bundles.compose)
     implementation(libs.bundles.hilt)
     kapt(libs.hilt.compiler)
     implementation(libs.bundles.compose.ui.tool)
