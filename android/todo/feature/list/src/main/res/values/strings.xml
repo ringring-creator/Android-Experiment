@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="failed_to_get_todo_list">failed to get todo list</string>
+    <string name="failed_to_edit_done">Failed to edit done</string>
+    <string name="retry">Retry</string>
+</resources>

@@ -8,8 +8,11 @@ import com.ring.ring.todo.infra.test.FakeTodoNetworkDataSource
 import com.ring.ring.user.infra.local.LocalUser
 import com.ring.ring.user.infra.test.FakeUserLocalDataSource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Instant
@@ -107,6 +110,27 @@ class TodoListViewModelTest {
     }
 
     @Test
+    fun `fetchTodoList send fetchErrorEvent when local failed`() = runTest {
+        //given
+        networkDataSource = FakeTodoNetworkDataSource(true)
+        localDataSource = FakeTodoLocalDataSource(true)
+        setupSubject()
+        var wasCalled = false
+        TestScope(UnconfinedTestDispatcher()).launch {
+            subject.fetchErrorEvent.collect {
+                wasCalled = true
+            }
+        }
+
+        //when
+        subject.fetchTodoList()
+        advanceUntilIdle()
+
+        //then
+        assertThat(wasCalled, `is`(true))
+    }
+
+    @Test
     fun `toggleDone update done of todo in network`() = runTest {
         //given
         subject.fetchTodoList()
@@ -135,6 +159,26 @@ class TodoListViewModelTest {
         //then
         val actual = subject.todoList.value.find { it.id == 1L }
         assertThat(actual!!.done, `is`(true))
+    }
+
+    @Test
+    fun `toggleDone send toggleDoneErrorEvent when editDone failed`() = runTest {
+        //given
+        networkDataSource = FakeTodoNetworkDataSource(true)
+        setupSubject()
+        var wasCalled = false
+        TestScope(UnconfinedTestDispatcher()).launch {
+            subject.toggleDoneErrorEvent.collect {
+                wasCalled = true
+            }
+        }
+
+        //when
+        subject.toggleDone(1L)
+        advanceUntilIdle()
+
+        //then
+        assertThat(wasCalled, `is`(true))
     }
 
     private fun setupSubject() {

@@ -1,5 +1,6 @@
 package com.ring.ring.todo.feature.list
 
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -19,7 +20,7 @@ private fun WrapTodoListScreen(uiState: TodoListUiState) {
         uiState = uiState,
         updater = updater,
         toCreateTodoScreen = {},
-//        snackBarHostState = SnackbarHostState(),
+        snackBarHostState = SnackbarHostState(),
 //        toSignUpScreen = {},
     )
 }

@@ -49,14 +49,12 @@ fun NavGraphBuilder.createTodoScreen(
     }
 }
 
-
 @Composable
 internal fun CreateTodoScreen(
     viewModel: CreateTodoViewModel = hiltViewModel(),
     toTodoListScreen: () -> Unit,
     snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
-
     CreateTodoScreen(
         uiState = rememberCreateTodoUiState(viewModel = viewModel),
         updater = toUpdater(viewModel),

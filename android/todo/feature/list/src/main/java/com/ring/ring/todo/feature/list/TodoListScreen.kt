@@ -16,11 +16,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
@@ -43,6 +48,7 @@ fun NavGraphBuilder.todoListScreen(
 internal fun TodoListScreen(
     viewModel: TodoListViewModel = hiltViewModel(),
     toCreateTodoScreen: () -> Unit,
+    snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     val uiState = rememberTodoListUiState(viewModel = viewModel)
     val updater = toUpdater(viewModel = viewModel)
@@ -51,10 +57,41 @@ internal fun TodoListScreen(
         uiState = uiState,
         updater = updater,
         toCreateTodoScreen = toCreateTodoScreen,
+        snackBarHostState = snackBarHostState,
     )
 
+    SetupSideEffect(viewModel, snackBarHostState)
+}
+
+@Composable
+private fun SetupSideEffect(
+    viewModel: TodoListViewModel,
+    snackBarHostState: SnackbarHostState
+) {
     LaunchedEffect(Unit) {
         viewModel.fetchTodoList()
+    }
+    val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        viewModel.fetchErrorEvent.collect {
+            val snackBarResult = snackBarHostState.showSnackbar(
+                message = context.getString(R.string.failed_to_get_todo_list),
+                actionLabel = context.getString(R.string.retry),
+                withDismissAction = true,
+            )
+            when (snackBarResult) {
+                SnackbarResult.Dismissed -> {}
+                SnackbarResult.ActionPerformed -> viewModel.fetchTodoList()
+            }
+        }
+    }
+    LaunchedEffect(Unit) {
+        viewModel.toggleDoneErrorEvent.collect {
+            snackBarHostState.showSnackbar(
+                message = context.getString(R.string.failed_to_edit_done),
+                withDismissAction = true,
+            )
+        }
     }
 }
 
@@ -65,11 +102,11 @@ internal fun TodoListScreen(
     toCreateTodoScreen: () -> Unit,
 //    toEditTodoScreen: (Long) -> Unit,
 //    toMyPageScreen: () -> Unit,
-//    snackBarHostState: SnackbarHostState,
+    snackBarHostState: SnackbarHostState,
 ) {
     Scaffold(
 //        topBar = { TodoNavBar(toMyPageScreen) },
-//        snackbarHost = { SnackbarHost(snackBarHostState) },
+        snackbarHost = { SnackbarHost(snackBarHostState) },
         floatingActionButton = {
             FloatingActionButton(onClick = toCreateTodoScreen) {
                 Icon(Icons.Filled.Add, contentDescription = null)
