@@ -1,4 +1,4 @@
-package com.ring.ring.todo.feature.create
+package com.ring.ring.todo.infra.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding

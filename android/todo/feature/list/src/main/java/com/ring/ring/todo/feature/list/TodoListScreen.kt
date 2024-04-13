@@ -33,10 +33,12 @@ const val TODO_LIST_ROUTE = "TodoListRoute"
 
 fun NavGraphBuilder.todoListScreen(
     toCreateTodoScreen: () -> Unit,
+    toEditTodoScreen: (id: String) -> Unit,
 ) {
     composable(TODO_LIST_ROUTE) {
         TodoListScreen(
             toCreateTodoScreen = toCreateTodoScreen,
+            toEditTodoScreen = toEditTodoScreen,
         )
     }
 }
@@ -46,6 +48,7 @@ fun NavGraphBuilder.todoListScreen(
 internal fun TodoListScreen(
     viewModel: TodoListViewModel = hiltViewModel(),
     toCreateTodoScreen: () -> Unit,
+    toEditTodoScreen: (id: String) -> Unit,
     snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     val uiState = rememberTodoListUiState(viewModel = viewModel)
@@ -55,6 +58,7 @@ internal fun TodoListScreen(
         uiState = uiState,
         updater = updater,
         toCreateTodoScreen = toCreateTodoScreen,
+        toEditTodoScreen = toEditTodoScreen,
         snackBarHostState = snackBarHostState,
     )
 
@@ -98,7 +102,7 @@ internal fun TodoListScreen(
     uiState: TodoListUiState,
     updater: TodoListUiUpdater,
     toCreateTodoScreen: () -> Unit,
-//    toEditTodoScreen: (Long) -> Unit,
+    toEditTodoScreen: (id: String) -> Unit,
 //    toMyPageScreen: () -> Unit,
     snackBarHostState: SnackbarHostState,
 ) {
@@ -113,7 +117,7 @@ internal fun TodoListScreen(
         val modifier = Modifier.padding(it)
         Content(
             modifier, uiState,
-//            toEditTodoScreen, scope,
+            toEditTodoScreen,
             updater,
         )
     }
@@ -123,8 +127,7 @@ internal fun TodoListScreen(
 private fun Content(
     modifier: Modifier,
     uiState: TodoListUiState,
-//    toEditTodoScreen: (Long) -> Unit,
-//    scope: CoroutineScope,
+    toEditTodoScreen: (id: String) -> Unit,
     updater: TodoListUiUpdater,
 ) {
     Column(
@@ -135,7 +138,7 @@ private fun Content(
         Spacer(modifier = Modifier.height(16.dp))
         uiState.todoList.forEach { todo ->
             Item(
-//                toEditTodoScreen,
+                toEditTodoScreen,
                 todo,
                 updater,
             )
@@ -150,7 +153,7 @@ private fun Header() {
 
 @Composable
 private fun Item(
-//    toEditTodoScreen: (Long) -> Unit,
+    toEditTodoScreen: (id: String) -> Unit,
     todo: TodoListUiState.Todo,
     updater: TodoListUiUpdater
 ) {
@@ -158,7 +161,7 @@ private fun Item(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
-        onClick = { }
+        onClick = { toEditTodoScreen(todo.id.toString()) }
     ) {
         Row(
             modifier = Modifier.padding(8.dp),

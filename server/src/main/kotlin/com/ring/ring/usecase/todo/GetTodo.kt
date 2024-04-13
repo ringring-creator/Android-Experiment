@@ -6,7 +6,9 @@ import com.ring.ring.data.repository.UserRepository
 import com.ring.ring.di.DataModules
 import com.ring.ring.exception.AuthorizationException
 import com.ring.ring.exception.NotLoggedInException
+import com.ring.ring.usecase.InstantSerializer
 import com.ring.ring.usecase.UseCase
+import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
 class GetTodo(
@@ -41,8 +43,8 @@ class GetTodo(
             val title: String,
             val description: String,
             val done: String,
-            val deadline: String,
-            val userId: String,
+            @Serializable(with = InstantSerializer::class)
+            val deadline: Instant,
         )
     }
 
@@ -51,8 +53,6 @@ class GetTodo(
         title = title,
         description = description,
         done = done.toString(),
-        deadline = deadline.toString(),
-        userId = userId.toString(),
+        deadline = deadline,
     )
-
 }

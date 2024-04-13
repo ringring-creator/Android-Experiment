@@ -1,9 +1,13 @@
 package com.ring.ring.todo.infra.test
 
 import com.ring.ring.todo.infra.network.TodoNetworkDataSource
-import com.ring.ring.todo.infra.network.dto.CreateRequest
-import com.ring.ring.todo.infra.network.dto.EditDoneRequest
-import com.ring.ring.todo.infra.network.dto.ListResponse
+import com.ring.ring.todo.infra.network.request.CreateRequest
+import com.ring.ring.todo.infra.network.request.DeleteRequest
+import com.ring.ring.todo.infra.network.request.EditDoneRequest
+import com.ring.ring.todo.infra.network.request.EditRequest
+import com.ring.ring.todo.infra.network.request.GetRequest
+import com.ring.ring.todo.infra.network.response.GetResponse
+import com.ring.ring.todo.infra.network.response.ListResponse
 import kotlinx.datetime.Instant
 
 class FakeTodoNetworkDataSource(
@@ -16,7 +20,7 @@ class FakeTodoNetworkDataSource(
 
     var parameter: Parameter = Parameter(0L, "")
 
-    val listResponse = listOf(
+    var listResponse = mutableListOf(
         ListResponse.Todo(
             1,
             "fakeTitle",
@@ -39,28 +43,72 @@ class FakeTodoNetworkDataSource(
         if (isSimulateError) throw Exception()
         if (token != parameter.token) throw Exception()
 
-        return ListResponse(
-            todoList = listResponse
-        )
+        return ListResponse(todoList = listResponse)
     }
 
-    data class CreateParameter(val request: CreateRequest, val token: String)
+    override suspend fun get(request: GetRequest, token: String): GetResponse {
+        if (isSimulateError) throw Exception()
+        if (token != parameter.token) throw Exception()
+        return listResponse.find { it.id == request.todoId }?.toGetResponse() ?: throw Exception()
+    }
 
-    var createWasCalled: CreateParameter? = null
     override suspend fun create(request: CreateRequest, token: String) {
         if (isSimulateError) throw Exception()
         if (token != parameter.token) throw Exception()
 
-        createWasCalled = CreateParameter(request, token)
+        listResponse.add(element = request.toListResponseTodo())
     }
 
+    private fun CreateRequest.toListResponseTodo() = ListResponse.Todo(
+        id = listResponse.maxBy { it.id }.id,
+        title = title,
+        description = description,
+        done = done,
+        deadline = deadline,
+        userId = parameter.userId,
+    )
 
-    data class EditDoneParameter(val request: EditDoneRequest, val token: String)
+    override suspend fun edit(request: EditRequest, token: String) {
+        if (isSimulateError) throw Exception()
+        if (token != parameter.token) throw Exception()
+        listResponse = listResponse.map {
+            if (it.id == request.id) editTodo(it, request) else it
+        }.toMutableList()
+    }
 
-    var editDoneWasCalled: EditDoneParameter? = null
     override suspend fun editDone(request: EditDoneRequest, token: String) {
         if (isSimulateError) throw Exception()
-        editDoneWasCalled = EditDoneParameter(request, token)
+        if (token != parameter.token) throw Exception()
+
+        listResponse = listResponse.map {
+            if (it.id == request.todoId) it.copy(done = request.done) else it
+        }.toMutableList()
     }
 
+    override suspend fun delete(request: DeleteRequest, token: String) {
+        if (isSimulateError) throw Exception()
+        if (token != parameter.token) throw Exception()
+
+        listResponse.removeIf { it.id == request.todoId }
+    }
+
+    private fun ListResponse.Todo.toGetResponse(): GetResponse {
+        return GetResponse(
+            id = id,
+            title = title,
+            description = description,
+            done = done,
+            deadline = deadline,
+        )
+    }
+
+    private fun editTodo(
+        it: ListResponse.Todo,
+        request: EditRequest
+    ) = it.copy(
+        title = request.title,
+        description = request.description,
+        done = request.done,
+        deadline = request.deadline,
+    )
 }

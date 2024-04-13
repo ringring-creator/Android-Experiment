@@ -11,15 +11,16 @@ import androidx.compose.ui.tooling.preview.Preview
 )
 @Composable
 internal fun PreviewTodoListScreen() {
-    WrapTodoListScreen(value)
+    TodoListScreen(value)
 }
 
 @Composable
-private fun WrapTodoListScreen(uiState: TodoListUiState) {
+private fun TodoListScreen(uiState: TodoListUiState) {
     TodoListScreen(
         uiState = uiState,
         updater = updater,
         toCreateTodoScreen = {},
+        toEditTodoScreen = {},
         snackBarHostState = SnackbarHostState(),
 //        toSignUpScreen = {},
     )

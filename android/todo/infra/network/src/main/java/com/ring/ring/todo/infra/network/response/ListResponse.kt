@@ -1,4 +1,4 @@
-package com.ring.ring.todo.infra.network.dto
+package com.ring.ring.todo.infra.network.response
 
 import com.ring.ring.todo.infra.network.InstantSerializer
 import kotlinx.datetime.Instant

@@ -2,7 +2,6 @@ package com.ring.ring.todo.feature.list
 
 import com.ring.ring.infra.test.MainDispatcherRule
 import com.ring.ring.todo.infra.local.LocalTodo
-import com.ring.ring.todo.infra.network.dto.EditDoneRequest
 import com.ring.ring.todo.infra.test.FakeTodoLocalDataSource
 import com.ring.ring.todo.infra.test.FakeTodoNetworkDataSource
 import com.ring.ring.user.infra.local.LocalUser
@@ -140,11 +139,10 @@ class TodoListViewModelTest {
         advanceUntilIdle()
 
         //then
-        val expected = FakeTodoNetworkDataSource.EditDoneParameter(
-            request = EditDoneRequest(1L, true),
-            token = localUser.token
-        )
-        assertThat(networkDataSource.editDoneWasCalled, equalTo(expected))
+        val actual = networkDataSource
+            .list(localUser.token)
+            .todoList.find { it.id == 1L }!!
+        assertThat(actual.done, `is`(true))
     }
 
     @Test

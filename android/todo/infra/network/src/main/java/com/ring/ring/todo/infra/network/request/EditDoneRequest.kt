@@ -1,4 +1,4 @@
-package com.ring.ring.todo.infra.network.dto
+package com.ring.ring.todo.infra.network.request
 
 import kotlinx.serialization.Serializable
 

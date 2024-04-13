@@ -3,7 +3,7 @@ package com.ring.ring.todo.feature.list
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ring.ring.todo.infra.local.LocalTodo
-import com.ring.ring.todo.infra.network.dto.ListResponse
+import com.ring.ring.todo.infra.network.response.ListResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.channels.Channel

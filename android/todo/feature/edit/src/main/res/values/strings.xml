@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="success_to_edit">Success to edit</string>
+    <string name="failed_to_edit">Failed to edit</string>
+    <string name="failed_to_delete">Failed to delete</string>
+    <string name="failed_to_get_todo_list">Failed to get todo list</string>
+    <string name="edit_todo">Edit Todo</string>
+    <string name="description">Description</string>
+    <string name="title">Title</string>
+    <string name="done">Done</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+</resources>

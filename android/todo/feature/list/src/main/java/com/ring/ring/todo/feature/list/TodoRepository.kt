@@ -3,8 +3,8 @@ package com.ring.ring.todo.feature.list
 import com.ring.ring.todo.infra.local.LocalTodo
 import com.ring.ring.todo.infra.local.TodoLocalDataSource
 import com.ring.ring.todo.infra.network.TodoNetworkDataSource
-import com.ring.ring.todo.infra.network.dto.EditDoneRequest
-import com.ring.ring.todo.infra.network.dto.ListResponse
+import com.ring.ring.todo.infra.network.request.EditDoneRequest
+import com.ring.ring.todo.infra.network.response.ListResponse
 import com.ring.ring.user.infra.local.UserLocalDataSource
 import javax.inject.Inject
 

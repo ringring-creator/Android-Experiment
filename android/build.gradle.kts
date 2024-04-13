@@ -60,6 +60,7 @@ android {
 dependencies {
     implementation(projects.android.todo.feature.list)
     implementation(projects.android.todo.feature.create)
+    implementation(projects.android.todo.feature.edit)
     implementation(projects.android.user.feature.login)
     implementation(projects.android.user.feature.signup)
 

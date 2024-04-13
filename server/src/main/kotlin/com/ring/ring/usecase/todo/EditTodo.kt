@@ -4,8 +4,8 @@ import com.ring.ring.data.Todo
 import com.ring.ring.data.repository.TodoRepository
 import com.ring.ring.data.repository.UserRepository
 import com.ring.ring.di.DataModules
-import com.ring.ring.exception.BadRequestException
 import com.ring.ring.exception.NotLoggedInException
+import com.ring.ring.usecase.InstantSerializer
 import com.ring.ring.usecase.UseCase
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
@@ -27,15 +27,16 @@ class EditTodo(
     ) : UseCase.Req {
         @Serializable
         data class ReqTodo(
-            val id: Long?,
+            val id: Long,
             val title: String,
             val description: String,
             val done: Boolean,
+            @Serializable(with = InstantSerializer::class)
             val deadline: Instant,
         )
 
         fun toTodo(userId: Long): Todo = Todo(
-            id = todo.id ?: throw BadRequestException(message = "Id is invalid"),
+            id = todo.id,
             title = todo.title,
             description = todo.description,
             done = todo.done,

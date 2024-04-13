@@ -1,7 +1,6 @@
 package com.ring.ring.todo.feature.create
 
 import com.ring.ring.infra.test.MainDispatcherRule
-import com.ring.ring.todo.infra.network.dto.CreateRequest
 import com.ring.ring.todo.infra.test.FakeTodoNetworkDataSource
 import com.ring.ring.user.infra.local.LocalUser
 import com.ring.ring.user.infra.test.FakeUserLocalDataSource
@@ -45,8 +44,8 @@ class CreateTodoViewModelTest {
     @Test
     fun saveTodo() = runTest {
         //given
-        subject.setTitle("fakeTitle")
-        subject.setDescription("fakeDescription")
+        subject.setTitle("fakeTitle3")
+        subject.setDescription("fakeDescription3")
         subject.setDone(true)
         subject.setDeadline(1L)
 
@@ -55,16 +54,12 @@ class CreateTodoViewModelTest {
         advanceUntilIdle()
 
         //then
-        val expected = FakeTodoNetworkDataSource.CreateParameter(
-            request = CreateRequest(
-                title = "fakeTitle",
-                description = "fakeDescription",
-                done = true,
-                deadline = Instant.fromEpochMilliseconds(1L),
-            ),
-            token = "fakeToken"
-        )
-        assertThat(networkDataSource.createWasCalled, equalTo(expected))
+        val element =
+            networkDataSource.list("fakeToken").todoList.find { it.title == "fakeTitle3" }!!
+        assertThat(element.title, equalTo("fakeTitle3"))
+        assertThat(element.description, equalTo("fakeDescription3"))
+        assertThat(element.done, equalTo(true))
+        assertThat(element.deadline, equalTo(Instant.fromEpochMilliseconds(1L)))
     }
 
     @Test
