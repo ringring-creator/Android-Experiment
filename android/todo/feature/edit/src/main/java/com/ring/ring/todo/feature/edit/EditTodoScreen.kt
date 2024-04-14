@@ -15,6 +15,8 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -41,7 +43,6 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.ring.ring.todo.infra.ui.CustomDatePicker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -283,4 +284,29 @@ private fun DeleteButton(
     Button(
         onClick = delete,
     ) { Text(stringResource(R.string.delete)) }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun CustomDatePicker(
+    isShowDatePicker: Boolean,
+    datePickerState: DatePickerState,
+    dismissDatePicker: () -> Unit,
+    setDate: (Long) -> Unit,
+) {
+    if (isShowDatePicker) {
+        DatePickerDialog(
+            onDismissRequest = dismissDatePicker,
+            confirmButton = {
+                Text("Set", modifier = Modifier
+                    .padding(16.dp)
+                    .clickable {
+                        datePickerState.selectedDateMillis?.let { setDate(it) }
+                        dismissDatePicker()
+                    })
+            }
+        ) {
+            DatePicker(datePickerState)
+        }
+    }
 }
