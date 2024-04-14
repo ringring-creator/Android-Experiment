@@ -1,6 +1,4 @@
-package com.ring.ring.todo.infra.network
-
-import com.ring.ring.todo.infra.domain.Todo
+package com.ring.ring.todo.infra.domain
 
 interface TodoNetworkDataSource {
     suspend fun list(token: String): List<Todo>

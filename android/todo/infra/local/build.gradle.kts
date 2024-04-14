@@ -37,7 +37,7 @@ android {
 
 dependencies {
     implementation(projects.android.infra.db)
-    implementation(projects.android.todo.infra.domain)
+    implementation(projects.android.todo.infra.model)
     implementation(libs.bundles.room)
     kapt(libs.room.compiler)
     implementation(libs.bundles.hilt)

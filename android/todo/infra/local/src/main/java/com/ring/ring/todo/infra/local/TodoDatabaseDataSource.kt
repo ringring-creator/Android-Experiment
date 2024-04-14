@@ -3,6 +3,7 @@ package com.ring.ring.todo.infra.local
 import com.ring.ring.infra.db.TodoDao
 import com.ring.ring.infra.db.TodoEntity
 import com.ring.ring.todo.infra.domain.Todo
+import com.ring.ring.todo.infra.domain.TodoLocalDataSource
 import javax.inject.Inject
 
 class TodoDatabaseDataSource @Inject constructor(

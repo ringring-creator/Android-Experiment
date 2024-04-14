@@ -1,6 +1,4 @@
-package com.ring.ring.todo.infra.local
-
-import com.ring.ring.todo.infra.domain.Todo
+package com.ring.ring.todo.infra.domain
 
 interface TodoLocalDataSource {
     suspend fun list(): List<Todo>

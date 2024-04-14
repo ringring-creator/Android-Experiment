@@ -41,7 +41,7 @@ android {
 }
 
 dependencies {
-    implementation(projects.android.todo.infra.domain)
+    implementation(projects.android.todo.infra.model)
     implementation(libs.androidx.activity.compose)
     implementation(libs.bundles.retrofit)
     implementation(libs.bundles.hilt)

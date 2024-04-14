@@ -1,8 +1,8 @@
 package com.ring.ring.todo.feature.list
 
 import com.ring.ring.infra.test.MainDispatcherRule
-import com.ring.ring.todo.infra.local.TodoLocalDataSource
-import com.ring.ring.todo.infra.network.TodoNetworkDataSource
+import com.ring.ring.todo.infra.domain.TodoLocalDataSource
+import com.ring.ring.todo.infra.domain.TodoNetworkDataSource
 import com.ring.ring.todo.infra.test.FakeErrorTodoLocalDataSource
 import com.ring.ring.todo.infra.test.FakeErrorTodoNetworkDataSource
 import com.ring.ring.todo.infra.test.FakeTodoLocalDataSource

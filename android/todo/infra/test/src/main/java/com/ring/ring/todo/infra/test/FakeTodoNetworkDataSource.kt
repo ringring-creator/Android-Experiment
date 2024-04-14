@@ -1,7 +1,7 @@
 package com.ring.ring.todo.infra.test
 
 import com.ring.ring.todo.infra.domain.Todo
-import com.ring.ring.todo.infra.network.TodoNetworkDataSource
+import com.ring.ring.todo.infra.domain.TodoNetworkDataSource
 import kotlinx.datetime.Instant
 
 class FakeTodoNetworkDataSource(

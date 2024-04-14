@@ -1,9 +1,9 @@
 package com.ring.ring.todo.infra.network.di
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import com.ring.ring.todo.infra.domain.TodoNetworkDataSource
 import com.ring.ring.todo.infra.network.BuildConfig
 import com.ring.ring.todo.infra.network.RetrofitTodoNetworkApi
-import com.ring.ring.todo.infra.network.TodoNetworkDataSource
 import com.ring.ring.todo.infra.network.TodoRetrofitDataSource
 import dagger.Module
 import dagger.Provides

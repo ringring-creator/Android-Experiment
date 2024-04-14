@@ -1,7 +1,7 @@
 package com.ring.ring.todo.infra.test
 
 import com.ring.ring.todo.infra.domain.Todo
-import com.ring.ring.todo.infra.local.TodoLocalDataSource
+import com.ring.ring.todo.infra.domain.TodoLocalDataSource
 
 class FakeErrorTodoLocalDataSource : TodoLocalDataSource {
     override suspend fun list(): List<Todo> {

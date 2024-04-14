@@ -1,8 +1,8 @@
 package com.ring.ring.todo.feature.list
 
 import com.ring.ring.todo.infra.domain.Todo
-import com.ring.ring.todo.infra.local.TodoLocalDataSource
-import com.ring.ring.todo.infra.network.TodoNetworkDataSource
+import com.ring.ring.todo.infra.domain.TodoLocalDataSource
+import com.ring.ring.todo.infra.domain.TodoNetworkDataSource
 import com.ring.ring.user.infra.local.UserLocalDataSource
 import javax.inject.Inject
 

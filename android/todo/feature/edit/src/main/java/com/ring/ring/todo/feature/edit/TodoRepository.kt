@@ -1,12 +1,12 @@
 package com.ring.ring.todo.feature.edit
 
 import com.ring.ring.todo.infra.domain.Todo
-import com.ring.ring.todo.infra.network.TodoNetworkDataSource
+import com.ring.ring.todo.infra.domain.TodoNetworkDataSource
 import com.ring.ring.user.infra.local.UserLocalDataSource
 import kotlinx.datetime.Instant
 import javax.inject.Inject
 
-class TodoRepository @Inject constructor(
+internal class TodoRepository @Inject constructor(
     private val networkDataSource: TodoNetworkDataSource,
     private val userLocalDataSource: UserLocalDataSource,
 ) {
