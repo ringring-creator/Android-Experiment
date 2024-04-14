@@ -1,8 +1,8 @@
 package com.ring.ring.user.feature.signup
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 internal data class SignUpUiState(
     val email: Email,
@@ -25,8 +25,8 @@ internal data class SignUpUiState(
 internal fun rememberSignUpUiState(
     viewModel: SignUpViewModel,
 ): SignUpUiState {
-    val email by viewModel.email.collectAsState()
-    val password by viewModel.password.collectAsState()
+    val email by viewModel.email.collectAsStateWithLifecycle()
+    val password by viewModel.password.collectAsStateWithLifecycle()
     return SignUpUiState(
         email = email,
         password = password,

@@ -1,8 +1,8 @@
 package com.ring.ring.todo.feature.list
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ring.ring.todo.infra.local.LocalTodo
 
 internal data class TodoListUiState(
@@ -29,7 +29,7 @@ internal fun LocalTodo.toTodo(): TodoListUiState.Todo? {
 internal fun rememberTodoListUiState(
     viewModel: TodoListViewModel,
 ): TodoListUiState {
-    val todoList by viewModel.todoList.collectAsState()
+    val todoList by viewModel.todoList.collectAsStateWithLifecycle()
     return TodoListUiState(
         todoList = todoList,
     )

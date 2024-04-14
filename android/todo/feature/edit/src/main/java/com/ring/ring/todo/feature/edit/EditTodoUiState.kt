@@ -1,8 +1,8 @@
 package com.ring.ring.todo.feature.edit
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 internal data class EditTodoUiState(
     val title: String,
@@ -16,6 +16,6 @@ internal data class EditTodoUiState(
 internal fun rememberEditTodoUiState(
     viewModel: EditTodoViewModel
 ): EditTodoUiState {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     return uiState
 }

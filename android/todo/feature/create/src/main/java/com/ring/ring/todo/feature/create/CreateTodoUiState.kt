@@ -1,8 +1,8 @@
 package com.ring.ring.todo.feature.create
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 internal data class CreateTodoUiState(
     val title: String,
@@ -24,11 +24,11 @@ internal data class CreateTodoUiState(
 internal fun rememberCreateTodoUiState(
     viewModel: CreateTodoViewModel,
 ): CreateTodoUiState {
-    val title by viewModel.title.collectAsState()
-    val description by viewModel.description.collectAsState()
-    val done by viewModel.done.collectAsState()
-    val deadline by viewModel.deadline.collectAsState()
-    val isShowDatePicker by viewModel.isShowDatePicker.collectAsState()
+    val title by viewModel.title.collectAsStateWithLifecycle()
+    val description by viewModel.description.collectAsStateWithLifecycle()
+    val done by viewModel.done.collectAsStateWithLifecycle()
+    val deadline by viewModel.deadline.collectAsStateWithLifecycle()
+    val isShowDatePicker by viewModel.isShowDatePicker.collectAsStateWithLifecycle()
 
     return CreateTodoUiState(
         title = title,
