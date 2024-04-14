@@ -1,6 +1,9 @@
 package com.ring.ring.todo.feature.list
 
+import androidx.compose.material3.DrawerState
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -11,17 +14,34 @@ import androidx.compose.ui.tooling.preview.Preview
 )
 @Composable
 internal fun PreviewTodoListScreen() {
-    TodoListScreen(value)
+    TodoListScreen(uiState = value)
+}
+
+@Preview(
+    group = "normal scenario",
+    showSystemUi = true,
+    apiLevel = 34,
+)
+@Composable
+internal fun PreviewTodoListScreenShowNavigationDrawer() {
+    TodoListScreen(
+        uiState = value,
+        drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    )
 }
 
 @Composable
-private fun TodoListScreen(uiState: TodoListUiState) {
+private fun TodoListScreen(
+    uiState: TodoListUiState,
+    drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Open),
+) {
     TodoListScreen(
         uiState = uiState,
         updater = updater,
         toCreateTodoScreen = {},
         toEditTodoScreen = {},
         snackBarHostState = SnackbarHostState(),
+        drawerState = drawerState,
 //        toSignUpScreen = {},
     )
 }

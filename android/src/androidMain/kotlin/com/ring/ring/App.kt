@@ -1,6 +1,7 @@
 package com.ring.ring
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
@@ -28,11 +29,15 @@ fun App(
             toSignUpScreen = { navController.navigate(SIGN_UP_ROUTE) },
         )
         signUpScreen(popBackStack = navController::popBackStack)
-        todoListScreen(
-            toCreateTodoScreen = { navController.navigate(CREATE_TODO_ROUTE) },
-            toEditTodoScreen = { navController.navigate(EditTodoNav.editRoute(it)) }
-        )
-        createTodoScreen(toTodoListScreen = { navController.navigate(TODO_LIST_ROUTE) })
-        editTodoScreen(toTodoListScreen = { navController.navigate(TODO_LIST_ROUTE) })
+        todoScreens(navController)
     }
+}
+
+private fun NavGraphBuilder.todoScreens(navController: NavHostController) {
+    todoListScreen(
+        toCreateTodoScreen = { navController.navigate(CREATE_TODO_ROUTE) },
+        toEditTodoScreen = { navController.navigate(EditTodoNav.editRoute(it)) }
+    )
+    createTodoScreen(toTodoListScreen = { navController.navigate(TODO_LIST_ROUTE) })
+    editTodoScreen(toTodoListScreen = { navController.navigate(TODO_LIST_ROUTE) })
 }
