@@ -14,6 +14,14 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import javax.inject.Inject
 
+sealed class EditTodoEvent {
+    object EditSuccess : EditTodoEvent()
+    object DeleteSuccess : EditTodoEvent()
+    object EditError : EditTodoEvent()
+    object DeleteError : EditTodoEvent()
+    object GetTodoError : EditTodoEvent()
+}
+
 @HiltViewModel
 internal class EditTodoViewModel @Inject constructor(
     private val todoRepository: TodoRepository,
@@ -25,26 +33,17 @@ internal class EditTodoViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(initEditTodoUiState())
     val uiState = _uiState.asStateFlow()
 
-    private val _editFinishedEvent = Channel<Unit>()
-    val editFinishedEvent = _editFinishedEvent.receiveAsFlow()
-    private val _deleteFinishedEvent = Channel<Unit>()
-    val deleteFinishedEvent = _deleteFinishedEvent.receiveAsFlow()
-    private val _editErrorEvent = Channel<Unit>()
+    private val _events = Channel<EditTodoEvent>()
+    val events = _events.receiveAsFlow()
 
-    val editErrorEvent = _editErrorEvent.receiveAsFlow()
-    private val _deleteErrorEvent = Channel<Unit>()
-    val deleteErrorEvent = _deleteErrorEvent.receiveAsFlow()
-    private val _getTodoErrorEvent = Channel<Unit>()
-    val getTodoErrorEvent = _getTodoErrorEvent.receiveAsFlow()
-    private val getErrorHandler = CoroutineExceptionHandler { c, e ->
-        _getTodoErrorEvent.trySend(Unit)
+    private val getErrorHandler = CoroutineExceptionHandler { _, _ ->
+        _events.trySend(EditTodoEvent.GetTodoError)
     }
-
     private val editErrorHandler = CoroutineExceptionHandler { _, _ ->
-        _editErrorEvent.trySend(Unit)
+        _events.trySend(EditTodoEvent.EditError)
     }
     private val deleteErrorHandler = CoroutineExceptionHandler { _, _ ->
-        _deleteErrorEvent.trySend(Unit)
+        _events.trySend(EditTodoEvent.DeleteError)
     }
 
     fun setTitle(title: String) {
@@ -84,14 +83,14 @@ internal class EditTodoViewModel @Inject constructor(
                 done = uiState.value.done,
                 deadline = deadline,
             )
-            _editFinishedEvent.trySend(Unit)
+            _events.trySend(EditTodoEvent.EditSuccess)
         }
     }
 
     fun deleteTodo() {
         viewModelScope.launch(deleteErrorHandler) {
             todoRepository.deleteTodo(id)
-            _deleteFinishedEvent.trySend(Unit)
+            _events.trySend(EditTodoEvent.DeleteSuccess)
         }
     }
 

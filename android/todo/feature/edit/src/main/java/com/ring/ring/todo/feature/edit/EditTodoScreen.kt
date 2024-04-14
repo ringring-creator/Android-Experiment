@@ -1,6 +1,7 @@
 package com.ring.ring.todo.feature.edit
 
 
+import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -85,62 +86,6 @@ internal fun EditTodoScreen(
     SetupSideEffect(viewModel, toTodoListScreen, snackBarHostState)
 }
 
-@Composable
-private fun SetupSideEffect(
-    viewModel: EditTodoViewModel,
-    toTodoListScreen: () -> Unit,
-    snackBarHostState: SnackbarHostState
-) {
-    LaunchedEffect(Unit) {
-        viewModel.getTodo()
-    }
-    val context = LocalContext.current
-    LaunchedEffect(Unit) {
-        viewModel.editFinishedEvent.collect {
-            snackBarHostState.showSnackbar(
-                message = context.getString(R.string.success_to_edit),
-                withDismissAction = true,
-            )
-        }
-    }
-    LaunchedEffect(Unit) {
-        viewModel.deleteFinishedEvent.collect {
-            toTodoListScreen()
-        }
-    }
-    LaunchedEffect(Unit) {
-        viewModel.editErrorEvent.collect {
-            snackBarHostState.showSnackbar(
-                message = context.getString(R.string.failed_to_edit),
-                withDismissAction = true,
-            )
-        }
-    }
-    LaunchedEffect(Unit) {
-        viewModel.deleteErrorEvent.collect {
-            snackBarHostState.showSnackbar(
-                message = context.getString(R.string.failed_to_delete),
-                withDismissAction = true,
-            )
-        }
-    }
-    LaunchedEffect(Unit) {
-        viewModel.getTodoErrorEvent.collect {
-            val snackBarResult = snackBarHostState.showSnackbar(
-                message = context.getString(R.string.failed_to_get_todo_list),
-                actionLabel = "Retry",
-                withDismissAction = true,
-            )
-            when (snackBarResult) {
-                SnackbarResult.Dismissed -> {}
-                SnackbarResult.ActionPerformed -> {
-                    viewModel.getTodo()
-                }
-            }
-        }
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun EditTodoScreen(
@@ -166,6 +111,107 @@ internal fun EditTodoScreen(
             Modifier
                 .padding(padding)
                 .padding(16.dp), uiState, updater
+        )
+    }
+}
+
+@Composable
+private fun SetupSideEffect(
+    viewModel: EditTodoViewModel,
+    toTodoListScreen: () -> Unit,
+    snackBarHostState: SnackbarHostState,
+    scope: CoroutineScope = rememberCoroutineScope(),
+) {
+    LaunchedEffect(Unit) {
+        viewModel.getTodo()
+    }
+    val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        viewModel.events.collect {
+            when (it) {
+                EditTodoEvent.DeleteError -> showDeleteErrorSnackbar(
+                    snackBarHostState,
+                    context,
+                    scope,
+                )
+
+                EditTodoEvent.DeleteSuccess -> toTodoListScreen()
+
+                EditTodoEvent.EditError -> showEditErrorSnackbar(snackBarHostState, context, scope)
+
+                EditTodoEvent.EditSuccess -> showEditSuccessSnackbar(
+                    snackBarHostState,
+                    context,
+                    scope,
+                )
+
+                EditTodoEvent.GetTodoError -> showGetTodoErrorSnackbar(
+                    snackBarHostState,
+                    context,
+                    viewModel,
+                    scope,
+                )
+            }
+        }
+    }
+}
+
+private fun showGetTodoErrorSnackbar(
+    snackBarHostState: SnackbarHostState,
+    context: Context,
+    viewModel: EditTodoViewModel,
+    scope: CoroutineScope,
+) {
+    scope.launch {
+        val snackBarResult = snackBarHostState.showSnackbar(
+            message = context.getString(R.string.failed_to_get_todo_list),
+            actionLabel = "Retry",
+            withDismissAction = true,
+        )
+        when (snackBarResult) {
+            SnackbarResult.Dismissed -> {}
+            SnackbarResult.ActionPerformed -> {
+                viewModel.getTodo()
+            }
+        }
+    }
+}
+
+private suspend fun showDeleteErrorSnackbar(
+    snackBarHostState: SnackbarHostState,
+    context: Context,
+    scope: CoroutineScope
+) {
+    scope.launch {
+        snackBarHostState.showSnackbar(
+            message = context.getString(R.string.failed_to_delete),
+            withDismissAction = true,
+        )
+    }
+}
+
+private fun showEditErrorSnackbar(
+    snackBarHostState: SnackbarHostState,
+    context: Context,
+    scope: CoroutineScope
+) {
+    scope.launch {
+        snackBarHostState.showSnackbar(
+            message = context.getString(R.string.failed_to_edit),
+            withDismissAction = true,
+        )
+    }
+}
+
+private fun showEditSuccessSnackbar(
+    snackBarHostState: SnackbarHostState,
+    context: Context,
+    scope: CoroutineScope
+) {
+    scope.launch {
+        snackBarHostState.showSnackbar(
+            message = context.getString(R.string.success_to_edit),
+            withDismissAction = true,
         )
     }
 }

@@ -124,8 +124,10 @@ class EditTodoViewModelTest {
         setupSubject()
         var wasCalled = false
         TestScope(UnconfinedTestDispatcher()).launch {
-            subject.getTodoErrorEvent.collect {
-                wasCalled = true
+            subject.events.collect {
+                if (it == EditTodoEvent.GetTodoError) {
+                    wasCalled = true
+                }
             }
         }
 
@@ -162,8 +164,10 @@ class EditTodoViewModelTest {
         //given
         var wasCalled = false
         TestScope(UnconfinedTestDispatcher()).launch {
-            subject.editFinishedEvent.collect {
-                wasCalled = true
+            subject.events.collect {
+                if (it == EditTodoEvent.EditSuccess) {
+                    wasCalled = true
+                }
             }
         }
 
@@ -182,8 +186,10 @@ class EditTodoViewModelTest {
         setupSubject()
         var wasCalled = false
         TestScope(UnconfinedTestDispatcher()).launch {
-            subject.editErrorEvent.collect {
-                wasCalled = true
+            subject.events.collect {
+                if (it == EditTodoEvent.EditError) {
+                    wasCalled = true
+                }
             }
         }
 
@@ -211,8 +217,10 @@ class EditTodoViewModelTest {
         //given
         var wasCalled = false
         TestScope(UnconfinedTestDispatcher()).launch {
-            subject.deleteFinishedEvent.collect {
-                wasCalled = true
+            subject.events.collect {
+                if (it == EditTodoEvent.DeleteSuccess) {
+                    wasCalled = true
+                }
             }
         }
 
@@ -231,8 +239,10 @@ class EditTodoViewModelTest {
         setupSubject()
         var wasCalled = false
         TestScope(UnconfinedTestDispatcher()).launch {
-            subject.deleteErrorEvent.collect {
-                wasCalled = true
+            subject.events.collect {
+                if (it == EditTodoEvent.DeleteError) {
+                    wasCalled = true
+                }
             }
         }
 
