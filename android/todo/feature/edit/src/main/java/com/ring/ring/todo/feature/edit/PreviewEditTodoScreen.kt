@@ -58,7 +58,7 @@ private val value: EditTodoUiState = EditTodoUiState(
     title = "title",
     description = "description",
     done = true,
-    deadline = DateUtil.format(Clock.System.now()),
+    deadline = DateUtil().format(Clock.System.now()),
     isShowDatePicker = false,
 )
 

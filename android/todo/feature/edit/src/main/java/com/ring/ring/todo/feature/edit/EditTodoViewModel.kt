@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import javax.inject.Inject
 
@@ -18,11 +17,12 @@ import javax.inject.Inject
 @HiltViewModel
 internal class EditTodoViewModel @Inject constructor(
     private val todoRepository: TodoRepository,
+    private val dateUtil: DateUtil,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     private val id: Long =
         savedStateHandle.get<Long>(EditTodoNav.ID) ?: throw IllegalArgumentException()
-    private var deadline: Instant = Clock.System.now()
+    private var deadline: Instant = dateUtil.currentInstant()
     private val _uiState = MutableStateFlow(initEditTodoUiState())
     val uiState = _uiState.asStateFlow()
 
@@ -62,7 +62,7 @@ internal class EditTodoViewModel @Inject constructor(
                 title = response.title,
                 description = response.description,
                 done = response.done,
-                deadline = DateUtil.format(deadline),
+                deadline = dateUtil.format(deadline),
             )
         }
     }
@@ -88,8 +88,8 @@ internal class EditTodoViewModel @Inject constructor(
     }
 
     fun setDeadline(dateMillis: Long) {
-        deadline = Instant.fromEpochMilliseconds(dateMillis)
-        _uiState.value = uiState.value.copy(deadline = DateUtil.format(deadline))
+        deadline = dateUtil.toInstant(dateMillis)
+        _uiState.value = uiState.value.copy(deadline = dateUtil.format(deadline))
     }
 
     fun showDatePicker() {
@@ -104,7 +104,7 @@ internal class EditTodoViewModel @Inject constructor(
         title = "",
         description = "",
         done = false,
-        deadline = DateUtil.format(deadline),
+        deadline = dateUtil.format(deadline),
         isShowDatePicker = false,
     )
 }

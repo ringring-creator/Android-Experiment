@@ -260,6 +260,7 @@ class EditTodoViewModelTest {
                 networkDataSource = networkDataSource,
                 userLocalDataSource = userLocalDataSource,
             ),
+            dateUtil = DateUtil(),
             savedStateHandle = savedStateHandle,
         )
     }

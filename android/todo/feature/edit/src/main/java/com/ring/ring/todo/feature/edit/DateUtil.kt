@@ -1,14 +1,24 @@
 package com.ring.ring.todo.feature.edit
 
+import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import javax.inject.Inject
 
-object DateUtil {
+class DateUtil @Inject constructor() {
+    fun currentInstant(): Instant {
+        return Clock.System.now()
+    }
+
     fun format(instant: Instant): String {
         val localDateTime = toLocalDateTime(instant)
         return toYYMMDD(localDateTime)
+    }
+
+    fun toInstant(epochMilliseconds: Long): Instant {
+        return Instant.fromEpochMilliseconds(epochMilliseconds)
     }
 
     private fun toYYMMDD(localDateTime: LocalDateTime) = "${localDateTime.year}-${
