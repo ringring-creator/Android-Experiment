@@ -15,39 +15,31 @@ import kotlinx.datetime.Instant
 import javax.inject.Inject
 
 @HiltViewModel
-class EditTodoViewModel @Inject constructor(
+internal class EditTodoViewModel @Inject constructor(
     private val todoRepository: TodoRepository,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     private val id: Long =
         savedStateHandle.get<Long>(EditTodoNav.ID) ?: throw IllegalArgumentException()
-    private val _title: MutableStateFlow<String> = MutableStateFlow("")
-    val title = _title.asStateFlow()
-    private val _description: MutableStateFlow<String> = MutableStateFlow("")
-    val description = _description.asStateFlow()
-    private val _done: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val done = _done.asStateFlow()
-    private var deadlineInstant: Instant = Clock.System.now()
-    private val _deadline = MutableStateFlow(DateUtil.format(deadlineInstant))
-    val deadline = _deadline.asStateFlow()
-    private val _isShowDatePicker: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val isShowDatePicker = _isShowDatePicker.asStateFlow()
+    private var deadline: Instant = Clock.System.now()
+    private val _uiState = MutableStateFlow(initEditTodoUiState())
+    val uiState = _uiState.asStateFlow()
 
     private val _editFinishedEvent = Channel<Unit>()
     val editFinishedEvent = _editFinishedEvent.receiveAsFlow()
     private val _deleteFinishedEvent = Channel<Unit>()
     val deleteFinishedEvent = _deleteFinishedEvent.receiveAsFlow()
-
     private val _editErrorEvent = Channel<Unit>()
+
     val editErrorEvent = _editErrorEvent.receiveAsFlow()
     private val _deleteErrorEvent = Channel<Unit>()
     val deleteErrorEvent = _deleteErrorEvent.receiveAsFlow()
     private val _getTodoErrorEvent = Channel<Unit>()
     val getTodoErrorEvent = _getTodoErrorEvent.receiveAsFlow()
-
     private val getErrorHandler = CoroutineExceptionHandler { c, e ->
         _getTodoErrorEvent.trySend(Unit)
     }
+
     private val editErrorHandler = CoroutineExceptionHandler { _, _ ->
         _editErrorEvent.trySend(Unit)
     }
@@ -56,28 +48,30 @@ class EditTodoViewModel @Inject constructor(
     }
 
     fun setTitle(title: String) {
-        if (this.title.value == title) return
-        _title.value = title
+        if (this.uiState.value.title == title) return
+        _uiState.value = uiState.value.copy(title = title)
     }
 
     fun setDescription(description: String) {
-        if (this.description.value == description) return
-        _description.value = description
+        if (this.uiState.value.description == description) return
+        _uiState.value = uiState.value.copy(description = description)
     }
 
     fun setDone(done: Boolean) {
-        if (this.done.value == done) return
-        _done.value = done
+        if (this.uiState.value.done == done) return
+        _uiState.value = uiState.value.copy(done = done)
     }
 
     fun getTodo() {
         viewModelScope.launch(getErrorHandler) {
             val response = todoRepository.getTodo(id)
-            _title.value = response.title
-            _description.value = response.description
-            _done.value = response.done
-            deadlineInstant = response.deadline
-            _deadline.value = DateUtil.format(deadlineInstant)
+            deadline = response.deadline
+            _uiState.value = uiState.value.copy(
+                title = response.title,
+                description = response.description,
+                done = response.done,
+                deadline = DateUtil.format(deadline),
+            )
         }
     }
 
@@ -85,10 +79,10 @@ class EditTodoViewModel @Inject constructor(
         viewModelScope.launch(editErrorHandler) {
             todoRepository.editTodo(
                 id = id,
-                title = title.value,
-                description = description.value,
-                done = done.value,
-                deadline = deadlineInstant,
+                title = uiState.value.title,
+                description = uiState.value.description,
+                done = uiState.value.done,
+                deadline = deadline,
             )
             _editFinishedEvent.trySend(Unit)
         }
@@ -102,15 +96,23 @@ class EditTodoViewModel @Inject constructor(
     }
 
     fun setDeadline(dateMillis: Long) {
-        deadlineInstant = Instant.fromEpochMilliseconds(dateMillis)
-        _deadline.value = DateUtil.format(deadlineInstant)
+        deadline = Instant.fromEpochMilliseconds(dateMillis)
+        _uiState.value = uiState.value.copy(deadline = DateUtil.format(deadline))
     }
 
     fun showDatePicker() {
-        _isShowDatePicker.value = true
+        _uiState.value = uiState.value.copy(isShowDatePicker = true)
     }
 
     fun dismissDatePicker() {
-        _isShowDatePicker.value = false
+        _uiState.value = uiState.value.copy(isShowDatePicker = false)
     }
+
+    private fun initEditTodoUiState() = EditTodoUiState(
+        title = "",
+        description = "",
+        done = false,
+        deadline = DateUtil.format(deadline),
+        isShowDatePicker = false,
+    )
 }

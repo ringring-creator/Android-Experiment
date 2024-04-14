@@ -16,16 +16,6 @@ internal data class EditTodoUiState(
 internal fun rememberEditTodoUiState(
     viewModel: EditTodoViewModel
 ): EditTodoUiState {
-    val title by viewModel.title.collectAsState()
-    val description by viewModel.description.collectAsState()
-    val done by viewModel.done.collectAsState()
-    val deadline by viewModel.deadline.collectAsState()
-    val isShowDatePicker by viewModel.isShowDatePicker.collectAsState()
-    return EditTodoUiState(
-        title = title,
-        description = description,
-        done = done,
-        deadline = deadline,
-        isShowDatePicker = isShowDatePicker,
-    )
+    val uiState by viewModel.uiState.collectAsState()
+    return uiState
 }

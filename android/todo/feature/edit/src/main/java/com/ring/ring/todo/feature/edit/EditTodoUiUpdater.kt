@@ -11,7 +11,7 @@ data class EditTodoUiUpdater(
     val dismissDatePicker: () -> Unit,
 )
 
-fun toEditTodoUiUpdater(viewModel: EditTodoViewModel): EditTodoUiUpdater {
+internal fun toEditTodoUiUpdater(viewModel: EditTodoViewModel): EditTodoUiUpdater {
     return EditTodoUiUpdater(
         editTodo = viewModel::editTodo,
         deleteTodo = viewModel::deleteTodo,

@@ -53,7 +53,7 @@ class EditTodoViewModelTest {
         subject.setTitle(expected)
 
         //then
-        assertThat(subject.title.value, equalTo(expected))
+        assertThat(subject.uiState.value.title, equalTo(expected))
     }
 
     @Test
@@ -63,7 +63,7 @@ class EditTodoViewModelTest {
         subject.setDescription(expected)
 
         //then
-        assertThat(subject.description.value, equalTo(expected))
+        assertThat(subject.uiState.value.description, equalTo(expected))
     }
 
     @Test
@@ -73,7 +73,7 @@ class EditTodoViewModelTest {
         subject.setDone(expected)
 
         //then
-        assertThat(subject.done.value, equalTo(expected))
+        assertThat(subject.uiState.value.done, equalTo(expected))
     }
 
     @Test
@@ -83,7 +83,7 @@ class EditTodoViewModelTest {
         subject.setDeadline(expected)
 
         //then
-        assertThat(subject.deadline.value, equalTo("1970-01-01"))
+        assertThat(subject.uiState.value.deadline, equalTo("1970-01-01"))
     }
 
     @Test
@@ -92,7 +92,7 @@ class EditTodoViewModelTest {
         subject.showDatePicker()
 
         //then
-        assertThat(subject.isShowDatePicker.value, `is`(true))
+        assertThat(subject.uiState.value.isShowDatePicker, `is`(true))
     }
 
     @Test
@@ -101,7 +101,7 @@ class EditTodoViewModelTest {
         subject.dismissDatePicker()
 
         //then
-        assertThat(subject.isShowDatePicker.value, `is`(false))
+        assertThat(subject.uiState.value.isShowDatePicker, `is`(false))
     }
 
     @Test
@@ -111,10 +111,10 @@ class EditTodoViewModelTest {
         advanceUntilIdle()
 
         //then
-        assertThat(subject.title.value, equalTo("fakeTitle"))
-        assertThat(subject.description.value, equalTo("fakeDescription"))
-        assertThat(subject.done.value, equalTo(false))
-        assertThat(subject.deadline.value, equalTo("2024-01-01"))
+        assertThat(subject.uiState.value.title, equalTo("fakeTitle"))
+        assertThat(subject.uiState.value.description, equalTo("fakeDescription"))
+        assertThat(subject.uiState.value.done, equalTo(false))
+        assertThat(subject.uiState.value.deadline, equalTo("2024-01-01"))
     }
 
     @Test
