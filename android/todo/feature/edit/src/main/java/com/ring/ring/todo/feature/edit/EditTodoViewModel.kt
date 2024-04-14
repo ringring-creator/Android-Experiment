@@ -14,13 +14,6 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import javax.inject.Inject
 
-sealed class EditTodoEvent {
-    object EditSuccess : EditTodoEvent()
-    object DeleteSuccess : EditTodoEvent()
-    object EditError : EditTodoEvent()
-    object DeleteError : EditTodoEvent()
-    object GetTodoError : EditTodoEvent()
-}
 
 @HiltViewModel
 internal class EditTodoViewModel @Inject constructor(

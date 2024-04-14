@@ -1,7 +1,6 @@
 package com.ring.ring.todo.feature.edit
 
 
-import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,8 +15,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -26,7 +23,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
@@ -40,34 +36,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavType
-import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
+import com.ring.ring.todo.feature.edit.EditTodoEvent.DeleteError
+import com.ring.ring.todo.feature.edit.EditTodoEvent.DeleteSuccess
+import com.ring.ring.todo.feature.edit.EditTodoEvent.EditError
+import com.ring.ring.todo.feature.edit.EditTodoEvent.EditSuccess
+import com.ring.ring.todo.feature.edit.EditTodoEvent.GetTodoError
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-
-class EditTodoNav {
-    val route = "EditTodoRoute/{$ID}"
-
-    companion object {
-        const val ID = "id"
-        fun editRoute(id: String) = "EditTodoRoute/$id"
-    }
-}
-
-fun NavGraphBuilder.editTodoScreen(
-    toTodoListScreen: () -> Unit,
-) {
-    composable(
-        route = EditTodoNav().route,
-        arguments = listOf(navArgument(EditTodoNav.ID) {
-            type = NavType.LongType
-        }),
-    ) {
-        EditTodoScreen(toTodoListScreen = toTodoListScreen)
-    }
-}
 
 @Composable
 internal fun EditTodoScreen(
@@ -120,99 +95,42 @@ private fun SetupSideEffect(
     viewModel: EditTodoViewModel,
     toTodoListScreen: () -> Unit,
     snackBarHostState: SnackbarHostState,
-    scope: CoroutineScope = rememberCoroutineScope(),
 ) {
-    LaunchedEffect(Unit) {
-        viewModel.getTodo()
-    }
+    val scope = rememberCoroutineScope()
     val context = LocalContext.current
     LaunchedEffect(Unit) {
+        viewModel.getTodo()
+
         viewModel.events.collect {
             when (it) {
-                EditTodoEvent.DeleteError -> showDeleteErrorSnackbar(
+                DeleteError -> showSnackbar(
                     snackBarHostState,
-                    context,
-                    scope,
+                    context.getString(R.string.failed_to_delete),
+                    scope
                 )
 
-                EditTodoEvent.DeleteSuccess -> toTodoListScreen()
-
-                EditTodoEvent.EditError -> showEditErrorSnackbar(snackBarHostState, context, scope)
-
-                EditTodoEvent.EditSuccess -> showEditSuccessSnackbar(
+                DeleteSuccess -> toTodoListScreen()
+                EditError -> showSnackbar(
                     snackBarHostState,
-                    context,
-                    scope,
+                    context.getString(R.string.failed_to_edit),
+                    scope
                 )
 
-                EditTodoEvent.GetTodoError -> showGetTodoErrorSnackbar(
+                EditSuccess -> showSnackbar(
                     snackBarHostState,
-                    context,
-                    viewModel,
-                    scope,
+                    context.getString(R.string.success_to_edit),
+                    scope
+                )
+
+                GetTodoError -> showRetrySnackbar(
+                    snackBarHostState,
+                    context.getString(R.string.failed_to_get_todo_list),
+                    context.getString(R.string.retry),
+                    viewModel::getTodo,
+                    scope
                 )
             }
         }
-    }
-}
-
-private fun showGetTodoErrorSnackbar(
-    snackBarHostState: SnackbarHostState,
-    context: Context,
-    viewModel: EditTodoViewModel,
-    scope: CoroutineScope,
-) {
-    scope.launch {
-        val snackBarResult = snackBarHostState.showSnackbar(
-            message = context.getString(R.string.failed_to_get_todo_list),
-            actionLabel = "Retry",
-            withDismissAction = true,
-        )
-        when (snackBarResult) {
-            SnackbarResult.Dismissed -> {}
-            SnackbarResult.ActionPerformed -> {
-                viewModel.getTodo()
-            }
-        }
-    }
-}
-
-private suspend fun showDeleteErrorSnackbar(
-    snackBarHostState: SnackbarHostState,
-    context: Context,
-    scope: CoroutineScope
-) {
-    scope.launch {
-        snackBarHostState.showSnackbar(
-            message = context.getString(R.string.failed_to_delete),
-            withDismissAction = true,
-        )
-    }
-}
-
-private fun showEditErrorSnackbar(
-    snackBarHostState: SnackbarHostState,
-    context: Context,
-    scope: CoroutineScope
-) {
-    scope.launch {
-        snackBarHostState.showSnackbar(
-            message = context.getString(R.string.failed_to_edit),
-            withDismissAction = true,
-        )
-    }
-}
-
-private fun showEditSuccessSnackbar(
-    snackBarHostState: SnackbarHostState,
-    context: Context,
-    scope: CoroutineScope
-) {
-    scope.launch {
-        snackBarHostState.showSnackbar(
-            message = context.getString(R.string.success_to_edit),
-            withDismissAction = true,
-        )
     }
 }
 
@@ -330,29 +248,4 @@ private fun DeleteButton(
     Button(
         onClick = delete,
     ) { Text(stringResource(R.string.delete)) }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun CustomDatePicker(
-    isShowDatePicker: Boolean,
-    datePickerState: DatePickerState,
-    dismissDatePicker: () -> Unit,
-    setDate: (Long) -> Unit,
-) {
-    if (isShowDatePicker) {
-        DatePickerDialog(
-            onDismissRequest = dismissDatePicker,
-            confirmButton = {
-                Text("Set", modifier = Modifier
-                    .padding(16.dp)
-                    .clickable {
-                        datePickerState.selectedDateMillis?.let { setDate(it) }
-                        dismissDatePicker()
-                    })
-            }
-        ) {
-            DatePicker(datePickerState)
-        }
-    }
 }
