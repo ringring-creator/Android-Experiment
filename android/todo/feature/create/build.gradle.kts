@@ -42,6 +42,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.android.todo.infra.domain)
     implementation(projects.android.todo.infra.network)
     implementation(projects.android.user.infra.local)
     implementation(libs.bundles.compose)

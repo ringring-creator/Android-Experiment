@@ -1,7 +1,7 @@
 package com.ring.ring.todo.feature.create
 
+import com.ring.ring.todo.infra.domain.Todo
 import com.ring.ring.todo.infra.network.TodoNetworkDataSource
-import com.ring.ring.todo.infra.network.request.CreateRequest
 import com.ring.ring.user.infra.local.UserLocalDataSource
 import kotlinx.datetime.Instant
 import javax.inject.Inject
@@ -17,7 +17,8 @@ class TodoRepository @Inject constructor(
         deadline: Instant,
     ) {
         networkDataSource.create(
-            CreateRequest(
+            Todo(
+                id = null,
                 title = title,
                 description = description,
                 done = done,

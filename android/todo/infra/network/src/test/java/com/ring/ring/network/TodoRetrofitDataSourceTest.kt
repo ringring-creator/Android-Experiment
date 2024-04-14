@@ -1,13 +1,9 @@
 package com.ring.ring.network
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import com.ring.ring.todo.infra.domain.Todo
 import com.ring.ring.todo.infra.network.RetrofitTodoNetworkApi
 import com.ring.ring.todo.infra.network.TodoRetrofitDataSource
-import com.ring.ring.todo.infra.network.request.CreateRequest
-import com.ring.ring.todo.infra.network.request.DeleteRequest
-import com.ring.ring.todo.infra.network.request.EditDoneRequest
-import com.ring.ring.todo.infra.network.request.EditRequest
-import com.ring.ring.todo.infra.network.request.GetRequest
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Instant
 import kotlinx.serialization.json.Json
@@ -59,15 +55,13 @@ class TodoRetrofitDataSourceTest {
         val actual = subject.list("fakeToken")
 
         //then
-        val todoList = actual.todoList
-        assertThat(todoList.count(), equalTo(2))
-        val firstElement = todoList.first()
+        assertThat(actual.count(), equalTo(2))
+        val firstElement = actual.first()
         assertThat(firstElement.id, equalTo(1))
         assertThat(firstElement.title, equalTo("fakeTitle"))
         assertThat(firstElement.description, equalTo("fakeDescription"))
         assertThat(firstElement.done, equalTo(false))
         assertThat(firstElement.deadline.toString(), equalTo("2024-01-01T00:00:00Z"))
-        assertThat(firstElement.userId, equalTo(1L))
     }
 
 
@@ -94,17 +88,14 @@ class TodoRetrofitDataSourceTest {
     fun `get request correct parameters`() = runTest {
         //given
         val response = MockResponse()
-            .setBody(""" { "id": 1, "title": "fakeTitle", "description": "fakeDescription", "done": false, "deadline": 1704067200000 } """.trimIndent())
+            .setBody(""" { "todo": {"id": 1, "title": "fakeTitle", "description": "fakeDescription", "done": false, "deadline": 1704067200000 } } """.trimIndent())
             .setResponseCode(200)
         mockWebServer.enqueue(response)
 
         //when
         val id = 1L
         val token = "fakeToken"
-        subject.get(
-            request = GetRequest(id),
-            token = token,
-        )
+        subject.get(todoId = id, token = token)
 
         //then
         val request = mockWebServer.takeRequest()
@@ -118,20 +109,16 @@ class TodoRetrofitDataSourceTest {
     fun `get parse json and fetch todos`() = runTest {
         //given
         val response = MockResponse()
-            .setBody(""" { "id": 1, "title": "fakeTitle", "description": "fakeDescription", "done": false, "deadline": 1704067200000 } """.trimIndent())
+            .setBody(""" { "todo": {"id": 1, "title": "fakeTitle", "description": "fakeDescription", "done": false, "deadline": 1704067200000 } } """.trimIndent())
             .setResponseCode(200)
         mockWebServer.enqueue(response)
 
         //when
         val id = 1L
-        val token = "fakeToken"
-        val actual = subject.get(
-            request = GetRequest(id),
-            token = token,
-        )
+        val actual = subject.get(todoId = id, token = "fakeToken")
 
         //then
-        assertThat(actual.id, equalTo(1))
+        assertThat(actual.id, equalTo(id))
         assertThat(actual.title, equalTo("fakeTitle"))
         assertThat(actual.description, equalTo("fakeDescription"))
         assertThat(actual.done, equalTo(false))
@@ -152,9 +139,8 @@ class TodoRetrofitDataSourceTest {
         val done = false
         val deadline = Instant.parse("2024-01-01T00:00:00Z")
         subject.create(
-            request = CreateRequest(
-                title, description, done, deadline
-            ), token
+            todo = Todo(null, title, description, done, deadline),
+            token = token,
         )
 
         //then
@@ -186,9 +172,7 @@ class TodoRetrofitDataSourceTest {
         val deadline = Instant.parse("2024-01-01T00:00:00Z")
         val token = "fakeToken"
         subject.edit(
-            request = EditRequest(
-                id, title, description, done, deadline
-            ),
+            todo = Todo(id, title, description, done, deadline),
             token = token,
         )
 
@@ -218,7 +202,7 @@ class TodoRetrofitDataSourceTest {
         val id = 1L
         val token = "fakeToken"
         subject.delete(
-            request = DeleteRequest(id),
+            todoId = id,
             token = token,
         )
 
@@ -241,7 +225,7 @@ class TodoRetrofitDataSourceTest {
         val token = "fakeToken"
         val done = true
         val todoId = 1L
-        subject.editDone(request = EditDoneRequest(todoId = todoId, done = done), token)
+        subject.editDone(todoId = todoId, done = done, token)
 
         //then
         val request = mockWebServer.takeRequest()

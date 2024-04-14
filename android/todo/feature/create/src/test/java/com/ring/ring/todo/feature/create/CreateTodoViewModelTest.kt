@@ -1,6 +1,8 @@
 package com.ring.ring.todo.feature.create
 
 import com.ring.ring.infra.test.MainDispatcherRule
+import com.ring.ring.todo.infra.network.TodoNetworkDataSource
+import com.ring.ring.todo.infra.test.FakeErrorTodoNetworkDataSource
 import com.ring.ring.todo.infra.test.FakeTodoNetworkDataSource
 import com.ring.ring.user.infra.local.LocalUser
 import com.ring.ring.user.infra.test.FakeUserLocalDataSource
@@ -27,16 +29,17 @@ class CreateTodoViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule(StandardTestDispatcher())
 
-    private var networkDataSource = FakeTodoNetworkDataSource()
+    private var localUser = LocalUser(10L, "fakeEmail", "fakeToken")
+    private var networkDataSource: TodoNetworkDataSource = FakeTodoNetworkDataSource(
+        parameter = FakeTodoNetworkDataSource.Parameter(localUser.userId, localUser.token)
+    )
     private var userLocalDataSource = FakeUserLocalDataSource()
 
-    private var localUser = LocalUser(10L, "fakeEmail", "fakeToken")
 
     @Before
     fun setUp() {
         runBlocking { userLocalDataSource.save(localUser) }
-        networkDataSource.parameter =
-            FakeTodoNetworkDataSource.Parameter(localUser.userId, localUser.token)
+
 
         setupSubject()
     }
@@ -54,8 +57,7 @@ class CreateTodoViewModelTest {
         advanceUntilIdle()
 
         //then
-        val element =
-            networkDataSource.list("fakeToken").todoList.find { it.title == "fakeTitle3" }!!
+        val element = networkDataSource.list(localUser.token).find { it.title == "fakeTitle3" }!!
         assertThat(element.title, equalTo("fakeTitle3"))
         assertThat(element.description, equalTo("fakeDescription3"))
         assertThat(element.done, equalTo(true))
@@ -83,7 +85,7 @@ class CreateTodoViewModelTest {
     @Test
     fun `saveTodo send saveTodoErrorEvent when failed`() = runTest {
         //given
-        networkDataSource = FakeTodoNetworkDataSource(true)
+        networkDataSource = FakeErrorTodoNetworkDataSource()
         setupSubject()
         var wasCalled = false
         TestScope(UnconfinedTestDispatcher()).launch {

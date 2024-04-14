@@ -1,7 +1,10 @@
 package com.ring.ring.todo.feature.list
 
 import com.ring.ring.infra.test.MainDispatcherRule
-import com.ring.ring.todo.infra.local.LocalTodo
+import com.ring.ring.todo.infra.local.TodoLocalDataSource
+import com.ring.ring.todo.infra.network.TodoNetworkDataSource
+import com.ring.ring.todo.infra.test.FakeErrorTodoLocalDataSource
+import com.ring.ring.todo.infra.test.FakeErrorTodoNetworkDataSource
 import com.ring.ring.todo.infra.test.FakeTodoLocalDataSource
 import com.ring.ring.todo.infra.test.FakeTodoNetworkDataSource
 import com.ring.ring.user.infra.local.LocalUser
@@ -14,7 +17,6 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import kotlinx.datetime.Instant
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
@@ -29,16 +31,16 @@ class TodoListViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule(StandardTestDispatcher())
 
-    private var networkDataSource = FakeTodoNetworkDataSource()
-    private var localDataSource = FakeTodoLocalDataSource()
-    private var userLocalDataSource = FakeUserLocalDataSource()
     private var localUser = LocalUser(10L, "fakeEmail", "fakeToken")
+    private var networkDataSource: TodoNetworkDataSource = FakeTodoNetworkDataSource(
+        parameter = FakeTodoNetworkDataSource.Parameter(localUser.userId, localUser.token)
+    )
+    private var localDataSource: TodoLocalDataSource = FakeTodoLocalDataSource()
+    private var userLocalDataSource = FakeUserLocalDataSource()
 
     @Before
     fun setUp() {
         runBlocking { userLocalDataSource.save(localUser) }
-        networkDataSource.parameter =
-            FakeTodoNetworkDataSource.Parameter(localUser.userId, localUser.token)
 
         setupSubject()
     }
@@ -71,7 +73,7 @@ class TodoListViewModelTest {
 
         assertThat(actual.count(), equalTo(2))
         val firstElement = actual.first()
-        val expected = networkDataSource.listResponse.first()
+        val expected = networkDataSource.list(localUser.token).first()
         assertThat(firstElement.id, equalTo(1))
         assertThat(firstElement.title, equalTo(expected.title))
         assertThat(firstElement.description, equalTo(expected.description))
@@ -82,15 +84,7 @@ class TodoListViewModelTest {
     @Test
     fun `fetchTodoList set todoList fetched from local when network failed`() = runTest {
         //given
-        val expected = LocalTodo(
-            id = 1L,
-            title = "fakeTitle",
-            description = "fakeDescription",
-            done = true,
-            deadline = Instant.parse("2024-04-01T00:00:00Z"),
-        )
-        localDataSource.upsert(listOf(expected, expected.copy(id = 2L)))
-        networkDataSource = FakeTodoNetworkDataSource(true)
+        networkDataSource = FakeErrorTodoNetworkDataSource()
         setupSubject()
 
         //when
@@ -102,17 +96,18 @@ class TodoListViewModelTest {
         assertThat(todoList.count(), equalTo(2))
 
         val firstElement = todoList.first()
-        assertThat(firstElement.id, equalTo(1L))
+        val expected = localDataSource.list().first()
+        assertThat(firstElement.id, equalTo(expected.id))
         assertThat(firstElement.title, equalTo(expected.title))
         assertThat(firstElement.done, equalTo(expected.done))
-        assertThat(firstElement.deadline, equalTo("2024-04-01"))
+        assertThat(firstElement.deadline, equalTo(DateUtil.format(expected.deadline)))
     }
 
     @Test
     fun `fetchTodoList send fetchErrorEvent when local failed`() = runTest {
         //given
-        networkDataSource = FakeTodoNetworkDataSource(true)
-        localDataSource = FakeTodoLocalDataSource(true)
+        networkDataSource = FakeErrorTodoNetworkDataSource()
+        localDataSource = FakeErrorTodoLocalDataSource()
         setupSubject()
         var wasCalled = false
         TestScope(UnconfinedTestDispatcher()).launch {
@@ -141,7 +136,7 @@ class TodoListViewModelTest {
         //then
         val actual = networkDataSource
             .list(localUser.token)
-            .todoList.find { it.id == 1L }!!
+            .find { it.id == 1L }!!
         assertThat(actual.done, `is`(true))
     }
 
@@ -162,7 +157,7 @@ class TodoListViewModelTest {
     @Test
     fun `toggleDone send toggleDoneErrorEvent when editDone failed`() = runTest {
         //given
-        networkDataSource = FakeTodoNetworkDataSource(true)
+        networkDataSource = FakeErrorTodoNetworkDataSource()
         setupSubject()
         var wasCalled = false
         TestScope(UnconfinedTestDispatcher()).launch {

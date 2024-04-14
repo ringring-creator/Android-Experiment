@@ -25,7 +25,7 @@ class TodoController(
     suspend fun create(call: ApplicationCall) {
         createTodo(
             req = CreateTodo.Req(
-                todo = call.receive<CreateTodo.Req.ReqTodo>(),
+                todoReq = call.receive<CreateTodo.Req.Body>(),
                 email = receiveEmail(call),
             )
         )
@@ -39,7 +39,7 @@ class TodoController(
                 email = receiveEmail(call),
             )
         )
-        call.respond(HttpStatusCode.OK, res.todo)
+        call.respond(HttpStatusCode.OK, res)
     }
 
     suspend fun list(call: ApplicationCall) {
@@ -54,7 +54,7 @@ class TodoController(
     suspend fun edit(call: ApplicationCall) {
         editTodo(
             req = EditTodo.Req(
-                todo = call.receive<EditTodo.Req.ReqTodo>(),
+                todo = call.receive<EditTodo.Req.Body>(),
                 email = receiveEmail(call)
             )
         )

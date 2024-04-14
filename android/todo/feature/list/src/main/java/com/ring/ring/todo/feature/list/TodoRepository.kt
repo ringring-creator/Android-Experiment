@@ -1,10 +1,8 @@
 package com.ring.ring.todo.feature.list
 
-import com.ring.ring.todo.infra.local.LocalTodo
+import com.ring.ring.todo.infra.domain.Todo
 import com.ring.ring.todo.infra.local.TodoLocalDataSource
 import com.ring.ring.todo.infra.network.TodoNetworkDataSource
-import com.ring.ring.todo.infra.network.request.EditDoneRequest
-import com.ring.ring.todo.infra.network.response.ListResponse
 import com.ring.ring.user.infra.local.UserLocalDataSource
 import javax.inject.Inject
 
@@ -16,29 +14,30 @@ internal class TodoRepository @Inject constructor(
     suspend fun list(): List<TodoListUiState.Todo> {
         return try {
             val user = userLocalDataSource.getUser()!!
-            val fetchedTodoList = networkDataSource
-                .list(user.token)
-                .todoList
-            localDataSource.upsert(fetchedTodoList.map(ListResponse.Todo::toLocalTodo))
-            fetchedTodoList.map { convert(it) }
+            val fetchedTodoList = networkDataSource.list(user.token)
+            localDataSource.deleteAll()
+            localDataSource.upsert(fetchedTodoList)
+            fetchedTodoList.mapNotNull { convert(it) }
         } catch (e: Throwable) {
             localDataSource
                 .list()
-                .mapNotNull(LocalTodo::toTodo)
+                .mapNotNull(Todo::toTodo)
         }
     }
 
     suspend fun editDone(id: Long, done: Boolean) {
         val user = userLocalDataSource.getUser()!!
-        networkDataSource.editDone(EditDoneRequest(id, done), user.token)
+        networkDataSource.editDone(id, done, user.token)
     }
 
-    private fun convert(todo: ListResponse.Todo): TodoListUiState.Todo {
-        return TodoListUiState.Todo(
-            id = todo.id,
-            title = todo.title,
-            done = todo.done,
-            deadline = todo.deadline.toString(),
-        )
+    private fun convert(todo: Todo): TodoListUiState.Todo? {
+        return todo.id?.let {
+            TodoListUiState.Todo(
+                id = it,
+                title = todo.title,
+                done = todo.done,
+                deadline = todo.deadline.toString(),
+            )
+        }
     }
 }

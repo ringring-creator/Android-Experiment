@@ -33,6 +33,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.android.todo.infra.domain)
     implementation(projects.android.todo.infra.network)
     implementation(projects.android.todo.infra.local)
     implementation(libs.androidx.core.ktx)

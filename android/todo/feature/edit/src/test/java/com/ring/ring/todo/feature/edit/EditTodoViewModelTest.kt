@@ -2,6 +2,8 @@ package com.ring.ring.todo.feature.edit
 
 import androidx.lifecycle.SavedStateHandle
 import com.ring.ring.infra.test.MainDispatcherRule
+import com.ring.ring.todo.infra.network.TodoNetworkDataSource
+import com.ring.ring.todo.infra.test.FakeErrorTodoNetworkDataSource
 import com.ring.ring.todo.infra.test.FakeTodoNetworkDataSource
 import com.ring.ring.user.infra.local.LocalUser
 import com.ring.ring.user.infra.test.FakeUserLocalDataSource
@@ -29,19 +31,20 @@ class EditTodoViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule(StandardTestDispatcher())
 
-    private var networkDataSource = FakeTodoNetworkDataSource()
+    private var localUser = LocalUser(10L, "fakeEmail", "fakeToken")
+    private var networkDataSource: TodoNetworkDataSource = FakeTodoNetworkDataSource(
+        parameter = FakeTodoNetworkDataSource.Parameter(localUser.userId, localUser.token)
+    )
     private var userLocalDataSource = FakeUserLocalDataSource()
     private lateinit var savedStateHandle: SavedStateHandle
 
     private val id = 1L
-    private var localUser = LocalUser(10L, "fakeEmail", "fakeToken")
 
     @Before
     fun setUp() {
         savedStateHandle = SavedStateHandle(mapOf(EditTodoNav.ID to id))
         runBlocking { userLocalDataSource.save(localUser) }
-        networkDataSource.parameter =
-            FakeTodoNetworkDataSource.Parameter(localUser.userId, localUser.token)
+
 
         setupSubject()
     }
@@ -120,7 +123,7 @@ class EditTodoViewModelTest {
     @Test
     fun `getTodo send getTodoErrorEvent when get failed`() = runTest {
         //given
-        networkDataSource = FakeTodoNetworkDataSource(true)
+        networkDataSource = FakeErrorTodoNetworkDataSource()
         setupSubject()
         var wasCalled = false
         TestScope(UnconfinedTestDispatcher()).launch {
@@ -152,7 +155,7 @@ class EditTodoViewModelTest {
         advanceUntilIdle()
 
         //then
-        val todo = networkDataSource.listResponse.find { it.id == id }!!
+        val todo = networkDataSource.list(localUser.token).find { it.id == id }!!
         assertThat(todo.title, equalTo("fakeTitle3"))
         assertThat(todo.description, equalTo("fakeDescription3"))
         assertThat(todo.done, equalTo(true))
@@ -182,7 +185,7 @@ class EditTodoViewModelTest {
     @Test
     fun `editTodo send editErrorEvent when edit failed`() = runTest {
         //given
-        networkDataSource = FakeTodoNetworkDataSource(true)
+        networkDataSource = FakeErrorTodoNetworkDataSource()
         setupSubject()
         var wasCalled = false
         TestScope(UnconfinedTestDispatcher()).launch {
@@ -208,7 +211,7 @@ class EditTodoViewModelTest {
         advanceUntilIdle()
 
         //then
-        val todo = networkDataSource.listResponse.find { it.id == id }
+        val todo = networkDataSource.list(localUser.token).find { it.id == id }
         assertThat(todo, nullValue())
     }
 
@@ -235,7 +238,7 @@ class EditTodoViewModelTest {
     @Test
     fun `deleteTodo send deleteErrorEvent when delete failed`() = runTest {
         //given
-        networkDataSource = FakeTodoNetworkDataSource(true)
+        networkDataSource = FakeErrorTodoNetworkDataSource()
         setupSubject()
         var wasCalled = false
         TestScope(UnconfinedTestDispatcher()).launch {

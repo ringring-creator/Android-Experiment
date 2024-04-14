@@ -2,8 +2,6 @@ package com.ring.ring.todo.feature.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ring.ring.todo.infra.local.LocalTodo
-import com.ring.ring.todo.infra.network.response.ListResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.channels.Channel
@@ -57,14 +55,4 @@ internal class TodoListViewModel @Inject constructor(
         newList[index] = newTodo
         _todoList.value = newList
     }
-}
-
-fun ListResponse.Todo.toLocalTodo(): LocalTodo {
-    return LocalTodo(
-        id = id,
-        title = title,
-        description = description,
-        done = done,
-        deadline = deadline,
-    )
 }

@@ -5,9 +5,7 @@ import com.ring.ring.data.repository.TodoRepository
 import com.ring.ring.data.repository.UserRepository
 import com.ring.ring.di.DataModules
 import com.ring.ring.exception.NotLoggedInException
-import com.ring.ring.usecase.InstantSerializer
 import com.ring.ring.usecase.UseCase
-import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
 class GetTodoList(
@@ -17,7 +15,7 @@ class GetTodoList(
     override suspend fun execute(req: Req): Res {
         val userId = userRepository.loadId(req.email) ?: throw NotLoggedInException()
         val todoList = repository.list(userId)
-        return Res(todoList = todoList.map { it.toGetTodoListItem() })
+        return Res(todoList = todoList.map { it.toTodoModel() })
     }
 
     @Serializable
@@ -27,26 +25,14 @@ class GetTodoList(
 
     @Serializable
     data class Res(
-        val todoList: List<ResTodo>
-    ) : UseCase.Res {
-        @Serializable
-        data class ResTodo(
-            val id: Long,
-            val title: String,
-            val description: String,
-            val done: Boolean,
-            @Serializable(with = InstantSerializer::class)
-            val deadline: Instant,
-            val userId: Long,
-        )
-    }
+        val todoList: List<TodoModel>
+    ) : UseCase.Res
 
-    private fun Todo.toGetTodoListItem(): Res.ResTodo = Res.ResTodo(
+    private fun Todo.toTodoModel(): TodoModel = TodoModel(
         id = id ?: throw IllegalStateException(),
         title = title,
         description = description,
         done = done,
         deadline = deadline,
-        userId = userId,
     )
 }

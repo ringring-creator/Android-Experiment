@@ -1,4 +1,4 @@
-package com.ring.ring.data
+package com.ring.ring.todo.infra.domain
 
 import kotlinx.datetime.Instant
 
@@ -8,5 +8,4 @@ data class Todo(
     val description: String,
     val done: Boolean,
     val deadline: Instant,
-    val userId: Long,
 )

@@ -124,7 +124,7 @@ private fun SetupSideEffect(
 
                 GetTodoError -> showRetrySnackbar(
                     snackBarHostState,
-                    context.getString(R.string.failed_to_get_todo_list),
+                    context.getString(R.string.failed_to_get_todo),
                     context.getString(R.string.retry),
                     viewModel::getTodo,
                     scope

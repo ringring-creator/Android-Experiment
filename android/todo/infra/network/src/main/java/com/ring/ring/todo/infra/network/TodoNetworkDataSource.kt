@@ -1,18 +1,12 @@
 package com.ring.ring.todo.infra.network
 
-import com.ring.ring.todo.infra.network.request.CreateRequest
-import com.ring.ring.todo.infra.network.request.DeleteRequest
-import com.ring.ring.todo.infra.network.request.EditDoneRequest
-import com.ring.ring.todo.infra.network.request.EditRequest
-import com.ring.ring.todo.infra.network.request.GetRequest
-import com.ring.ring.todo.infra.network.response.GetResponse
-import com.ring.ring.todo.infra.network.response.ListResponse
+import com.ring.ring.todo.infra.domain.Todo
 
 interface TodoNetworkDataSource {
-    suspend fun list(token: String): ListResponse
-    suspend fun get(request: GetRequest, token: String): GetResponse
-    suspend fun create(request: CreateRequest, token: String)
-    suspend fun edit(request: EditRequest, token: String)
-    suspend fun editDone(request: EditDoneRequest, token: String)
-    suspend fun delete(request: DeleteRequest, token: String)
+    suspend fun list(token: String): List<Todo>
+    suspend fun get(todoId: Long, token: String): Todo
+    suspend fun create(todo: Todo, token: String)
+    suspend fun edit(todo: Todo, token: String)
+    suspend fun editDone(todoId: Long, done: Boolean, token: String)
+    suspend fun delete(todoId: Long, token: String)
 }

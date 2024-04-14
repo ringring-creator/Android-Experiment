@@ -1,12 +1,12 @@
-package com.ring.ring.todo.infra.network.request
+package com.ring.ring.usecase.todo
 
-import com.ring.ring.todo.infra.network.InstantSerializer
+import com.ring.ring.usecase.InstantSerializer
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class EditRequest(
-    val id: Long,
+data class TodoModel(
+    val id: Long?,
     val title: String,
     val description: String,
     val done: Boolean,

@@ -11,4 +11,5 @@
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
     <string name="retry">Retry\n</string>
+    <string name="failed_to_get_todo">Failed to get todo</string>
 </resources>

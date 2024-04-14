@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.ring.ring.infra.db.AndroidExperimentDatabase
+import com.ring.ring.todo.infra.domain.Todo
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Instant
 import org.hamcrest.CoreMatchers.equalTo
@@ -40,7 +41,7 @@ class TodoDatabaseDataSourceTest {
     @Test
     fun upsert() = runTest {
         //given
-        val expected = LocalTodo(
+        val expected = Todo(
             id = null,
             title = "fakeTitle",
             description = "fakeDescription",
@@ -65,7 +66,7 @@ class TodoDatabaseDataSourceTest {
     @Test
     fun deleteAll() = runTest {
         //given
-        val expected = LocalTodo(
+        val expected = Todo(
             id = null,
             title = "fakeTitle",
             description = "fakeDescription",

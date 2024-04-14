@@ -1,10 +1,7 @@
 package com.ring.ring.todo.feature.edit
 
+import com.ring.ring.todo.infra.domain.Todo
 import com.ring.ring.todo.infra.network.TodoNetworkDataSource
-import com.ring.ring.todo.infra.network.request.DeleteRequest
-import com.ring.ring.todo.infra.network.request.EditRequest
-import com.ring.ring.todo.infra.network.request.GetRequest
-import com.ring.ring.todo.infra.network.response.GetResponse
 import com.ring.ring.user.infra.local.UserLocalDataSource
 import kotlinx.datetime.Instant
 import javax.inject.Inject
@@ -13,9 +10,9 @@ class TodoRepository @Inject constructor(
     private val networkDataSource: TodoNetworkDataSource,
     private val userLocalDataSource: UserLocalDataSource,
 ) {
-    suspend fun getTodo(id: Long): GetResponse {
+    suspend fun getTodo(id: Long): Todo {
         val token = userLocalDataSource.getUser()!!.token
-        return networkDataSource.get(GetRequest(todoId = id), token)
+        return networkDataSource.get(todoId = id, token)
     }
 
     suspend fun editTodo(
@@ -27,7 +24,7 @@ class TodoRepository @Inject constructor(
     ) {
         val token = userLocalDataSource.getUser()!!.token
         networkDataSource.edit(
-            EditRequest(
+            Todo(
                 id = id,
                 title = title,
                 description = description,
@@ -40,7 +37,6 @@ class TodoRepository @Inject constructor(
 
     suspend fun deleteTodo(id: Long) {
         val token = userLocalDataSource.getUser()!!.token
-        networkDataSource.delete(DeleteRequest(id), token)
+        networkDataSource.delete(todoId = id, token)
     }
-
 }
