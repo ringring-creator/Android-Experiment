@@ -6,8 +6,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
 object DateUtil {
-    fun format(epochMilliseconds: Long): String {
-        val instant = Instant.fromEpochMilliseconds(epochMilliseconds)
+    fun format(instant: Instant): String {
         val localDateTime = toLocalDateTime(instant)
         return toYYMMDD(localDateTime)
     }

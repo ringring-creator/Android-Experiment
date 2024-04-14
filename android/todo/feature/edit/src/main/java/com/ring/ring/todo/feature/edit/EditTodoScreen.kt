@@ -191,7 +191,7 @@ private fun Content(
             TitleTextField(uiState.title, updater.setTitle)
             DescriptionTextField(uiState.description, updater.setDescription)
             DoneCheckBox(uiState.done, updater.setDone)
-            DeadlineField(uiState.deadline.formatString(), updater.showDatePicker)
+            DeadlineField(uiState.deadline, updater.showDatePicker)
             Spacer(modifier = Modifier.height(8.dp))
             Row(
                 modifier = Modifier.align(Alignment.End),

@@ -4,24 +4,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 
-data class EditTodoUiState(
+internal data class EditTodoUiState(
     val title: String,
     val description: String,
     val done: Boolean,
-    val deadline: Deadline,
+    val deadline: String,
     val isShowDatePicker: Boolean,
-) {
-    data class Deadline(
-        val dateMillis: Long
-    ) {
-        fun formatString(): String {
-            return DateUtil.format(dateMillis)
-        }
-    }
-}
+)
 
 @Composable
-fun rememberEditTodoUiState(
+internal fun rememberEditTodoUiState(
     viewModel: EditTodoViewModel
 ): EditTodoUiState {
     val title by viewModel.title.collectAsState()

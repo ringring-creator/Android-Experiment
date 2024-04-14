@@ -79,14 +79,11 @@ class EditTodoViewModelTest {
     @Test
     fun setDeadline() {
         //given,when
-        val expected = id
+        val expected = 1L
         subject.setDeadline(expected)
 
         //then
-        assertThat(
-            subject.deadline.value,
-            equalTo(EditTodoUiState.Deadline(expected))
-        )
+        assertThat(subject.deadline.value, equalTo("1970-01-01"))
     }
 
     @Test
@@ -117,14 +114,7 @@ class EditTodoViewModelTest {
         assertThat(subject.title.value, equalTo("fakeTitle"))
         assertThat(subject.description.value, equalTo("fakeDescription"))
         assertThat(subject.done.value, equalTo(false))
-        assertThat(
-            subject.deadline.value,
-            equalTo(
-                EditTodoUiState.Deadline(
-                    Instant.parse("2024-01-01T00:00:00Z").toEpochMilliseconds()
-                )
-            )
-        )
+        assertThat(subject.deadline.value, equalTo("2024-01-01"))
     }
 
     @Test

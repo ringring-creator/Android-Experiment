@@ -27,9 +27,8 @@ class EditTodoViewModel @Inject constructor(
     val description = _description.asStateFlow()
     private val _done: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val done = _done.asStateFlow()
-    private val _deadline: MutableStateFlow<EditTodoUiState.Deadline> = MutableStateFlow(
-        EditTodoUiState.Deadline(Clock.System.now().toEpochMilliseconds())
-    )
+    private var deadlineInstant: Instant = Clock.System.now()
+    private val _deadline = MutableStateFlow(DateUtil.format(deadlineInstant))
     val deadline = _deadline.asStateFlow()
     private val _isShowDatePicker: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isShowDatePicker = _isShowDatePicker.asStateFlow()
@@ -77,7 +76,8 @@ class EditTodoViewModel @Inject constructor(
             _title.value = response.title
             _description.value = response.description
             _done.value = response.done
-            _deadline.value = EditTodoUiState.Deadline(response.deadline.toEpochMilliseconds())
+            deadlineInstant = response.deadline
+            _deadline.value = DateUtil.format(deadlineInstant)
         }
     }
 
@@ -88,7 +88,7 @@ class EditTodoViewModel @Inject constructor(
                 title = title.value,
                 description = description.value,
                 done = done.value,
-                deadline = Instant.fromEpochMilliseconds(deadline.value.dateMillis),
+                deadline = deadlineInstant,
             )
             _editFinishedEvent.trySend(Unit)
         }
@@ -102,7 +102,8 @@ class EditTodoViewModel @Inject constructor(
     }
 
     fun setDeadline(dateMillis: Long) {
-        _deadline.value = EditTodoUiState.Deadline(dateMillis)
+        deadlineInstant = Instant.fromEpochMilliseconds(dateMillis)
+        _deadline.value = DateUtil.format(deadlineInstant)
     }
 
     fun showDatePicker() {
