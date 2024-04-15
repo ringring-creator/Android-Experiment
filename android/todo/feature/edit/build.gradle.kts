@@ -44,6 +44,7 @@ android {
 dependencies {
     implementation(projects.android.todo.infra.model)
     implementation(projects.android.todo.infra.network)
+    implementation(projects.android.user.infra.model)
     implementation(projects.android.user.infra.local)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

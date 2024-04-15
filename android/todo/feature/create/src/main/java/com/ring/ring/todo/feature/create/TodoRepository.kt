@@ -2,7 +2,7 @@ package com.ring.ring.todo.feature.create
 
 import com.ring.ring.todo.infra.domain.Todo
 import com.ring.ring.todo.infra.domain.TodoNetworkDataSource
-import com.ring.ring.user.infra.local.UserLocalDataSource
+import com.ring.ring.user.infra.model.UserLocalDataSource
 import kotlinx.datetime.Instant
 import javax.inject.Inject
 

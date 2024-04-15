@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.test.core.app.ApplicationProvider
 import com.ring.ring.infra.test.fake.FakeLogger
+import com.ring.ring.user.infra.model.User
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -52,11 +53,7 @@ class UserDataStoreDataSourceTest {
     @Test
     fun `get user data saved`() = runTest {
         //given
-        val expected = LocalUser(
-            userId = 1L,
-            email = "fakeEmail",
-            token = "fakeToken",
-        )
+        val expected = User(id = 1L, email = "fakeEmail", token = "fakeToken")
         subject.save(expected)
         advanceUntilIdle()
 
@@ -64,7 +61,7 @@ class UserDataStoreDataSourceTest {
         val actual = subject.getUser()!!
 
         //then
-        assertThat(actual.userId, equalTo(expected.userId))
+        assertThat(actual.id, equalTo(expected.id))
         assertThat(actual.email, equalTo(expected.email))
         assertThat(actual.token, equalTo(expected.token))
     }
@@ -78,7 +75,11 @@ class UserDataStoreDataSourceTest {
 
         //when
         assertThrows(IOException::class.java) {
-            runBlocking { subject.save(LocalUser(1L, "", "")) }
+            runBlocking {
+                subject.save(
+                    User(id = 1L, email = "", token = "")
+                )
+            }
         }
 
         //then

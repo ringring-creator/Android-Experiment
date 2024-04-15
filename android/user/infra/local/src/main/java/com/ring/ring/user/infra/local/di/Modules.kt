@@ -5,7 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.ring.ring.user.infra.local.UserDataStoreDataSource
-import com.ring.ring.user.infra.local.UserLocalDataSource
+import com.ring.ring.user.infra.model.UserLocalDataSource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

@@ -1,6 +1,7 @@
 package com.ring.ring.network
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import com.ring.ring.user.infra.model.Credentials
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -56,10 +57,10 @@ class UserRetrofitDataSourceTest {
         mockWebServer.enqueue(response)
 
         //when
-        val actual = subject.login(LoginRequest(LoginRequest.Credentials("", "")))
+        val actual = subject.login(Credentials("", ""))
 
         //then
-        assertThat(actual.userId, equalTo(expectedUserId))
+        assertThat(actual.id, equalTo(expectedUserId))
         assertThat(actual.token, equalTo(expectedToken))
     }
 
@@ -75,11 +76,7 @@ class UserRetrofitDataSourceTest {
         //when
         val email = "fakeEmail"
         val password = "fakePassword"
-        subject.login(
-            LoginRequest(
-                LoginRequest.Credentials(email, password)
-            )
-        )
+        subject.login(Credentials(email, password))
 
         //then
         val request = mockWebServer.takeRequest()
@@ -99,11 +96,7 @@ class UserRetrofitDataSourceTest {
         //when
         val email = "fakeEmail"
         val password = "fakePassword"
-        subject.signUp(
-            SignUpRequest(
-                SignUpRequest.Credentials(email, password)
-            )
-        )
+        subject.signUp(Credentials(email, password))
 
         //then
         val request = mockWebServer.takeRequest()

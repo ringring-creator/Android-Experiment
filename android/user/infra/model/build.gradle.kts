@@ -3,17 +3,15 @@ plugins {
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.hilt)
     alias(libs.plugins.kapt)
-    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
-    namespace = "com.ring.ring.user.infra.network"
+    namespace = "com.ring.ring.model"
     compileSdk = 34
 
     defaultConfig {
         minSdk = 24
 
-        buildConfigField("String", "BACKEND_URL", "\"http://10.0.2.2:8081\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
@@ -34,23 +32,17 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
-    buildFeatures {
-        buildConfig = true
-    }
-    testOptions.unitTests.isIncludeAndroidResources = true
 }
 
 dependencies {
-    implementation(projects.android.user.infra.model)
-    implementation(libs.androidx.activity.compose)
-    implementation(libs.bundles.retrofit)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
     implementation(libs.bundles.hilt)
     kapt(libs.hilt.compiler)
-
+    implementation(libs.kotlinx.datetime)
     testImplementation(libs.junit)
-    testImplementation(libs.hilt.android.testing)
-    testImplementation(libs.squareup.okhttp3.mockwebserver)
-    testImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
 }
 
 kapt {

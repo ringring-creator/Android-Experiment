@@ -36,6 +36,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.android.user.infra.model)
     implementation(projects.android.infra.test)
     implementation(projects.android.infra.log)
     implementation(libs.bundles.hilt)

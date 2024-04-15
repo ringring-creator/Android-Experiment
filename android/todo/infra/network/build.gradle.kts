@@ -49,7 +49,6 @@ dependencies {
     implementation(libs.kotlinx.datetime)
 
     testImplementation(libs.junit)
-    testImplementation(libs.hilt.android.testing)
     testImplementation(libs.squareup.okhttp3.mockwebserver)
     testImplementation(libs.kotlinx.coroutines.test)
 }

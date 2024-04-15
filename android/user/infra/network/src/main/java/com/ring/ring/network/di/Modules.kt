@@ -2,8 +2,8 @@ package com.ring.ring.network.di
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.ring.ring.network.RetrofitUserNetworkApi
-import com.ring.ring.network.UserNetworkDataSource
 import com.ring.ring.network.UserRetrofitDataSource
+import com.ring.ring.user.infra.model.UserNetworkDataSource
 import com.ring.ring.user.infra.network.BuildConfig
 import dagger.Module
 import dagger.Provides

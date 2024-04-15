@@ -6,6 +6,8 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.ring.ring.infra.log.Logger
+import com.ring.ring.user.infra.model.User
+import com.ring.ring.user.infra.model.UserLocalDataSource
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -16,10 +18,10 @@ class UserDataStoreDataSource @Inject constructor(
     private val dataStore: DataStore<Preferences>,
     private val logger: Logger,
 ) : UserLocalDataSource {
-    override suspend fun save(user: LocalUser) {
+    override suspend fun save(user: User) {
         try {
             dataStore.edit {
-                it[USER_ID_KEY] = user.userId
+                it[USER_ID_KEY] = user.id
                 it[EMAIL_KEY] = user.email
                 it[TOKEN_KEY] = user.token
             }
@@ -29,19 +31,27 @@ class UserDataStoreDataSource @Inject constructor(
         }
     }
 
-    override suspend fun getUser(): LocalUser? {
+    override suspend fun getUser(): User? {
         return try {
-            dataStore.data.map {
-                LocalUser(
-                    userId = it[USER_ID_KEY] ?: return@map null,
-                    email = it[EMAIL_KEY] ?: return@map null,
-                    token = it[TOKEN_KEY] ?: return@map null,
-                )
-            }.first()
+            dataStore
+                .data
+                .map(this::toUser)
+                .first()
         } catch (e: Throwable) {
             logger.e("DataStoreUserDataSource", "failed to getUser", e)
             throw e
         }
+    }
+
+    private fun toUser(it: Preferences): User? {
+        val userId = it[USER_ID_KEY] ?: return null
+        val email = it[EMAIL_KEY] ?: return null
+        val token = it[TOKEN_KEY] ?: return null
+        return User(
+            id = userId,
+            email = email,
+            token = token,
+        )
     }
 
     companion object {

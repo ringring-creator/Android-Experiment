@@ -1,7 +1,9 @@
 package com.ring.ring.user.feature.login
 
 import com.ring.ring.infra.test.MainDispatcherRule
-import com.ring.ring.network.LoginRequest
+import com.ring.ring.user.infra.model.Credentials
+import com.ring.ring.user.infra.model.UserNetworkDataSource
+import com.ring.ring.user.infra.test.FakeErrorUserNetworkDataSource
 import com.ring.ring.user.infra.test.FakeUserLocalDataSource
 import com.ring.ring.user.infra.test.FakeUserNetworkDataSource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -25,7 +27,7 @@ class LoginViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule(StandardTestDispatcher())
 
-    private var networkDataSource = FakeUserNetworkDataSource()
+    private var networkDataSource: UserNetworkDataSource = FakeUserNetworkDataSource()
     private var localDataSource = FakeUserLocalDataSource()
 
     @Before
@@ -57,23 +59,19 @@ class LoginViewModelTest {
     fun `login save user from networkDataSource`() = runTest {
         //given
         val expectedEmail = "fakeEmail"
+        val password = "fakePassword"
+        networkDataSource.signUp(Credentials(expectedEmail, password))
         subject.setEmail(expectedEmail)
+        subject.setPassword(password)
         subject.login()
         advanceUntilIdle()
 
         //when
-        val expect = networkDataSource.login(
-            LoginRequest(
-                LoginRequest.Credentials(
-                    "dummy",
-                    "dummy"
-                )
-            )
-        )
+        val expect = networkDataSource.login(Credentials(expectedEmail, password))
 
         //then
         val actual = localDataSource.getUser()
-        assertThat(actual.userId, equalTo(expect.userId))
+        assertThat(actual.id, equalTo(expect.id))
         assertThat(actual.email, equalTo(expectedEmail))
         assertThat(actual.token, equalTo(expect.token))
     }
@@ -88,6 +86,8 @@ class LoginViewModelTest {
         }
 
         //when
+        subject.setEmail("defaultEmail")
+        subject.setPassword("defaultPassword")
         subject.login()
         advanceUntilIdle()
 
@@ -99,7 +99,7 @@ class LoginViewModelTest {
     @Test
     fun `login send loginFailedEvent when login failed`() = runTest {
         //given
-        networkDataSource = FakeUserNetworkDataSource(isSimulateError = true)
+        networkDataSource = FakeErrorUserNetworkDataSource()
         setupSubject()
         var wasCalled = false
         TestScope(UnconfinedTestDispatcher()).launch {

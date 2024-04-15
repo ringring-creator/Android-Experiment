@@ -1,7 +1,12 @@
 package com.ring.ring.user.feature.signup
 
 import com.ring.ring.infra.test.MainDispatcherRule
+import com.ring.ring.user.infra.model.Credentials
+import com.ring.ring.user.infra.model.UserNetworkDataSource
+import com.ring.ring.user.infra.test.FakeErrorUserNetworkDataSource
 import com.ring.ring.user.infra.test.FakeUserNetworkDataSource
+import io.mockk.coVerify
+import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -21,7 +26,7 @@ import org.junit.Test
 class SignUpViewModelTest {
     private lateinit var subject: SignUpViewModel
 
-    private var networkDataSource = FakeUserNetworkDataSource()
+    private var networkDataSource: UserNetworkDataSource = FakeUserNetworkDataSource()
 
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule(StandardTestDispatcher())
@@ -130,19 +135,23 @@ class SignUpViewModelTest {
 
     @Test
     fun `signUp call signUp api`() = runTest {
-        //given,when
+        //given
+        networkDataSource = mockk(relaxed = true)
+        setupSubject()
+
+        //when
         subject.signUp()
         advanceUntilIdle()
 
         //then
-        assertThat(
-            networkDataSource.calledSignUpParameter!!.email,
-            equalTo(subject.email.value.input)
-        )
-        assertThat(
-            networkDataSource.calledSignUpParameter!!.password,
-            equalTo(subject.password.value.input)
-        )
+        coVerify {
+            networkDataSource.signUp(
+                Credentials(
+                    subject.email.value.input,
+                    subject.password.value.input,
+                )
+            )
+        }
     }
 
     @Test
@@ -164,7 +173,7 @@ class SignUpViewModelTest {
     @Test
     fun `signUp send signUpFailedEvent when sign up failed`() = runTest {
         //given
-        networkDataSource = FakeUserNetworkDataSource(isSimulateError = true)
+        networkDataSource = FakeErrorUserNetworkDataSource()
         setupSubject()
         var wasCalled = false
         TestScope(UnconfinedTestDispatcher()).launch {

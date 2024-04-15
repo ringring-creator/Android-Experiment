@@ -43,6 +43,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.android.user.infra.model)
     implementation(projects.android.user.infra.network)
     implementation(projects.android.user.infra.local)
     implementation(libs.bundles.compose)
@@ -57,6 +58,7 @@ dependencies {
     testImplementation(libs.compose.ui.test.junit)
     testImplementation(libs.robolectric)
     testImplementation(libs.hilt.android.testing)
+    testImplementation(libs.mockk)
 }
 
 kapt {

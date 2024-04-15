@@ -3,6 +3,7 @@ package com.ring.ring.network
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class LoginRequest(
-    val credentials: CredentialsModel,
+data class CredentialsModel(
+    val email: String,
+    val password: String,
 )

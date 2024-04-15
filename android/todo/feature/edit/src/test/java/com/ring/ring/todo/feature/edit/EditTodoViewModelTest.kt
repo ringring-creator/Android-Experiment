@@ -5,7 +5,7 @@ import com.ring.ring.infra.test.MainDispatcherRule
 import com.ring.ring.todo.infra.domain.TodoNetworkDataSource
 import com.ring.ring.todo.infra.test.FakeErrorTodoNetworkDataSource
 import com.ring.ring.todo.infra.test.FakeTodoNetworkDataSource
-import com.ring.ring.user.infra.local.LocalUser
+import com.ring.ring.user.infra.model.User
 import com.ring.ring.user.infra.test.FakeUserLocalDataSource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -31,9 +31,9 @@ class EditTodoViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule(StandardTestDispatcher())
 
-    private var localUser = LocalUser(10L, "fakeEmail", "fakeToken")
+    private var localUser = User(10L, "fakeEmail", "fakeToken")
     private var networkDataSource: TodoNetworkDataSource = FakeTodoNetworkDataSource(
-        parameter = FakeTodoNetworkDataSource.Parameter(localUser.userId, localUser.token)
+        parameter = FakeTodoNetworkDataSource.Parameter(localUser.id, localUser.token)
     )
     private var userLocalDataSource = FakeUserLocalDataSource()
     private lateinit var savedStateHandle: SavedStateHandle

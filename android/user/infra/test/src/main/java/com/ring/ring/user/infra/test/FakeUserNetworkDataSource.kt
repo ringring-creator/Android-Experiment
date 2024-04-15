@@ -1,33 +1,20 @@
 package com.ring.ring.user.infra.test
 
-import com.ring.ring.network.LoginRequest
-import com.ring.ring.network.LoginResponse
-import com.ring.ring.network.SignUpRequest
-import com.ring.ring.network.UserNetworkDataSource
+import com.ring.ring.user.infra.model.Credentials
+import com.ring.ring.user.infra.model.User
+import com.ring.ring.user.infra.model.UserNetworkDataSource
 
-class FakeUserNetworkDataSource(
-    private val isSimulateError: Boolean = false,
-) : UserNetworkDataSource {
-    var calledSignUpParameter: Credentials? = null
-
+class FakeUserNetworkDataSource : UserNetworkDataSource {
     private var credentialsList: MutableList<Credentials> = mutableListOf(
         Credentials("defaultEmail", "defaultPassword")
     )
 
-    override suspend fun login(request: LoginRequest): LoginResponse {
-        if (isSimulateError) throw Exception()
-        return LoginResponse(1L, "fakeToken")
+    override suspend fun login(credentials: Credentials): User {
+        if (credentialsList.contains(credentials).not()) throw Exception()
+        return User(1L, credentials.email, credentials.password)
     }
 
-    override suspend fun signUp(request: SignUpRequest) {
-        if (isSimulateError) throw Exception()
-        val credentials = Credentials(request.credentials.email, request.credentials.password)
+    override suspend fun signUp(credentials: Credentials) {
         credentialsList.add(credentials)
-        calledSignUpParameter = credentials
     }
-
-    data class Credentials(
-        val email: String,
-        val password: String,
-    )
 }

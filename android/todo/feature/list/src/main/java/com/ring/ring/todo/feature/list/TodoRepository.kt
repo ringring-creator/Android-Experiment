@@ -3,7 +3,7 @@ package com.ring.ring.todo.feature.list
 import com.ring.ring.todo.infra.domain.Todo
 import com.ring.ring.todo.infra.domain.TodoLocalDataSource
 import com.ring.ring.todo.infra.domain.TodoNetworkDataSource
-import com.ring.ring.user.infra.local.UserLocalDataSource
+import com.ring.ring.user.infra.model.UserLocalDataSource
 import javax.inject.Inject
 
 internal class TodoRepository @Inject constructor(

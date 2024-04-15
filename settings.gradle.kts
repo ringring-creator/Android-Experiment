@@ -21,6 +21,7 @@ dependencyResolutionManagement {
 include(":android")
 include(":android:user:feature:login")
 include(":android:user:feature:signup")
+include(":android:user:infra:model")
 include(":android:user:infra:network")
 include(":android:user:infra:local")
 include(":android:user:infra:test")
