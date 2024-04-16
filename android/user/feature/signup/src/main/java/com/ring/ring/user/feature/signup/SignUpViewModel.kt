@@ -17,10 +17,8 @@ import javax.inject.Inject
 internal class SignUpViewModel @Inject constructor(
     private val userRepository: SignUpRepository,
 ) : ViewModel() {
-    private val _email = MutableStateFlow(initEmail)
-    val email = _email.asStateFlow()
-    private val _password = MutableStateFlow(initPassword)
-    val password = _password.asStateFlow()
+    private val _uiState = MutableStateFlow(initSignUpUiState)
+    val uiState = _uiState.asStateFlow()
     private val _signUpFinishedEvent = Channel<Unit>()
     val signUpFinishedEvent = _signUpFinishedEvent.receiveAsFlow()
     private val _signUpFailedEvent = Channel<Unit>()
@@ -31,18 +29,22 @@ internal class SignUpViewModel @Inject constructor(
     }
 
     fun setEmail(email: String) {
-        if (this.email.value.input == email) return
-        _email.value = generateEmail(email)
+        if (this.uiState.value.email.input == email) return
+        _uiState.value = uiState.value.copy(
+            email = generateEmail(email)
+        )
     }
 
     fun setPassword(password: String) {
-        if (this.password.value.input == password) return
-        _password.value = generatePassword(password)
+        if (this.uiState.value.password.input == password) return
+        _uiState.value = uiState.value.copy(
+            password = generatePassword(password)
+        )
     }
 
     fun signUp() {
         viewModelScope.launch(handler) {
-            userRepository.signUp(email.value.input, password.value.input)
+            userRepository.signUp(uiState.value.email.input, uiState.value.password.input)
             _signUpFinishedEvent.trySend(Unit)
         }
     }
@@ -60,8 +62,9 @@ internal class SignUpViewModel @Inject constructor(
     )
 
     companion object {
-        val initEmail = SignUpUiState.Email("", isError = false, visibleSupportingText = false)
-        val initPassword =
-            SignUpUiState.Password("", isError = false, visibleSupportingText = false)
+        val initSignUpUiState = SignUpUiState(
+            email = SignUpUiState.Email("", isError = false, visibleSupportingText = false),
+            password = SignUpUiState.Password("", isError = false, visibleSupportingText = false),
+        )
     }
 }

@@ -25,10 +25,6 @@ internal data class SignUpUiState(
 internal fun rememberSignUpUiState(
     viewModel: SignUpViewModel,
 ): SignUpUiState {
-    val email by viewModel.email.collectAsStateWithLifecycle()
-    val password by viewModel.password.collectAsStateWithLifecycle()
-    return SignUpUiState(
-        email = email,
-        password = password,
-    )
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    return uiState
 }

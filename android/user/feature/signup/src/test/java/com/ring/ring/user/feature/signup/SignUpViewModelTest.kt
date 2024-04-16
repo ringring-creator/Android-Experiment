@@ -44,7 +44,7 @@ class SignUpViewModelTest {
         subject.setEmail(value)
 
         //then
-        assertThat(subject.email.value, equalTo(expect))
+        assertThat(subject.uiState.value.email, equalTo(expect))
     }
 
     @Test
@@ -55,7 +55,7 @@ class SignUpViewModelTest {
         subject.setEmail(value)
 
         //then
-        assertThat(subject.email.value, equalTo(expect))
+        assertThat(subject.uiState.value.email, equalTo(expect))
     }
 
     @Test
@@ -70,7 +70,7 @@ class SignUpViewModelTest {
             isError = false,
             visibleSupportingText = false,
         )
-        assertThat(subject.password.value, equalTo(expected))
+        assertThat(subject.uiState.value.password, equalTo(expected))
     }
 
     @Test
@@ -85,7 +85,7 @@ class SignUpViewModelTest {
             isError = true,
             visibleSupportingText = true,
         )
-        assertThat(subject.password.value, equalTo(expected))
+        assertThat(subject.uiState.value.password, equalTo(expected))
     }
 
     @Test
@@ -100,7 +100,7 @@ class SignUpViewModelTest {
             isError = true,
             visibleSupportingText = true,
         )
-        assertThat(subject.password.value, equalTo(expected))
+        assertThat(subject.uiState.value.password, equalTo(expected))
     }
 
     @Test
@@ -115,7 +115,7 @@ class SignUpViewModelTest {
             isError = true,
             visibleSupportingText = true,
         )
-        assertThat(subject.password.value, equalTo(expected))
+        assertThat(subject.uiState.value.password, equalTo(expected))
     }
 
     @Test
@@ -130,7 +130,7 @@ class SignUpViewModelTest {
             isError = true,
             visibleSupportingText = true,
         )
-        assertThat(subject.password.value, equalTo(expected))
+        assertThat(subject.uiState.value.password, equalTo(expected))
     }
 
     @Test
@@ -147,8 +147,8 @@ class SignUpViewModelTest {
         coVerify {
             networkDataSource.signUp(
                 Credentials(
-                    subject.email.value.input,
-                    subject.password.value.input,
+                    subject.uiState.value.email.input,
+                    subject.uiState.value.password.input,
                 )
             )
         }
