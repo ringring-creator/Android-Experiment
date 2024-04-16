@@ -41,8 +41,6 @@ import com.ring.ring.todo.feature.edit.EditTodoEvent.DeleteSuccess
 import com.ring.ring.todo.feature.edit.EditTodoEvent.EditError
 import com.ring.ring.todo.feature.edit.EditTodoEvent.EditSuccess
 import com.ring.ring.todo.feature.edit.EditTodoEvent.GetTodoError
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 @Composable
 internal fun EditTodoScreen(
@@ -73,20 +71,29 @@ internal fun EditTodoScreen(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.edit_todo)) },
-                navigationIcon = {
-                    IconButton(onClick = toTodoListScreen) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, null)
-                    }
-                }
+                navigationIcon = { NavigationIcon(toTodoListScreen) }
             )
         },
         snackbarHost = { SnackbarHost(snackBarHostState) },
     ) { padding ->
         Content(
-            Modifier
+            modifier = Modifier
                 .padding(padding)
-                .padding(16.dp), uiState, updater
+                .padding(16.dp),
+            title = uiState.title,
+            description = uiState.description,
+            done = uiState.done,
+            deadline = uiState.deadline,
+            isShowDatePicker = uiState.isShowDatePicker,
+            updater = updater
         )
+    }
+}
+
+@Composable
+private fun NavigationIcon(toTodoListScreen: () -> Unit) {
+    IconButton(onClick = toTodoListScreen) {
+        Icon(Icons.AutoMirrored.Filled.ArrowBack, null)
     }
 }
 
@@ -138,10 +145,13 @@ private fun SetupSideEffect(
 @Composable
 private fun Content(
     modifier: Modifier,
-    uiState: EditTodoUiState,
+    title: String,
+    description: String,
+    done: Boolean,
+    deadline: String,
+    isShowDatePicker: Boolean,
     updater: EditTodoUiUpdater,
     datePickerState: DatePickerState = rememberDatePickerState(),
-    scope: CoroutineScope = rememberCoroutineScope(),
 ) {
     Box(
         modifier = modifier,
@@ -152,21 +162,21 @@ private fun Content(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Spacer(modifier = Modifier.height(8.dp))
-            TitleTextField(uiState.title, updater.setTitle)
-            DescriptionTextField(uiState.description, updater.setDescription)
-            DoneCheckBox(uiState.done, updater.setDone)
-            DeadlineField(uiState.deadline, updater.showDatePicker)
+            TitleTextField(title, updater.setTitle)
+            DescriptionTextField(description, updater.setDescription)
+            DoneCheckBox(done, updater.setDone)
+            DeadlineField(deadline, updater.showDatePicker)
             Spacer(modifier = Modifier.height(8.dp))
             Row(
                 modifier = Modifier.align(Alignment.End),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                EditButton { scope.launch { updater.editTodo() } }
-                DeleteButton { scope.launch { updater.deleteTodo() } }
+                EditButton { updater.editTodo() }
+                DeleteButton { updater.deleteTodo() }
             }
         }
         CustomDatePicker(
-            uiState.isShowDatePicker,
+            isShowDatePicker,
             datePickerState,
             updater.dismissDatePicker,
             updater.setDeadline,
