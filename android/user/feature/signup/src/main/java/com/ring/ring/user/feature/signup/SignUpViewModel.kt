@@ -2,8 +2,8 @@ package com.ring.ring.user.feature.signup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ring.ring.user.feature.signup.SignUpUiState.Email
-import com.ring.ring.user.feature.signup.SignUpUiState.Password
+import com.ring.ring.user.infra.model.Email
+import com.ring.ring.user.infra.model.Password
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.channels.Channel
@@ -47,43 +47,21 @@ internal class SignUpViewModel @Inject constructor(
         }
     }
 
-    private fun generateEmail(emailValue: String) = Email(
+    private fun generateEmail(emailValue: String) = SignUpUiState.Email(
         input = emailValue,
-        isError = isInvalidEmail(emailValue),
-        visibleSupportingText = isInvalidEmail(emailValue)
+        isError = Email.isInvalidEmail(emailValue),
+        visibleSupportingText = Email.isInvalidEmail(emailValue)
     )
 
-    private fun isInvalidEmail(email: String): Boolean {
-        val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$".toRegex()
-        return email.matches(emailRegex).not()
-    }
-
-    private fun generatePassword(password: String) = Password(
+    private fun generatePassword(password: String) = SignUpUiState.Password(
         input = password,
-        isError = isInvalidPassword(password),
-        visibleSupportingText = isInvalidPassword(password),
+        isError = Password.isInvalidPassword(password),
+        visibleSupportingText = Password.isInvalidPassword(password),
     )
-
-    private fun isInvalidPassword(password: String): Boolean {
-        if (password.length < 8) return true
-
-        var hasDigit = false
-        var hasUpperCase = false
-        var hasLowerCase = false
-
-        for (char in password) {
-            when {
-                char.isDigit() -> hasDigit = true
-                char.isUpperCase() -> hasUpperCase = true
-                char.isLowerCase() -> hasLowerCase = true
-            }
-            if (hasDigit && hasUpperCase && hasLowerCase) return false
-        }
-        return true
-    }
 
     companion object {
-        val initEmail = Email("", isError = false, visibleSupportingText = false)
-        val initPassword = Password("", isError = false, visibleSupportingText = false)
+        val initEmail = SignUpUiState.Email("", isError = false, visibleSupportingText = false)
+        val initPassword =
+            SignUpUiState.Password("", isError = false, visibleSupportingText = false)
     }
 }
