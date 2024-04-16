@@ -12,7 +12,9 @@ class LoginRepository @Inject constructor(
     private val localDataSource: UserLocalDataSource,
 ) {
     suspend fun login(email: String, password: String) {
-        val user = networkDataSource.login(Credentials.issue(email, password))
+        val user = networkDataSource.login(
+            credentials = Credentials.issue(email, password)
+        )
         localDataSource.save(user = user)
     }
 }

@@ -3,6 +3,7 @@ package com.ring.ring.todo.feature.edit
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ring.ring.util.date.DateUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.channels.BufferOverflow
@@ -26,7 +27,6 @@ internal class EditTodoViewModel @Inject constructor(
     private var deadline: Instant = dateUtil.currentInstant()
     private val _uiState = MutableStateFlow(initEditTodoUiState())
     val uiState = _uiState.asStateFlow()
-
 
     private val _events = Channel<EditTodoEvent>(capacity = 5, BufferOverflow.DROP_OLDEST)
     val events = _events.receiveAsFlow()
@@ -54,6 +54,19 @@ internal class EditTodoViewModel @Inject constructor(
     fun setDone(done: Boolean) {
         if (this.uiState.value.done == done) return
         _uiState.value = uiState.value.copy(done = done)
+    }
+
+    fun setDeadline(dateMillis: Long) {
+        deadline = dateUtil.toInstant(dateMillis)
+        _uiState.value = uiState.value.copy(deadline = dateUtil.format(deadline))
+    }
+
+    fun showDatePicker() {
+        _uiState.value = uiState.value.copy(isShowDatePicker = true)
+    }
+
+    fun dismissDatePicker() {
+        _uiState.value = uiState.value.copy(isShowDatePicker = false)
     }
 
     fun getTodo() {
@@ -87,19 +100,6 @@ internal class EditTodoViewModel @Inject constructor(
             todoRepository.deleteTodo(id)
             _events.trySend(EditTodoEvent.DeleteSuccess)
         }
-    }
-
-    fun setDeadline(dateMillis: Long) {
-        deadline = dateUtil.toInstant(dateMillis)
-        _uiState.value = uiState.value.copy(deadline = dateUtil.format(deadline))
-    }
-
-    fun showDatePicker() {
-        _uiState.value = uiState.value.copy(isShowDatePicker = true)
-    }
-
-    fun dismissDatePicker() {
-        _uiState.value = uiState.value.copy(isShowDatePicker = false)
     }
 
     private fun initEditTodoUiState() = EditTodoUiState(

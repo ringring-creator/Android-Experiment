@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.ring.ring.infra.log"
+    namespace = "com.ring.ring.util"
     compileSdk = 34
 
     defaultConfig {
@@ -32,17 +32,14 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    testOptions.unitTests.isIncludeAndroidResources = true
 }
 
 dependencies {
     implementation(libs.bundles.hilt)
     kapt(libs.hilt.compiler)
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
+    implementation(libs.kotlinx.datetime)
     testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
 }
 
 kapt {

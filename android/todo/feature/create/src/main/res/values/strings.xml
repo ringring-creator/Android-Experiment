@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="failed_to_create">Failed to create</string>
+    <string name="title">Title</string>
+    <string name="description">Description</string>
+    <string name="done">Done</string>
+    <string name="create">Create</string>
+    <string name="set">Set</string>
+    <string name="create_todo">Create Todo</string>
 </resources>

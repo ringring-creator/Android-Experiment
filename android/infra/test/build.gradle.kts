@@ -33,7 +33,7 @@ android {
 }
 
 dependencies {
-    implementation(projects.android.infra.log)
+    implementation(projects.android.infra.util)
     implementation(libs.androidx.core.ktx)
     implementation(libs.junit)
     implementation(libs.compose.ui.test.junit)

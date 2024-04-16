@@ -53,7 +53,7 @@ internal fun EditTodoScreen(
 
     EditTodoScreen(
         uiState = rememberEditTodoUiState(viewModel = viewModel),
-        updater = toEditTodoUiUpdater(viewModel = viewModel),
+        updater = remember { toEditTodoUiUpdater(viewModel = viewModel) },
         toTodoListScreen = toTodoListScreen,
         snackBarHostState = snackBarHostState,
     )

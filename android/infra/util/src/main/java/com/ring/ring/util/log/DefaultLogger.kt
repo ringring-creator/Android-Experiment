@@ -1,4 +1,4 @@
-package com.ring.ring.infra.log
+package com.ring.ring.util.log
 
 import android.util.Log
 import javax.inject.Inject

@@ -1,7 +1,7 @@
-package com.ring.ring.infra.log.di
+package com.ring.ring.util.di
 
-import com.ring.ring.infra.log.DefaultLogger
-import com.ring.ring.infra.log.Logger
+import com.ring.ring.util.log.DefaultLogger
+import com.ring.ring.util.log.Logger
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

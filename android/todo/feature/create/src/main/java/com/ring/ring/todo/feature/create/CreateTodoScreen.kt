@@ -1,5 +1,6 @@
 package com.ring.ring.todo.feature.create
 
+import android.content.Context
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -34,13 +35,19 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.ring.ring.todo.feature.create.CreateTodoEvent.CreateTodoError
+import com.ring.ring.todo.feature.create.CreateTodoEvent.CreateTodoSuccess
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 const val CREATE_TODO_ROUTE = "CreateTodoRoute"
 
@@ -62,7 +69,7 @@ internal fun CreateTodoScreen(
 ) {
     CreateTodoScreen(
         uiState = rememberCreateTodoUiState(viewModel = viewModel),
-        updater = toUpdater(viewModel),
+        updater = remember { toUpdater(viewModel) },
         toTodoListScreen = toTodoListScreen,
         snackBarHostState = snackBarHostState,
     )
@@ -76,19 +83,28 @@ private fun SetupSideEffect(
     toTodoListScreen: () -> Unit,
     snackBarHostState: SnackbarHostState
 ) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
-        viewModel.saveSuccessEvent.collect {
-            toTodoListScreen()
+        viewModel.event.collect {
+            when (it) {
+                CreateTodoSuccess -> toTodoListScreen()
+                CreateTodoError -> showCreateTodoFailedSnackbar(snackBarHostState, context, scope)
+            }
         }
     }
-    val context = LocalContext.current
-    LaunchedEffect(Unit) {
-        viewModel.saveTodoErrorEvent.collect {
-            snackBarHostState.showSnackbar(
-                message = context.getString(R.string.failed_to_create),
-                withDismissAction = true,
-            )
-        }
+}
+
+private fun showCreateTodoFailedSnackbar(
+    snackBarHostState: SnackbarHostState,
+    context: Context,
+    scope: CoroutineScope
+) {
+    scope.launch {
+        snackBarHostState.showSnackbar(
+            message = context.getString(R.string.failed_to_create),
+            withDismissAction = true,
+        )
     }
 }
 
@@ -103,12 +119,8 @@ internal fun CreateTodoScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Create Todo") },
-                navigationIcon = {
-                    IconButton(onClick = toTodoListScreen) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, null)
-                    }
-                }
+                title = { Text(stringResource(R.string.create_todo)) },
+                navigationIcon = { NavigationIcon(toTodoListScreen) }
             )
         },
         snackbarHost = { SnackbarHost(snackBarHostState) },
@@ -117,9 +129,20 @@ internal fun CreateTodoScreen(
             modifier = Modifier
                 .padding(padding)
                 .padding(16.dp),
-            uiState = uiState,
+            title = uiState.title,
+            description = uiState.description,
+            done = uiState.done,
+            deadline = uiState.deadline,
+            isShowDatePicker = uiState.isShowDatePicker,
             updater = updater,
         )
+    }
+}
+
+@Composable
+private fun NavigationIcon(toTodoListScreen: () -> Unit) {
+    IconButton(onClick = toTodoListScreen) {
+        Icon(Icons.AutoMirrored.Filled.ArrowBack, null)
     }
 }
 
@@ -127,7 +150,11 @@ internal fun CreateTodoScreen(
 @Composable
 private fun Content(
     modifier: Modifier,
-    uiState: CreateTodoUiState,
+    title: String,
+    description: String,
+    done: Boolean,
+    deadline: String,
+    isShowDatePicker: Boolean,
     updater: CreateTodoUiUpdater,
     datePickerState: DatePickerState = rememberDatePickerState(),
     scrollState: ScrollState = rememberScrollState(),
@@ -141,15 +168,15 @@ private fun Content(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Spacer(modifier = Modifier.height(8.dp))
-            TitleTextField(uiState.title, updater.setTitle)
-            DescriptionTextField(uiState.description, updater.setDescription)
-            DoneCheckBox(uiState.done, updater.setDone)
-            DeadlineField(uiState.deadline, updater.showDatePicker)
+            TitleTextField(title, updater.setTitle)
+            DescriptionTextField(description, updater.setDescription)
+            DoneCheckBox(done, updater.setDone)
+            DeadlineField(deadline, updater.showDatePicker)
             Spacer(modifier = Modifier.height(8.dp))
             CreateButton(updater.saveTodo)
         }
         CustomDatePicker(
-            uiState.isShowDatePicker,
+            isShowDatePicker,
             datePickerState,
             updater.dismissDatePicker,
             updater.setDeadline,
@@ -165,7 +192,7 @@ private fun TitleTextField(
     OutlinedTextField(
         value = title,
         onValueChange = setTitle,
-        label = { Text("Title") },
+        label = { Text(stringResource(R.string.title)) },
         modifier = Modifier.fillMaxWidth()
     )
 }
@@ -178,7 +205,7 @@ private fun DescriptionTextField(
     OutlinedTextField(
         value = description,
         onValueChange = setDescription,
-        label = { Text("Description") },
+        label = { Text(stringResource(R.string.description)) },
         modifier = Modifier.fillMaxWidth()
     )
 }
@@ -193,13 +220,13 @@ private fun DoneCheckBox(
             checked = done,
             onCheckedChange = setDone,
         )
-        Text("Done")
+        Text(stringResource(R.string.done))
     }
 }
 
 @Composable
 private fun DeadlineField(
-    deadline: CreateTodoUiState.Deadline,
+    deadline: String,
     showDatePicker: () -> Unit,
 ) {
     Row(
@@ -211,7 +238,7 @@ private fun DeadlineField(
             Icons.Filled.DateRange,
             contentDescription = null,
         )
-        Text(deadline.formatString())
+        Text(deadline)
     }
 }
 
@@ -221,7 +248,7 @@ private fun ColumnScope.CreateButton(create: () -> Unit) {
         onClick = create,
         modifier = Modifier.align(Alignment.End)
     ) {
-        Text("Create")
+        Text(stringResource(R.string.create))
     }
 }
 
@@ -237,12 +264,14 @@ private fun CustomDatePicker(
         DatePickerDialog(
             onDismissRequest = dismissDatePicker,
             confirmButton = {
-                Text("Set", modifier = Modifier
-                    .padding(16.dp)
-                    .clickable {
-                        datePickerState.selectedDateMillis?.let { setDate(it) }
-                        dismissDatePicker()
-                    })
+                Text(
+                    stringResource(R.string.set),
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .clickable {
+                            datePickerState.selectedDateMillis?.let { setDate(it) }
+                            dismissDatePicker()
+                        })
             }
         ) {
             DatePicker(datePickerState)

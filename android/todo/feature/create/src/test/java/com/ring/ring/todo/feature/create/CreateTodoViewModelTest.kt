@@ -6,6 +6,7 @@ import com.ring.ring.todo.infra.test.FakeErrorTodoNetworkDataSource
 import com.ring.ring.todo.infra.test.FakeTodoNetworkDataSource
 import com.ring.ring.user.infra.model.User
 import com.ring.ring.user.infra.test.FakeUserLocalDataSource
+import com.ring.ring.util.date.DateUtil
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -69,8 +70,8 @@ class CreateTodoViewModelTest {
         //given
         var wasCalled = false
         TestScope(UnconfinedTestDispatcher()).launch {
-            subject.saveSuccessEvent.collect {
-                wasCalled = true
+            subject.event.collect {
+                if (it == CreateTodoEvent.CreateTodoSuccess) wasCalled = true
             }
         }
 
@@ -89,8 +90,8 @@ class CreateTodoViewModelTest {
         setupSubject()
         var wasCalled = false
         TestScope(UnconfinedTestDispatcher()).launch {
-            subject.saveTodoErrorEvent.collect {
-                wasCalled = true
+            subject.event.collect {
+                if (it == CreateTodoEvent.CreateTodoError) wasCalled = true
             }
         }
 
@@ -109,7 +110,7 @@ class CreateTodoViewModelTest {
         subject.setTitle(expected)
 
         //then
-        assertThat(subject.title.value, equalTo(expected))
+        assertThat(subject.uiState.value.title, equalTo(expected))
     }
 
     @Test
@@ -119,7 +120,7 @@ class CreateTodoViewModelTest {
         subject.setDescription(expected)
 
         //then
-        assertThat(subject.description.value, equalTo(expected))
+        assertThat(subject.uiState.value.description, equalTo(expected))
     }
 
     @Test
@@ -129,7 +130,7 @@ class CreateTodoViewModelTest {
         subject.setDone(expected)
 
         //then
-        assertThat(subject.done.value, equalTo(expected))
+        assertThat(subject.uiState.value.done, equalTo(expected))
     }
 
     @Test
@@ -139,7 +140,11 @@ class CreateTodoViewModelTest {
         subject.setDeadline(expected)
 
         //then
-        assertThat(subject.deadline.value, equalTo(CreateTodoUiState.Deadline(expected)))
+        val dateUtil = DateUtil()
+        assertThat(
+            subject.uiState.value.deadline,
+            equalTo(dateUtil.format(dateUtil.toInstant(expected)))
+        )
     }
 
     @Test
@@ -148,7 +153,7 @@ class CreateTodoViewModelTest {
         subject.showDatePicker()
 
         //then
-        assertThat(subject.isShowDatePicker.value, `is`(true))
+        assertThat(subject.uiState.value.isShowDatePicker, `is`(true))
     }
 
     @Test
@@ -157,7 +162,7 @@ class CreateTodoViewModelTest {
         subject.dismissDatePicker()
 
         //then
-        assertThat(subject.isShowDatePicker.value, `is`(false))
+        assertThat(subject.uiState.value.isShowDatePicker, `is`(false))
     }
 
     private fun setupSubject() {
@@ -166,6 +171,7 @@ class CreateTodoViewModelTest {
                 networkDataSource = networkDataSource,
                 userLocalDataSource = userLocalDataSource,
             ),
+            dateUtil = DateUtil(),
         )
     }
 }

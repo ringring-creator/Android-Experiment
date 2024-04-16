@@ -5,7 +5,6 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.ring.ring.infra.log.Logger
 import com.ring.ring.user.infra.model.User
 import com.ring.ring.user.infra.model.UserLocalDataSource
 import kotlinx.coroutines.flow.first
@@ -16,7 +15,7 @@ import javax.inject.Singleton
 @Singleton
 class UserDataStoreDataSource @Inject constructor(
     private val dataStore: DataStore<Preferences>,
-    private val logger: Logger,
+    private val logger: com.ring.ring.util.log.Logger,
 ) : UserLocalDataSource {
     override suspend fun save(user: User) {
         try {

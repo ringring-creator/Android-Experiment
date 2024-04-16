@@ -1,8 +1,6 @@
 package com.ring.ring.infra.test.fake
 
-import com.ring.ring.infra.log.Logger
-
-class FakeLogger : Logger {
+class FakeLogger : com.ring.ring.util.log.Logger {
     var vWasCalled: Parameter? = null
     override fun v(tag: String, msg: String, tr: Throwable?) {
         vWasCalled = Parameter(tag, msg, tr)

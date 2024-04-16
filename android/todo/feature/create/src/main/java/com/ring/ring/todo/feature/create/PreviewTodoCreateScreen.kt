@@ -3,7 +3,7 @@ package com.ring.ring.todo.feature.create
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import kotlinx.datetime.Clock
+import com.ring.ring.util.date.DateUtil
 
 @Preview(
     group = "normal scenario",
@@ -49,7 +49,7 @@ private val value: CreateTodoUiState = CreateTodoUiState(
     title = "title",
     description = "description",
     done = true,
-    deadline = CreateTodoUiState.Deadline(Clock.System.now().toEpochMilliseconds()),
+    deadline = DateUtil().format(DateUtil().currentInstant()),
     isShowDatePicker = false,
 )
 
