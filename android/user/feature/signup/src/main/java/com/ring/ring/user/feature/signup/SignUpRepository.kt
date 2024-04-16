@@ -10,6 +10,6 @@ class SignUpRepository @Inject constructor(
     private val networkDataSource: UserNetworkDataSource,
 ) {
     suspend fun signUp(email: String, password: String) {
-        networkDataSource.signUp(Credentials(email, password))
+        networkDataSource.signUp(Credentials.issue(email, password))
     }
 }

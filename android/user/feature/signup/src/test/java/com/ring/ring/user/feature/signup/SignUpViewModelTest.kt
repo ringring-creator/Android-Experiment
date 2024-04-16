@@ -135,13 +135,15 @@ class SignUpViewModelTest {
         setupSubject()
 
         //when
+        subject.setEmail("email@example.com")
+        subject.setPassword("Abcdefg1")
         subject.signUp()
         advanceUntilIdle()
 
         //then
         coVerify {
             networkDataSource.signUp(
-                Credentials(
+                Credentials.issue(
                     subject.uiState.value.email.value,
                     subject.uiState.value.password.value,
                 )
@@ -160,6 +162,8 @@ class SignUpViewModelTest {
         }
 
         //when
+        subject.setEmail("email@example.com")
+        subject.setPassword("Abcdefg1")
         subject.signUp()
         advanceUntilIdle()
 

@@ -9,6 +9,6 @@ data class LoginResponse(
     val token: String,
 ) {
     fun toUser(email: String): User {
-        return User(userId, email, token)
+        return User.generate(userId, email, token)
     }
 }

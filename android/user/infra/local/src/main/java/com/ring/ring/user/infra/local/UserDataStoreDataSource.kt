@@ -21,8 +21,8 @@ class UserDataStoreDataSource @Inject constructor(
     override suspend fun save(user: User) {
         try {
             dataStore.edit {
-                it[USER_ID_KEY] = user.id
-                it[EMAIL_KEY] = user.email
+                it[USER_ID_KEY] = user.id.value
+                it[EMAIL_KEY] = user.email.value
                 it[TOKEN_KEY] = user.token
             }
         } catch (e: Throwable) {
@@ -47,7 +47,7 @@ class UserDataStoreDataSource @Inject constructor(
         val userId = it[USER_ID_KEY] ?: return null
         val email = it[EMAIL_KEY] ?: return null
         val token = it[TOKEN_KEY] ?: return null
-        return User(
+        return User.generate(
             id = userId,
             email = email,
             token = token,

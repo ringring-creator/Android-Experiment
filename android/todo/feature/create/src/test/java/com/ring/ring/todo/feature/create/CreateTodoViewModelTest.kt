@@ -29,9 +29,9 @@ class CreateTodoViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule(StandardTestDispatcher())
 
-    private var localUser = User(10L, "fakeEmail", "fakeToken")
+    private var localUser = User.generate(10L, "email@example.com", "Abcdefg1")
     private var networkDataSource: TodoNetworkDataSource = FakeTodoNetworkDataSource(
-        parameter = FakeTodoNetworkDataSource.Parameter(localUser.id, localUser.token)
+        parameter = FakeTodoNetworkDataSource.Parameter(localUser.id.value, localUser.token)
     )
     private var userLocalDataSource = FakeUserLocalDataSource()
 

@@ -2,6 +2,7 @@ package com.ring.ring.user.feature.login
 
 import com.ring.ring.infra.test.MainDispatcherRule
 import com.ring.ring.user.infra.model.Credentials
+import com.ring.ring.user.infra.model.Email
 import com.ring.ring.user.infra.model.UserNetworkDataSource
 import com.ring.ring.user.infra.test.FakeErrorUserNetworkDataSource
 import com.ring.ring.user.infra.test.FakeUserLocalDataSource
@@ -58,21 +59,21 @@ class LoginViewModelTest {
     @Test
     fun `login save user from networkDataSource`() = runTest {
         //given
-        val expectedEmail = "fakeEmail"
-        val password = "fakePassword"
-        networkDataSource.signUp(Credentials(expectedEmail, password))
+        val expectedEmail = "email@example.com"
+        val password = "Abcdefg1"
+        networkDataSource.signUp(Credentials.issue(expectedEmail, password))
         subject.setEmail(expectedEmail)
         subject.setPassword(password)
         subject.login()
         advanceUntilIdle()
 
         //when
-        val expect = networkDataSource.login(Credentials(expectedEmail, password))
+        val expect = networkDataSource.login(Credentials.issue(expectedEmail, password))
 
         //then
         val actual = localDataSource.getUser()
         assertThat(actual.id, equalTo(expect.id))
-        assertThat(actual.email, equalTo(expectedEmail))
+        assertThat(actual.email, equalTo(Email(expectedEmail)))
         assertThat(actual.token, equalTo(expect.token))
     }
 
@@ -86,8 +87,8 @@ class LoginViewModelTest {
         }
 
         //when
-        subject.setEmail("defaultEmail")
-        subject.setPassword("defaultPassword")
+        subject.setEmail("email@example.com")
+        subject.setPassword("Abcdefg1")
         subject.login()
         advanceUntilIdle()
 

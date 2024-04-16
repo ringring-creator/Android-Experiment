@@ -2,6 +2,7 @@ package com.ring.ring.network
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.ring.ring.user.infra.model.Credentials
+import com.ring.ring.user.infra.model.Id
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -57,10 +58,10 @@ class UserRetrofitDataSourceTest {
         mockWebServer.enqueue(response)
 
         //when
-        val actual = subject.login(Credentials("", ""))
+        val actual = subject.login(Credentials.issue("email@example.com", "Abcdefg1"))
 
         //then
-        assertThat(actual.id, equalTo(expectedUserId))
+        assertThat(actual.id, equalTo(Id(expectedUserId)))
         assertThat(actual.token, equalTo(expectedToken))
     }
 
@@ -74,9 +75,9 @@ class UserRetrofitDataSourceTest {
         mockWebServer.enqueue(response)
 
         //when
-        val email = "fakeEmail"
-        val password = "fakePassword"
-        subject.login(Credentials(email, password))
+        val email = "email@example.com"
+        val password = "Abcdefg1"
+        subject.login(Credentials.issue(email, password))
 
         //then
         val request = mockWebServer.takeRequest()
@@ -94,9 +95,9 @@ class UserRetrofitDataSourceTest {
         mockWebServer.enqueue(response)
 
         //when
-        val email = "fakeEmail"
-        val password = "fakePassword"
-        subject.signUp(Credentials(email, password))
+        val email = "email@example.com"
+        val password = "Abcdefg1"
+        subject.signUp(Credentials.issue(email, password))
 
         //then
         val request = mockWebServer.takeRequest()

@@ -15,16 +15,16 @@ class UserRetrofitDataSource @Inject constructor(
         return networkApi.login(
             request = LoginRequest(
                 credentials = CredentialsModel(
-                    credentials.email, credentials.password
+                    credentials.email.value, credentials.password.value
                 )
             )
-        ).toUser(credentials.email)
+        ).toUser(credentials.email.value)
     }
 
     override suspend fun signUp(credentials: Credentials) {
         networkApi.signUp(
             request = SignUpRequest(
-                CredentialsModel(credentials.email, credentials.password)
+                CredentialsModel(credentials.email.value, credentials.password.value)
             )
         )
     }

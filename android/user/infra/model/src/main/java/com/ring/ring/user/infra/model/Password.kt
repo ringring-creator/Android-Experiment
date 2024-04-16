@@ -3,6 +3,10 @@ package com.ring.ring.user.infra.model
 data class Password(
     val value: String
 ) {
+    init {
+        if (isInvalidPassword(value)) throw IllegalArgumentException("Password is insecure")
+    }
+
     companion object {
         fun isInvalidPassword(password: String): Boolean {
             if (password.length < 8) return true

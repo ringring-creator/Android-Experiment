@@ -1,7 +1,15 @@
 package com.ring.ring.user.infra.model
 
 class User(
-    val id: Long,
-    val email: String,
+    val id: Id,
+    val email: Email,
     val token: String,
-)
+) {
+    companion object {
+        fun generate(id: Long, email: String, token: String): User = User(
+            id = Id(id),
+            email = Email(email),
+            token = token,
+        )
+    }
+}
