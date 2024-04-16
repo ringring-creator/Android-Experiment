@@ -66,7 +66,7 @@ class SignUpViewModelTest {
 
         //then
         val expected = SignUpUiState.Password(
-            input = value,
+            value = value,
             isError = false,
         )
         assertThat(subject.uiState.value.password, equalTo(expected))
@@ -80,7 +80,7 @@ class SignUpViewModelTest {
 
         //then
         val expected = SignUpUiState.Password(
-            input = value,
+            value = value,
             isError = true,
         )
         assertThat(subject.uiState.value.password, equalTo(expected))
@@ -94,7 +94,7 @@ class SignUpViewModelTest {
 
         //then
         val expected = SignUpUiState.Password(
-            input = value,
+            value = value,
             isError = true,
         )
         assertThat(subject.uiState.value.password, equalTo(expected))
@@ -108,7 +108,7 @@ class SignUpViewModelTest {
 
         //then
         val expected = SignUpUiState.Password(
-            input = value,
+            value = value,
             isError = true,
         )
         assertThat(subject.uiState.value.password, equalTo(expected))
@@ -122,7 +122,7 @@ class SignUpViewModelTest {
 
         //then
         val expected = SignUpUiState.Password(
-            input = value,
+            value = value,
             isError = true,
         )
         assertThat(subject.uiState.value.password, equalTo(expected))
@@ -142,8 +142,8 @@ class SignUpViewModelTest {
         coVerify {
             networkDataSource.signUp(
                 Credentials(
-                    subject.uiState.value.email.input,
-                    subject.uiState.value.password.input,
+                    subject.uiState.value.email.value,
+                    subject.uiState.value.password.value,
                 )
             )
         }

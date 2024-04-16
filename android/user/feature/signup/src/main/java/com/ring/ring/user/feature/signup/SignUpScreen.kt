@@ -128,7 +128,7 @@ private fun EmailTextField(
     setEmail: (String) -> Unit
 ) {
     OutlinedTextField(
-        value = email.input,
+        value = email.value,
         onValueChange = setEmail,
         label = { Text(stringResource(R.string.email)) },
         modifier = Modifier.fillMaxWidth(),
@@ -144,7 +144,7 @@ private fun PasswordTextField(
     setPassword: (String) -> Unit,
 ) {
     OutlinedTextField(
-        value = password.input,
+        value = password.value,
         onValueChange = setPassword,
         label = { Text(stringResource(R.string.password)) },
         singleLine = true,

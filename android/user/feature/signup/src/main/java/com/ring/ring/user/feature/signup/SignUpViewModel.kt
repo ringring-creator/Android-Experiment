@@ -17,7 +17,7 @@ import javax.inject.Inject
 internal class SignUpViewModel @Inject constructor(
     private val userRepository: SignUpRepository,
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(initSignUpUiState)
+    private val _uiState = MutableStateFlow(defaultSignUpUiState())
     val uiState = _uiState.asStateFlow()
     private val _signUpFinishedEvent = Channel<Unit>()
     val signUpFinishedEvent = _signUpFinishedEvent.receiveAsFlow()
@@ -29,40 +29,42 @@ internal class SignUpViewModel @Inject constructor(
     }
 
     fun setEmail(email: String) {
-        if (this.uiState.value.email.input == email) return
-        _uiState.value = uiState.value.copy(
-            email = generateEmail(email)
-        )
+        if (this.uiState.value.email.value == email) return
+        _uiState.value = uiState.value.replaceEmail(email)
     }
 
     fun setPassword(password: String) {
-        if (this.uiState.value.password.input == password) return
-        _uiState.value = uiState.value.copy(
-            password = generatePassword(password)
-        )
+        if (this.uiState.value.password.value == password) return
+        _uiState.value = uiState.value.replacePassword(password)
     }
 
     fun signUp() {
         viewModelScope.launch(handler) {
-            userRepository.signUp(uiState.value.email.input, uiState.value.password.input)
+            userRepository.signUp(uiState.value.email.value, uiState.value.password.value)
             _signUpFinishedEvent.trySend(Unit)
         }
     }
 
-    private fun generateEmail(emailValue: String) = SignUpUiState.Email(
-        input = emailValue,
-        isError = Email.isInvalidEmail(emailValue),
+    private fun defaultSignUpUiState() = SignUpUiState(
+        email = SignUpUiState.Email("", isError = false),
+        password = SignUpUiState.Password("", isError = false),
     )
+}
 
-    private fun generatePassword(password: String) = SignUpUiState.Password(
-        input = password,
-        isError = Password.isInvalidPassword(password),
+private fun SignUpUiState.replaceEmail(value: String): SignUpUiState {
+    return this.copy(
+        email = SignUpUiState.Email(
+            value = value,
+            isError = Email.isInvalidEmail(value),
+        ),
     )
+}
 
-    companion object {
-        val initSignUpUiState = SignUpUiState(
-            email = SignUpUiState.Email("", isError = false),
-            password = SignUpUiState.Password("", isError = false),
-        )
-    }
+private fun SignUpUiState.replacePassword(value: String): SignUpUiState {
+    return this.copy(
+        password = SignUpUiState.Password(
+            value = value,
+            isError = Password.isInvalidPassword(value),
+        ),
+    )
 }
