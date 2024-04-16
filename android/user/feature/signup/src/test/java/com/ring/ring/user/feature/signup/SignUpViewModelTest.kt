@@ -154,7 +154,9 @@ class SignUpViewModelTest {
         //given
         var wasCalled = false
         TestScope(UnconfinedTestDispatcher()).launch {
-            subject.signUpFinishedEvent.collect { wasCalled = true }
+            subject.event.collect {
+                if (it == SignUpEvent.SignUpSuccess) wasCalled = true
+            }
         }
 
         //when
@@ -172,7 +174,9 @@ class SignUpViewModelTest {
         setupSubject()
         var wasCalled = false
         TestScope(UnconfinedTestDispatcher()).launch {
-            subject.signUpFailedEvent.collect { wasCalled = true }
+            subject.event.collect {
+                if (it == SignUpEvent.SignUpError) wasCalled = true
+            }
         }
 
         //when

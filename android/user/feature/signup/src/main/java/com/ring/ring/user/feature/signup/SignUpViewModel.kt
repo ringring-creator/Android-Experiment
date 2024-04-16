@@ -6,6 +6,7 @@ import com.ring.ring.user.infra.model.Email
 import com.ring.ring.user.infra.model.Password
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,13 +20,11 @@ internal class SignUpViewModel @Inject constructor(
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(defaultSignUpUiState())
     val uiState = _uiState.asStateFlow()
-    private val _signUpFinishedEvent = Channel<Unit>()
-    val signUpFinishedEvent = _signUpFinishedEvent.receiveAsFlow()
-    private val _signUpFailedEvent = Channel<Unit>()
-    val signUpFailedEvent = _signUpFailedEvent.receiveAsFlow()
+    private val _event = Channel<SignUpEvent>(capacity = 5, BufferOverflow.DROP_OLDEST)
+    val event = _event.receiveAsFlow()
 
     private val handler = CoroutineExceptionHandler { _, _ ->
-        _signUpFailedEvent.trySend(Unit)
+        _event.trySend(SignUpEvent.SignUpError)
     }
 
     fun setEmail(email: String) {
@@ -41,7 +40,7 @@ internal class SignUpViewModel @Inject constructor(
     fun signUp() {
         viewModelScope.launch(handler) {
             userRepository.signUp(uiState.value.email.value, uiState.value.password.value)
-            _signUpFinishedEvent.trySend(Unit)
+            _event.trySend(SignUpEvent.SignUpSuccess)
         }
     }
 

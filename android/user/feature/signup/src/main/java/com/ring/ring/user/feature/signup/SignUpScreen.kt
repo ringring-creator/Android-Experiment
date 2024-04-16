@@ -1,5 +1,6 @@
 package com.ring.ring.user.feature.signup
 
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -23,6 +24,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -33,6 +35,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.ring.ring.user.feature.signup.SignUpEvent.SignUpError
+import com.ring.ring.user.feature.signup.SignUpEvent.SignUpSuccess
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 const val SIGN_UP_ROUTE = "SignUpRoute"
 
@@ -59,17 +65,28 @@ internal fun SignUpScreen(
         toLoginScreen = toLoginScreen,
     )
 
-    LaunchedEffect(Unit) {
-        viewModel.signUpFinishedEvent.collect { toLoginScreen() }
-    }
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
-        viewModel.signUpFailedEvent.collect {
-            snackBarHostState.showSnackbar(
-                message = context.getString(R.string.failed_to_sign_up),
-                withDismissAction = true,
-            )
+        viewModel.event.collect {
+            when (it) {
+                SignUpError -> toLoginScreen()
+                SignUpSuccess -> showSignUpFailedSnackbar(snackBarHostState, context, scope)
+            }
         }
+    }
+}
+
+private suspend fun showSignUpFailedSnackbar(
+    snackBarHostState: SnackbarHostState,
+    context: Context,
+    scope: CoroutineScope
+) {
+    scope.launch {
+        snackBarHostState.showSnackbar(
+            message = context.getString(R.string.failed_to_sign_up),
+            withDismissAction = true,
+        )
     }
 }
 

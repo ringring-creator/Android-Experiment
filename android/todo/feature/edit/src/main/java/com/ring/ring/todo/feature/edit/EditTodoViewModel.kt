@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,7 +27,8 @@ internal class EditTodoViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(initEditTodoUiState())
     val uiState = _uiState.asStateFlow()
 
-    private val _events = Channel<EditTodoEvent>()
+
+    private val _events = Channel<EditTodoEvent>(capacity = 5, BufferOverflow.DROP_OLDEST)
     val events = _events.receiveAsFlow()
 
     private val getErrorHandler = CoroutineExceptionHandler { _, _ ->
