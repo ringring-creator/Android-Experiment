@@ -11,10 +11,6 @@ internal data class LoginUiState(
 
 @Composable
 internal fun rememberLoginUiState(viewModel: LoginViewModel): LoginUiState {
-    val email by viewModel.email.collectAsStateWithLifecycle()
-    val password by viewModel.password.collectAsStateWithLifecycle()
-    return LoginUiState(
-        email = email,
-        password = password,
-    )
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    return uiState
 }

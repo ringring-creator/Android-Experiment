@@ -12,13 +12,11 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(
+internal class LoginViewModel @Inject constructor(
     private val userRepository: LoginRepository,
 ) : ViewModel() {
-    private val _email = MutableStateFlow("")
-    val email = _email.asStateFlow()
-    private val _password = MutableStateFlow("")
-    val password = _password.asStateFlow()
+    private val _uiState = MutableStateFlow(LoginUiState("", ""))
+    val uiState = _uiState.asStateFlow()
 
     private val _loginFinishedEvent = Channel<Unit>()
     val loginFinishedEvent = _loginFinishedEvent.receiveAsFlow()
@@ -30,18 +28,18 @@ class LoginViewModel @Inject constructor(
     }
 
     fun setEmail(email: String) {
-        if (this.email.value == email) return
-        _email.value = email
+        if (this.uiState.value.email == email) return
+        _uiState.value = uiState.value.copy(email = email)
     }
 
     fun setPassword(password: String) {
-        if (this.password.value == password) return
-        _password.value = password
+        if (this.uiState.value.password == password) return
+        _uiState.value = uiState.value.copy(password = password)
     }
 
     fun login() {
         viewModelScope.launch(handler) {
-            userRepository.login(email.value, password.value)
+            userRepository.login(uiState.value.email, uiState.value.password)
             _loginFinishedEvent.trySend(Unit)
         }
     }

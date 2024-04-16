@@ -43,7 +43,7 @@ class LoginViewModelTest {
         subject.setEmail(expect)
 
         //then
-        assertThat(subject.email.value, equalTo(expect))
+        assertThat(subject.uiState.value.email, equalTo(expect))
     }
 
     @Test
@@ -53,7 +53,7 @@ class LoginViewModelTest {
         subject.setPassword(expect)
 
         //then
-        assertThat(subject.password.value, equalTo(expect))
+        assertThat(subject.uiState.value.password, equalTo(expect))
     }
 
     @Test
