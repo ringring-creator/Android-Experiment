@@ -21,7 +21,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,7 +31,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 
@@ -57,16 +55,23 @@ internal fun LoginScreen(
     snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
-    val uiState = rememberLoginUiState(viewModel)
-    val updater = toUpdater(viewModel)
 
     LoginScreen(
-        uiState = uiState,
-        updater = updater,
+        uiState = rememberLoginUiState(viewModel),
+        updater = remember { toUpdater(viewModel) },
         snackBarHostState = snackBarHostState,
         toSignUpScreen = toSignUpScreen,
     )
 
+    SetupSideEffect(viewModel, toTodoListScreen, snackBarHostState)
+}
+
+@Composable
+private fun SetupSideEffect(
+    viewModel: LoginViewModel,
+    toTodoListScreen: () -> Unit,
+    snackBarHostState: SnackbarHostState
+) {
     LaunchedEffect(Unit) {
         viewModel.loginFinishedEvent.collect {
             toTodoListScreen()
@@ -83,33 +88,6 @@ internal fun LoginScreen(
     }
 }
 
-private fun toUpdater(viewModel: LoginViewModel) = LoginUiUpdater(
-    setEmail = viewModel::setEmail,
-    setPassword = viewModel::setPassword,
-    login = viewModel::login,
-)
-
-@Composable
-private fun rememberLoginUiState(viewModel: LoginViewModel): LoginUiState {
-    val email by viewModel.email.collectAsStateWithLifecycle()
-    val password by viewModel.password.collectAsStateWithLifecycle()
-    return LoginUiState(
-        email = email,
-        password = password,
-    )
-}
-
-internal data class LoginUiState(
-    val email: String,
-    val password: String,
-)
-
-internal data class LoginUiUpdater(
-    val setEmail: (email: String) -> Unit,
-    val setPassword: (password: String) -> Unit,
-    val login: () -> Unit,
-)
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun LoginScreen(
@@ -124,7 +102,8 @@ internal fun LoginScreen(
     ) { paddingValues ->
         Content(
             modifier = Modifier.padding(paddingValues),
-            uiState = uiState,
+            email = uiState.email,
+            password = uiState.password,
             updater = updater,
             toSignUpScreen = toSignUpScreen
         )
@@ -134,7 +113,8 @@ internal fun LoginScreen(
 @Composable
 private fun Content(
     modifier: Modifier,
-    uiState: LoginUiState,
+    email: String,
+    password: String,
     updater: LoginUiUpdater,
     toSignUpScreen: () -> Unit
 ) {
@@ -145,8 +125,8 @@ private fun Content(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        EmailTextField(uiState.email, updater.setEmail)
-        PasswordTextField(uiState.password, updater.setPassword)
+        EmailTextField(email, updater.setEmail)
+        PasswordTextField(password, updater.setPassword)
         Spacer(Modifier.height(8.dp))
         LoginButton { updater.login() }
         Spacer(Modifier.height(16.dp))
@@ -190,7 +170,7 @@ private fun SignUpText(toSignUpScreen: () -> Unit) {
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text("Don't have an account?")
+        Text(stringResource(R.string.dont_have_an_account))
         Button(
             onClick = { toSignUpScreen() },
             contentPadding = PaddingValues(),
@@ -213,9 +193,3 @@ private fun LoginButton(login: () -> Unit) {
         Text(stringResource(id = R.string.login))
     }
 }
-
-//@Preview
-//@Composable
-//private fun Preview() {
-//    PreviewLoginScreen()
-//}

@@ -60,7 +60,7 @@ internal fun SignUpScreen(
 ) {
     SignUpScreen(
         uiState = rememberSignUpUiState(viewModel = viewModel),
-        updater = toUpdater(viewModel),
+        updater = remember { toUpdater(viewModel) },
         snackBarHostState = snackBarHostState,
         toLoginScreen = toLoginScreen,
     )
@@ -113,7 +113,8 @@ internal fun SignUpScreen(
     ) { paddingValues ->
         Content(
             modifier = Modifier.padding(paddingValues),
-            uiState = uiState,
+            email = uiState.email,
+            password = uiState.password,
             updater = updater,
         )
     }
@@ -122,7 +123,8 @@ internal fun SignUpScreen(
 @Composable
 private fun Content(
     modifier: Modifier,
-    uiState: SignUpUiState,
+    email: SignUpUiState.Email,
+    password: SignUpUiState.Password,
     updater: SignUpUiUpdater,
 ) {
     Column(
@@ -132,8 +134,8 @@ private fun Content(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        EmailTextField(uiState.email, updater.setEmail)
-        PasswordTextField(uiState.password, updater.setPassword)
+        EmailTextField(email, updater.setEmail)
+        PasswordTextField(password, updater.setPassword)
         Spacer(Modifier.height(8.dp))
         SignUpButton(updater.signUp)
     }
