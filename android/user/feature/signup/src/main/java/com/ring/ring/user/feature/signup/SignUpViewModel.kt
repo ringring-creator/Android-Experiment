@@ -52,19 +52,17 @@ internal class SignUpViewModel @Inject constructor(
     private fun generateEmail(emailValue: String) = SignUpUiState.Email(
         input = emailValue,
         isError = Email.isInvalidEmail(emailValue),
-        visibleSupportingText = Email.isInvalidEmail(emailValue)
     )
 
     private fun generatePassword(password: String) = SignUpUiState.Password(
         input = password,
         isError = Password.isInvalidPassword(password),
-        visibleSupportingText = Password.isInvalidPassword(password),
     )
 
     companion object {
         val initSignUpUiState = SignUpUiState(
-            email = SignUpUiState.Email("", isError = false, visibleSupportingText = false),
-            password = SignUpUiState.Password("", isError = false, visibleSupportingText = false),
+            email = SignUpUiState.Email("", isError = false),
+            password = SignUpUiState.Password("", isError = false),
         )
     }
 }

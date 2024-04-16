@@ -23,7 +23,7 @@ internal fun PreviewSignUpScreen() {
 internal fun PreviewSignUpScreenWhenEmailInvalid() {
     SignUpScreen(
         uiState = uiState.copy(
-            email = SignUpUiState.Email("test", true, true)
+            email = SignUpUiState.Email("test", true)
         ),
     )
 }
@@ -37,7 +37,7 @@ internal fun PreviewSignUpScreenWhenEmailInvalid() {
 internal fun PreviewSignUpScreenWhenPasswordInvalid() {
     SignUpScreen(
         uiState = uiState.copy(
-            password = SignUpUiState.Password("test", true, true)
+            password = SignUpUiState.Password("test", true)
         )
     )
 }
@@ -53,8 +53,8 @@ private fun SignUpScreen(uiState: SignUpUiState) {
 }
 
 private val uiState = SignUpUiState(
-    email = SignUpUiState.Email("test@gmail.com", false, false),
-    password = SignUpUiState.Password("Testtest1", false, false)
+    email = SignUpUiState.Email("test@gmail.com", false),
+    password = SignUpUiState.Password("Testtest1", false)
 )
 
 private val updater = SignUpUiUpdater({}, {}, {})

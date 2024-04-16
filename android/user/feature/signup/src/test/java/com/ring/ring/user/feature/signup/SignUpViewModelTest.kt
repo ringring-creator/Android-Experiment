@@ -40,7 +40,7 @@ class SignUpViewModelTest {
     fun `setEmail when email is valid format`() {
         //given,when
         val value = "fake-email@gmail.com"
-        val expect = SignUpUiState.Email(value, isError = false, visibleSupportingText = false)
+        val expect = SignUpUiState.Email(value, isError = false)
         subject.setEmail(value)
 
         //then
@@ -51,7 +51,7 @@ class SignUpViewModelTest {
     fun `setEmail when email is invalid format`() {
         //given,when
         val value = "fake-email"
-        val expect = SignUpUiState.Email(value, isError = true, visibleSupportingText = true)
+        val expect = SignUpUiState.Email(value, isError = true)
         subject.setEmail(value)
 
         //then
@@ -68,7 +68,6 @@ class SignUpViewModelTest {
         val expected = SignUpUiState.Password(
             input = value,
             isError = false,
-            visibleSupportingText = false,
         )
         assertThat(subject.uiState.value.password, equalTo(expected))
     }
@@ -83,7 +82,6 @@ class SignUpViewModelTest {
         val expected = SignUpUiState.Password(
             input = value,
             isError = true,
-            visibleSupportingText = true,
         )
         assertThat(subject.uiState.value.password, equalTo(expected))
     }
@@ -98,7 +96,6 @@ class SignUpViewModelTest {
         val expected = SignUpUiState.Password(
             input = value,
             isError = true,
-            visibleSupportingText = true,
         )
         assertThat(subject.uiState.value.password, equalTo(expected))
     }
@@ -113,7 +110,6 @@ class SignUpViewModelTest {
         val expected = SignUpUiState.Password(
             input = value,
             isError = true,
-            visibleSupportingText = true,
         )
         assertThat(subject.uiState.value.password, equalTo(expected))
     }
@@ -128,7 +124,6 @@ class SignUpViewModelTest {
         val expected = SignUpUiState.Password(
             input = value,
             isError = true,
-            visibleSupportingText = true,
         )
         assertThat(subject.uiState.value.password, equalTo(expected))
     }

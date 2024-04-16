@@ -11,13 +11,11 @@ internal data class SignUpUiState(
     internal data class Email(
         val input: String,
         val isError: Boolean,
-        val visibleSupportingText: Boolean,
     )
 
     internal data class Password(
         val input: String,
         val isError: Boolean,
-        val visibleSupportingText: Boolean,
     )
 }
 

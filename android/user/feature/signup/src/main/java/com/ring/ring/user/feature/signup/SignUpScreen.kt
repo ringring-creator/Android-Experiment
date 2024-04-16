@@ -133,11 +133,6 @@ private fun EmailTextField(
         label = { Text(stringResource(R.string.email)) },
         modifier = Modifier.fillMaxWidth(),
         isError = email.isError,
-        supportingText = {
-            if (email.visibleSupportingText) {
-                Text(stringResource(R.string.email_address_is_invalid))
-            }
-        },
         singleLine = true,
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
     )
@@ -155,9 +150,7 @@ private fun PasswordTextField(
         singleLine = true,
         isError = password.isError,
         supportingText = {
-            if (password.visibleSupportingText) {
-                Text(stringResource(R.string.password_is_invalid))
-            }
+            Text(stringResource(R.string.password_is_invalid))
         },
         visualTransformation = PasswordVisualTransformation(),
         modifier = Modifier.fillMaxWidth(),
