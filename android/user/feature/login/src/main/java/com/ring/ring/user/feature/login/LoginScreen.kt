@@ -1,5 +1,6 @@
 package com.ring.ring.user.feature.login
 
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -22,6 +23,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,6 +35,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 const val LOGIN_ROUTE = "LoginRoute"
 
@@ -72,19 +76,28 @@ private fun SetupSideEffect(
     toTodoListScreen: () -> Unit,
     snackBarHostState: SnackbarHostState
 ) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
-        viewModel.loginFinishedEvent.collect {
-            toTodoListScreen()
+        viewModel.event.collect {
+            when (it) {
+                LoginEvent.LoginSuccess -> toTodoListScreen()
+                LoginEvent.LoginError -> showLoginFailedSnackbar(snackBarHostState, context, scope)
+            }
         }
     }
-    val context = LocalContext.current
-    LaunchedEffect(Unit) {
-        viewModel.loginFailedEvent.collect {
-            snackBarHostState.showSnackbar(
-                message = context.getString(R.string.failed_to_login),
-                withDismissAction = true,
-            )
-        }
+}
+
+private suspend fun showLoginFailedSnackbar(
+    snackBarHostState: SnackbarHostState,
+    context: Context,
+    scope: CoroutineScope
+) {
+    scope.launch {
+        snackBarHostState.showSnackbar(
+            message = context.getString(R.string.failed_to_login),
+            withDismissAction = true,
+        )
     }
 }
 

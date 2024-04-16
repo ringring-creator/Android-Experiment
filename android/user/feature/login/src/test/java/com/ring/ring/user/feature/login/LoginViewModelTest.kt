@@ -83,7 +83,9 @@ class LoginViewModelTest {
         //given
         var wasCalled = false
         TestScope(UnconfinedTestDispatcher()).launch {
-            subject.loginFinishedEvent.collect { wasCalled = true }
+            subject.event.collect {
+                if (it == LoginEvent.LoginSuccess) wasCalled = true
+            }
         }
 
         //when
@@ -104,7 +106,9 @@ class LoginViewModelTest {
         setupSubject()
         var wasCalled = false
         TestScope(UnconfinedTestDispatcher()).launch {
-            subject.loginFailedEvent.collect { wasCalled = true }
+            subject.event.collect {
+                if (it == LoginEvent.LoginError) wasCalled = true
+            }
         }
 
         //when

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,13 +19,11 @@ internal class LoginViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(LoginUiState("", ""))
     val uiState = _uiState.asStateFlow()
 
-    private val _loginFinishedEvent = Channel<Unit>()
-    val loginFinishedEvent = _loginFinishedEvent.receiveAsFlow()
-    private val _loginFailedEvent = Channel<Unit>()
-    val loginFailedEvent = _loginFailedEvent.receiveAsFlow()
+    private val _event = Channel<LoginEvent>(capacity = 5, BufferOverflow.DROP_OLDEST)
+    val event = _event.receiveAsFlow()
 
     private val handler = CoroutineExceptionHandler { _, _ ->
-        _loginFailedEvent.trySend(Unit)
+        _event.trySend(LoginEvent.LoginError)
     }
 
     fun setEmail(email: String) {
@@ -40,7 +39,7 @@ internal class LoginViewModel @Inject constructor(
     fun login() {
         viewModelScope.launch(handler) {
             userRepository.login(uiState.value.email, uiState.value.password)
-            _loginFinishedEvent.trySend(Unit)
+            _event.trySend(LoginEvent.LoginSuccess)
         }
     }
 }
