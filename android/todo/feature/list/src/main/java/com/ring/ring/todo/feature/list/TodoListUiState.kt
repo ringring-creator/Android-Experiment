@@ -29,8 +29,6 @@ internal fun Todo.toTodo(): TodoListUiState.Todo? {
 internal fun rememberTodoListUiState(
     viewModel: TodoListViewModel,
 ): TodoListUiState {
-    val todoList by viewModel.todoList.collectAsStateWithLifecycle()
-    return TodoListUiState(
-        todoList = todoList,
-    )
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    return uiState
 }

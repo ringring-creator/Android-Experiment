@@ -6,4 +6,5 @@
     <string name="todo_list">Todo List</string>
     <string name="my_page">My Page</string>
     <string name="todo">Todo</string>
+    <string name="deadline">Deadline: %1$s</string>
 </resources>

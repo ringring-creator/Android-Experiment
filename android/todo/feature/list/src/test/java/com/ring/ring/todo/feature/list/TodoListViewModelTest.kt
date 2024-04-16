@@ -52,7 +52,7 @@ class TodoListViewModelTest {
         advanceUntilIdle()
 
         //then
-        val todoList = subject.todoList.value
+        val todoList = subject.uiState.value.todoList
         assertThat(todoList.count(), equalTo(2))
 
         val firstElement = todoList.first()
@@ -92,7 +92,7 @@ class TodoListViewModelTest {
         advanceUntilIdle()
 
         //then
-        val todoList = subject.todoList.value
+        val todoList = subject.uiState.value.todoList
         assertThat(todoList.count(), equalTo(2))
 
         val firstElement = todoList.first()
@@ -111,8 +111,8 @@ class TodoListViewModelTest {
         setupSubject()
         var wasCalled = false
         TestScope(UnconfinedTestDispatcher()).launch {
-            subject.fetchErrorEvent.collect {
-                wasCalled = true
+            subject.event.collect {
+                if (it == TodoListEvent.FetchErrorEvent) wasCalled = true
             }
         }
 
@@ -150,7 +150,7 @@ class TodoListViewModelTest {
         advanceUntilIdle()
 
         //then
-        val actual = subject.todoList.value.find { it.id == 1L }
+        val actual = subject.uiState.value.todoList.find { it.id == 1L }
         assertThat(actual!!.done, `is`(true))
     }
 
@@ -161,8 +161,8 @@ class TodoListViewModelTest {
         setupSubject()
         var wasCalled = false
         TestScope(UnconfinedTestDispatcher()).launch {
-            subject.toggleDoneErrorEvent.collect {
-                wasCalled = true
+            subject.event.collect {
+                if (it == TodoListEvent.ToggleDoneErrorEvent) wasCalled = true
             }
         }
 

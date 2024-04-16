@@ -2,13 +2,15 @@
 
 package com.ring.ring.todo.feature.list
 
+import android.content.Context
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
@@ -43,24 +45,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.composable
+import com.ring.ring.todo.feature.list.TodoListEvent.FetchErrorEvent
+import com.ring.ring.todo.feature.list.TodoListEvent.ToggleDoneErrorEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-
-const val TODO_LIST_ROUTE = "TodoListRoute"
-
-fun NavGraphBuilder.todoListScreen(
-    toCreateTodoScreen: () -> Unit,
-    toEditTodoScreen: (id: String) -> Unit,
-) {
-    composable(TODO_LIST_ROUTE) {
-        TodoListScreen(
-            toCreateTodoScreen = toCreateTodoScreen,
-            toEditTodoScreen = toEditTodoScreen,
-        )
-    }
-}
 
 @Composable
 internal fun TodoListScreen(
@@ -69,50 +57,16 @@ internal fun TodoListScreen(
     toEditTodoScreen: (id: String) -> Unit,
     snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
-    val uiState = rememberTodoListUiState(viewModel = viewModel)
-    val updater = toUpdater(viewModel = viewModel)
 
     TodoListScreen(
-        uiState = uiState,
-        updater = updater,
+        uiState = rememberTodoListUiState(viewModel = viewModel),
+        updater = remember { toUpdater(viewModel = viewModel) },
         toCreateTodoScreen = toCreateTodoScreen,
         toEditTodoScreen = toEditTodoScreen,
         snackBarHostState = snackBarHostState,
     )
 
     SetupSideEffect(viewModel, snackBarHostState)
-}
-
-@Composable
-private fun SetupSideEffect(
-    viewModel: TodoListViewModel,
-    snackBarHostState: SnackbarHostState
-) {
-    LaunchedEffect(Unit) {
-        viewModel.fetchTodoList()
-    }
-    val context = LocalContext.current
-    LaunchedEffect(Unit) {
-        viewModel.fetchErrorEvent.collect {
-            val snackBarResult = snackBarHostState.showSnackbar(
-                message = context.getString(R.string.failed_to_get_todo_list),
-                actionLabel = context.getString(R.string.retry),
-                withDismissAction = true,
-            )
-            when (snackBarResult) {
-                SnackbarResult.Dismissed -> {}
-                SnackbarResult.ActionPerformed -> viewModel.fetchTodoList()
-            }
-        }
-    }
-    LaunchedEffect(Unit) {
-        viewModel.toggleDoneErrorEvent.collect {
-            snackBarHostState.showSnackbar(
-                message = context.getString(R.string.failed_to_edit_done),
-                withDismissAction = true,
-            )
-        }
-    }
 }
 
 @Composable
@@ -128,9 +82,7 @@ internal fun TodoListScreen(
 ) {
     ModalNavigationDrawer(
         drawerState = drawerState,
-        drawerContent = {
-            ModalDrawerSheet { DrawerSheet() }
-        },
+        drawerContent = { ModalDrawerSheet { DrawerSheet() } },
     ) {
         Scaffold(
             topBar = { TopBar(scope, drawerState) },
@@ -141,13 +93,75 @@ internal fun TodoListScreen(
                 }
             },
         ) {
-            val modifier = Modifier.padding(it)
             Content(
-                modifier, uiState,
-                toEditTodoScreen,
-                updater,
+                modifier = Modifier.padding(it),
+                todoList = uiState.todoList,
+                toEditTodoScreen = toEditTodoScreen,
+                updater = updater,
             )
         }
+    }
+}
+
+@Composable
+private fun SetupSideEffect(
+    viewModel: TodoListViewModel,
+    snackBarHostState: SnackbarHostState
+) {
+    LaunchedEffect(Unit) {
+        viewModel.fetchTodoList()
+    }
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    LaunchedEffect(Unit) {
+        viewModel.event.collect {
+            when (it) {
+                FetchErrorEvent -> showFetchErrorSnackbar(
+                    scope,
+                    snackBarHostState,
+                    context,
+                    viewModel::fetchTodoList,
+                )
+
+                ToggleDoneErrorEvent -> showToggleDoneErrorSnackbar(
+                    scope,
+                    snackBarHostState,
+                    context
+                )
+            }
+        }
+    }
+}
+
+private fun showFetchErrorSnackbar(
+    scope: CoroutineScope,
+    snackBarHostState: SnackbarHostState,
+    context: Context,
+    fetchTodoList: () -> Unit,
+) {
+    scope.launch {
+        val snackBarResult = snackBarHostState.showSnackbar(
+            message = context.getString(R.string.failed_to_get_todo_list),
+            actionLabel = context.getString(R.string.retry),
+            withDismissAction = true,
+        )
+        when (snackBarResult) {
+            SnackbarResult.Dismissed -> {}
+            SnackbarResult.ActionPerformed -> fetchTodoList()
+        }
+    }
+}
+
+private fun showToggleDoneErrorSnackbar(
+    scope: CoroutineScope,
+    snackBarHostState: SnackbarHostState,
+    context: Context
+) {
+    scope.launch {
+        snackBarHostState.showSnackbar(
+            message = context.getString(R.string.failed_to_edit_done),
+            withDismissAction = true,
+        )
     }
 }
 
@@ -197,16 +211,16 @@ private fun DrawerSheet() {
 @Composable
 private fun Content(
     modifier: Modifier,
-    uiState: TodoListUiState,
+    todoList: List<TodoListUiState.Todo>,
     toEditTodoScreen: (id: String) -> Unit,
     updater: TodoListUiUpdater,
 ) {
-    Column(
-        modifier = modifier.padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+    LazyColumn(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
     ) {
-        Spacer(modifier = Modifier.height(16.dp))
-        uiState.todoList.forEach { todo ->
+        items(todoList) { todo ->
             Item(
                 toEditTodoScreen,
                 todo,
@@ -267,7 +281,7 @@ private fun TitleText(title: String) {
 @Composable
 private fun DeadlineText(modifier: Modifier, deadline: String) {
     Text(
-        "Deadline: $deadline",
+        stringResource(R.string.deadline, deadline),
         style = MaterialTheme.typography.bodyMedium,
         modifier = modifier
     )
