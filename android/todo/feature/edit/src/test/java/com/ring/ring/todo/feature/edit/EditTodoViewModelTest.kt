@@ -10,7 +10,6 @@ import com.ring.ring.user.infra.test.FakeUserLocalDataSource
 import com.ring.ring.util.date.DateUtil
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -32,11 +31,9 @@ class EditTodoViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule(StandardTestDispatcher())
 
-    private var localUser = User.generate(10L, "email@example.com", "Abcdefg1")
-    private var networkDataSource: TodoNetworkDataSource = FakeTodoNetworkDataSource(
-        parameter = FakeTodoNetworkDataSource.Parameter(localUser.id.value, localUser.token)
-    )
-    private var userLocalDataSource = FakeUserLocalDataSource()
+    private var user = User.generate(10L, "email@example.com", "Abcdefg1")
+    private var networkDataSource: TodoNetworkDataSource = FakeTodoNetworkDataSource(user.token)
+    private var userLocalDataSource = FakeUserLocalDataSource(user)
     private lateinit var savedStateHandle: SavedStateHandle
 
     private val id = 1L
@@ -44,9 +41,6 @@ class EditTodoViewModelTest {
     @Before
     fun setUp() {
         savedStateHandle = SavedStateHandle(mapOf(EditTodoNav.ID to id))
-        runBlocking { userLocalDataSource.save(localUser) }
-
-
         setupSubject()
     }
 
@@ -156,7 +150,7 @@ class EditTodoViewModelTest {
         advanceUntilIdle()
 
         //then
-        val todo = networkDataSource.list(localUser.token).find { it.id == id }!!
+        val todo = networkDataSource.list(user.token).find { it.id == id }!!
         assertThat(todo.title, equalTo("fakeTitle3"))
         assertThat(todo.description, equalTo("fakeDescription3"))
         assertThat(todo.done, equalTo(true))
@@ -212,7 +206,7 @@ class EditTodoViewModelTest {
         advanceUntilIdle()
 
         //then
-        val todo = networkDataSource.list(localUser.token).find { it.id == id }
+        val todo = networkDataSource.list(user.token).find { it.id == id }
         assertThat(todo, nullValue())
     }
 

@@ -1,13 +1,13 @@
 package com.ring.ring.user.infra.test
 
 import com.ring.ring.user.infra.model.User
+import com.ring.ring.user.infra.model.UserLocalDataSource
 
-class FakeUserLocalDataSource : com.ring.ring.user.infra.model.UserLocalDataSource {
-    private var user = User.generate(
-        id = 1L,
-        email = "email@example.com",
-        token = "fakeToken",
-    )
+private val defaultUser = User.generate(id = 1L, email = "email@example.com", token = "fakeToken")
+
+class FakeUserLocalDataSource(
+    private var user: User = defaultUser
+) : UserLocalDataSource {
 
     override suspend fun save(user: User) {
         this.user = user

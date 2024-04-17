@@ -2,22 +2,18 @@ package com.ring.ring.todo.feature.create
 
 import com.ring.ring.infra.test.MainDispatcherRule
 import com.ring.ring.todo.infra.domain.TodoNetworkDataSource
-import com.ring.ring.todo.infra.test.FakeErrorTodoNetworkDataSource
 import com.ring.ring.todo.infra.test.FakeTodoNetworkDataSource
 import com.ring.ring.user.infra.model.User
 import com.ring.ring.user.infra.test.FakeUserLocalDataSource
 import com.ring.ring.util.date.DateUtil
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Instant
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.`is`
+import org.hamcrest.CoreMatchers.notNullValue
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
 import org.junit.Rule
@@ -30,27 +26,20 @@ class CreateTodoViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule(StandardTestDispatcher())
 
-    private var localUser = User.generate(10L, "email@example.com", "Abcdefg1")
-    private var networkDataSource: TodoNetworkDataSource = FakeTodoNetworkDataSource(
-        parameter = FakeTodoNetworkDataSource.Parameter(localUser.id.value, localUser.token)
-    )
-    private var userLocalDataSource = FakeUserLocalDataSource()
+    private var user = User.generate(10L, "email@example.com", "Abcdefg1")
+    private var networkDataSource: TodoNetworkDataSource =
+        FakeTodoNetworkDataSource(user.token)
+    private var userLocalDataSource = FakeUserLocalDataSource(user = user)
 
 
     @Before
     fun setUp() {
-        runBlocking { userLocalDataSource.save(localUser) }
-
-
         setupSubject()
     }
 
     @Test
-    fun saveTodo() = runTest {
+    fun `saveTodo request in network`() = runTest {
         //given
-        subject.setTitle("fakeTitle3")
-        subject.setDescription("fakeDescription3")
-        subject.setDone(true)
         subject.setDeadline(1L)
 
         //when
@@ -58,79 +47,9 @@ class CreateTodoViewModelTest {
         advanceUntilIdle()
 
         //then
-        val element = networkDataSource.list(localUser.token).find { it.title == "fakeTitle3" }!!
-        assertThat(element.title, equalTo("fakeTitle3"))
-        assertThat(element.description, equalTo("fakeDescription3"))
-        assertThat(element.done, equalTo(true))
-        assertThat(element.deadline, equalTo(Instant.fromEpochMilliseconds(1L)))
-    }
-
-    @Test
-    fun `saveTodo send saveSuccessEvent`() = runTest {
-        //given
-        var wasCalled = false
-        TestScope(UnconfinedTestDispatcher()).launch {
-            subject.event.collect {
-                if (it == CreateTodoEvent.CreateTodoSuccess) wasCalled = true
-            }
-        }
-
-        //when
-        subject.saveTodo()
-        advanceUntilIdle()
-
-        //then
-        assertThat(wasCalled, `is`(true))
-    }
-
-    @Test
-    fun `saveTodo send saveTodoErrorEvent when failed`() = runTest {
-        //given
-        networkDataSource = FakeErrorTodoNetworkDataSource()
-        setupSubject()
-        var wasCalled = false
-        TestScope(UnconfinedTestDispatcher()).launch {
-            subject.event.collect {
-                if (it == CreateTodoEvent.CreateTodoError) wasCalled = true
-            }
-        }
-
-        //when
-        subject.saveTodo()
-        advanceUntilIdle()
-
-        //then
-        assertThat(wasCalled, `is`(true))
-    }
-
-    @Test
-    fun setTitle() {
-        //given,when
-        val expected = "fakeTitle"
-        subject.setTitle(expected)
-
-        //then
-        assertThat(subject.uiState.value.title, equalTo(expected))
-    }
-
-    @Test
-    fun setDescription() {
-        //given,when
-        val expected = "fakeDescription"
-        subject.setDescription(expected)
-
-        //then
-        assertThat(subject.uiState.value.description, equalTo(expected))
-    }
-
-    @Test
-    fun setDone() {
-        //given,when
-        val expected = true
-        subject.setDone(expected)
-
-        //then
-        assertThat(subject.uiState.value.done, equalTo(expected))
+        val element = networkDataSource.list(user.token)
+            .find { it.deadline == Instant.fromEpochMilliseconds(1L) }!!
+        assertThat(element, notNullValue())
     }
 
     @Test

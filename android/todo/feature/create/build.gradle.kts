@@ -60,6 +60,9 @@ dependencies {
     testImplementation(projects.android.user.infra.test)
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.compose.ui.test.junit)
+    testImplementation(libs.hilt.android.testing)
 }
 
 kapt {

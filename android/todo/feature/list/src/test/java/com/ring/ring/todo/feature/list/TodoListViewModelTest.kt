@@ -11,7 +11,6 @@ import com.ring.ring.user.infra.model.User
 import com.ring.ring.user.infra.test.FakeUserLocalDataSource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -31,17 +30,13 @@ class TodoListViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule(StandardTestDispatcher())
 
-    private var localUser = User.generate(10L, "email@example.com", "Abcdefg1")
-    private var networkDataSource: TodoNetworkDataSource = FakeTodoNetworkDataSource(
-        parameter = FakeTodoNetworkDataSource.Parameter(localUser.id.value, localUser.token)
-    )
+    private var user = User.generate(10L, "email@example.com", "Abcdefg1")
+    private var networkDataSource: TodoNetworkDataSource = FakeTodoNetworkDataSource(user.token)
     private var localDataSource: TodoLocalDataSource = FakeTodoLocalDataSource()
-    private var userLocalDataSource = FakeUserLocalDataSource()
+    private var userLocalDataSource = FakeUserLocalDataSource(user)
 
     @Before
     fun setUp() {
-        runBlocking { userLocalDataSource.save(localUser) }
-
         setupSubject()
     }
 
@@ -73,7 +68,7 @@ class TodoListViewModelTest {
 
         assertThat(actual.count(), equalTo(2))
         val firstElement = actual.first()
-        val expected = networkDataSource.list(localUser.token).first()
+        val expected = networkDataSource.list(user.token).first()
         assertThat(firstElement.id, equalTo(1))
         assertThat(firstElement.title, equalTo(expected.title))
         assertThat(firstElement.description, equalTo(expected.description))
@@ -135,7 +130,7 @@ class TodoListViewModelTest {
 
         //then
         val actual = networkDataSource
-            .list(localUser.token)
+            .list(user.token)
             .find { it.id == 1L }!!
         assertThat(actual.done, `is`(true))
     }

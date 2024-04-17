@@ -39,6 +39,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -179,7 +180,9 @@ private fun TitleTextField(
         value = title,
         onValueChange = setTitle,
         label = { Text(stringResource(R.string.title)) },
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("TitleTextField")
     )
 }
 
@@ -192,7 +195,9 @@ private fun DescriptionTextField(
         value = description,
         onValueChange = setDescription,
         label = { Text(stringResource(R.string.description)) },
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("DescriptionTextField")
     )
 }
 
@@ -205,6 +210,7 @@ private fun DoneCheckBox(
         Checkbox(
             checked = done,
             onCheckedChange = setDone,
+            modifier = Modifier.testTag("DoneCheckBox")
         )
         Text(stringResource(R.string.done))
     }
@@ -218,7 +224,9 @@ private fun DeadlineField(
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.clickable(onClick = showDatePicker),
+        modifier = Modifier
+            .clickable(onClick = showDatePicker)
+            .testTag("DeadlineField"),
     ) {
         Icon(
             Icons.Filled.DateRange,
@@ -232,7 +240,9 @@ private fun DeadlineField(
 private fun ColumnScope.CreateButton(create: () -> Unit) {
     Button(
         onClick = create,
-        modifier = Modifier.align(Alignment.End)
+        modifier = Modifier
+            .align(Alignment.End)
+            .testTag("CreateButton")
     ) {
         Text(stringResource(R.string.create))
     }
