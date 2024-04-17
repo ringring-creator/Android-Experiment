@@ -28,6 +28,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -54,9 +55,9 @@ fun NavGraphBuilder.signUpScreen(
 
 @Composable
 internal fun SignUpScreen(
+    toLoginScreen: () -> Unit,
     viewModel: SignUpViewModel = hiltViewModel(),
     snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
-    toLoginScreen: () -> Unit,
 ) {
     SignUpScreen(
         uiState = rememberSignUpUiState(viewModel = viewModel),
@@ -70,8 +71,8 @@ internal fun SignUpScreen(
     LaunchedEffect(Unit) {
         viewModel.event.collect {
             when (it) {
-                SignUpError -> toLoginScreen()
-                SignUpSuccess -> showSignUpFailedSnackbar(snackBarHostState, context, scope)
+                SignUpSuccess -> toLoginScreen()
+                SignUpError -> showSignUpFailedSnackbar(snackBarHostState, context, scope)
             }
         }
     }
@@ -150,7 +151,9 @@ private fun EmailTextField(
         value = email.value,
         onValueChange = setEmail,
         label = { Text(stringResource(R.string.email)) },
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("EmailTextField"),
         isError = email.isError,
         singleLine = true,
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
@@ -172,7 +175,9 @@ private fun PasswordTextField(
             Text(stringResource(R.string.password_is_invalid))
         },
         visualTransformation = PasswordVisualTransformation(),
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("PasswordTextField"),
     )
 }
 
@@ -180,6 +185,8 @@ private fun PasswordTextField(
 private fun SignUpButton(signUp: () -> Unit) {
     Button(
         onClick = signUp,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("SignUpButton")
     ) { Text(stringResource(R.string.sign_up)) }
 }
