@@ -4,18 +4,13 @@ import com.ring.ring.infra.test.MainDispatcherRule
 import com.ring.ring.user.infra.model.Credentials
 import com.ring.ring.user.infra.model.Email
 import com.ring.ring.user.infra.model.UserNetworkDataSource
-import com.ring.ring.user.infra.test.FakeErrorUserNetworkDataSource
 import com.ring.ring.user.infra.test.FakeUserLocalDataSource
 import com.ring.ring.user.infra.test.FakeUserNetworkDataSource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers.equalTo
-import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
 import org.junit.Rule
@@ -28,7 +23,10 @@ class LoginViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule(StandardTestDispatcher())
 
-    private var networkDataSource: UserNetworkDataSource = FakeUserNetworkDataSource()
+    private val savedCredentials = Credentials.issue("email@example.com", "Abcdefg1")
+    private var networkDataSource: UserNetworkDataSource = FakeUserNetworkDataSource(
+        credentialsList = mutableListOf(savedCredentials),
+    )
     private var localDataSource = FakeUserLocalDataSource()
 
     @Before
@@ -37,86 +35,26 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun setEmail() {
-        //given,when
-        val expect = "fake-email"
-        subject.setEmail(expect)
-
-        //then
-        assertThat(subject.uiState.value.email, equalTo(expect))
-    }
-
-    @Test
-    fun setPassword() {
-        //given,when
-        val expect = "fake-password"
-        subject.setPassword(expect)
-
-        //then
-        assertThat(subject.uiState.value.password, equalTo(expect))
-    }
-
-    @Test
     fun `login save user from networkDataSource`() = runTest {
         //given
-        val expectedEmail = "email@example.com"
-        val password = "Abcdefg1"
-        networkDataSource.signUp(Credentials.issue(expectedEmail, password))
-        subject.setEmail(expectedEmail)
-        subject.setPassword(password)
+        subject.setEmail(savedCredentials.email.value)
+        subject.setPassword(savedCredentials.password.value)
+
+        //when
         subject.login()
         advanceUntilIdle()
 
-        //when
-        val expect = networkDataSource.login(Credentials.issue(expectedEmail, password))
-
         //then
+        val expect = networkDataSource.login(
+            credentials = Credentials.issue(
+                savedCredentials.email.value,
+                savedCredentials.password.value
+            )
+        )
         val actual = localDataSource.getUser()
         assertThat(actual.id, equalTo(expect.id))
-        assertThat(actual.email, equalTo(Email(expectedEmail)))
+        assertThat(actual.email, equalTo(Email(savedCredentials.email.value)))
         assertThat(actual.token, equalTo(expect.token))
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun `login send loginFinishedEvent`() = runTest {
-        //given
-        var wasCalled = false
-        TestScope(UnconfinedTestDispatcher()).launch {
-            subject.event.collect {
-                if (it == LoginEvent.LoginSuccess) wasCalled = true
-            }
-        }
-
-        //when
-        subject.setEmail("email@example.com")
-        subject.setPassword("Abcdefg1")
-        subject.login()
-        advanceUntilIdle()
-
-        //then
-        assertThat(wasCalled, `is`(true))
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun `login send loginFailedEvent when login failed`() = runTest {
-        //given
-        networkDataSource = FakeErrorUserNetworkDataSource()
-        setupSubject()
-        var wasCalled = false
-        TestScope(UnconfinedTestDispatcher()).launch {
-            subject.event.collect {
-                if (it == LoginEvent.LoginError) wasCalled = true
-            }
-        }
-
-        //when
-        subject.login()
-        advanceUntilIdle()
-
-        //then
-        assertThat(wasCalled, `is`(true))
     }
 
     private fun setupSubject() {

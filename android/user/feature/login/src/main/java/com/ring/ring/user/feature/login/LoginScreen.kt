@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -157,7 +158,9 @@ private fun EmailTextField(
         onValueChange = setEmail,
         label = { Text(stringResource(id = R.string.email_address)) },
         singleLine = true,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("EmailTextField"),
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
     )
 }
@@ -172,7 +175,9 @@ private fun PasswordTextField(
         onValueChange = setPassword,
         label = { Text(stringResource(R.string.password)) },
         singleLine = true,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("PasswordTextField"),
         visualTransformation = PasswordVisualTransformation(),
     )
 }
@@ -201,7 +206,9 @@ private fun SignUpText(toSignUpScreen: () -> Unit) {
 private fun LoginButton(login: () -> Unit) {
     Button(
         onClick = login,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("LoginButton"),
     ) {
         Text(stringResource(id = R.string.login))
     }

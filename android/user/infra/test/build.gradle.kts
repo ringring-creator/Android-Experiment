@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.kapt)
 }
 
 android {
@@ -39,4 +41,10 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.junit)
     implementation(libs.compose.ui.test.junit)
+    implementation(libs.bundles.hilt)
+    kapt(libs.hilt.compiler)
+}
+
+kapt {
+    correctErrorTypes = true
 }
