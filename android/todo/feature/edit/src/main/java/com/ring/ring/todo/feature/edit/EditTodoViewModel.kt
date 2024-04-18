@@ -71,7 +71,7 @@ internal class EditTodoViewModel @Inject constructor(
 
     fun getTodo() {
         viewModelScope.launch(getErrorHandler) {
-            val response = todoRepository.getTodo(id)
+            val response = todoRepository.fetchTodo(id)
             deadline = response.deadline
             _uiState.value = uiState.value.copy(todo = response.todo)
         }
@@ -79,7 +79,7 @@ internal class EditTodoViewModel @Inject constructor(
 
     fun editTodo() {
         viewModelScope.launch(editErrorHandler) {
-            todoRepository.editTodo(
+            todoRepository.updateTodo(
                 id = id,
                 uiState.value.todo,
                 deadline = deadline,

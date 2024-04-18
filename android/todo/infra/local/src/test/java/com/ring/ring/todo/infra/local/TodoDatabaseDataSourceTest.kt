@@ -51,7 +51,7 @@ class TodoDatabaseDataSourceTest {
         subject.upsert(listOf(expected, expected))
 
         //when
-        val actual = subject.list()
+        val actual = subject.load()
 
         //then
         assertThat(actual.count(), equalTo(2))
@@ -74,14 +74,14 @@ class TodoDatabaseDataSourceTest {
             deadline = Instant.parse("2021-01-01T00:00:00Z"),
         )
         subject.upsert(listOf(expected, expected))
-        var numberOfRecords = subject.list().count()
+        var numberOfRecords = subject.load().count()
         assertThat(numberOfRecords, equalTo(2))
 
         //when
         subject.deleteAll()
 
         //then
-        numberOfRecords = subject.list().count()
+        numberOfRecords = subject.load().count()
         assertThat(numberOfRecords, equalTo(0))
     }
 }

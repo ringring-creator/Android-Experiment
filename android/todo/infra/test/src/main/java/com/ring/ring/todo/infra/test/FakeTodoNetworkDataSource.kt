@@ -7,12 +7,12 @@ class FakeTodoNetworkDataSource(
     private val token: String = "",
     private var values: MutableList<Todo> = mutableListOf(),
 ) : TodoNetworkDataSource {
-    override suspend fun list(token: String): List<Todo> {
+    override suspend fun fetchList(token: String): List<Todo> {
         if (token != this.token) throw Exception()
         return values
     }
 
-    override suspend fun get(todoId: Long, token: String): Todo {
+    override suspend fun fetch(todoId: Long, token: String): Todo {
         if (token != this.token) throw Exception()
         return values.find { it.id == todoId } ?: throw Exception()
     }
@@ -23,14 +23,14 @@ class FakeTodoNetworkDataSource(
         values.add(element = todo.copy(id = id + 1L))
     }
 
-    override suspend fun edit(todo: Todo, token: String) {
+    override suspend fun update(todo: Todo, token: String) {
         if (token != this.token) throw Exception()
         values = values.map {
             if (it.id == todo.id) todo else it
         }.toMutableList()
     }
 
-    override suspend fun editDone(todoId: Long, done: Boolean, token: String) {
+    override suspend fun updateDone(todoId: Long, done: Boolean, token: String) {
         if (token != this.token) throw Exception()
         if (values.any { it.id == todoId }.not()) throw Exception()
         values = values.map {

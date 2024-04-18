@@ -12,27 +12,27 @@ internal class EditTodoRepository @Inject constructor(
     private val userLocalDataSource: UserLocalDataSource,
     private val dateUtil: DateUtil,
 ) {
-    data class GetTodoResponse(
+    data class FetchTodoResponse(
         val todo: EditTodoUiState.Todo,
         val deadline: Instant,
     )
 
-    suspend fun getTodo(id: Long): GetTodoResponse {
+    suspend fun fetchTodo(id: Long): FetchTodoResponse {
         val token = userLocalDataSource.getUser()!!.token
-        val todo = networkDataSource.get(todoId = id, token)
-        return GetTodoResponse(
+        val todo = networkDataSource.fetch(todoId = id, token)
+        return FetchTodoResponse(
             todo = convert(todo),
             deadline = todo.deadline,
         )
     }
 
-    suspend fun editTodo(
+    suspend fun updateTodo(
         id: Long,
         todo: EditTodoUiState.Todo,
         deadline: Instant
     ) {
         val token = userLocalDataSource.getUser()!!.token
-        networkDataSource.edit(
+        networkDataSource.update(
             todo = Todo(
                 id = id,
                 title = todo.title,

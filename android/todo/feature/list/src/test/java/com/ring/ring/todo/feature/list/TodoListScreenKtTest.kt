@@ -125,7 +125,7 @@ class TodoListScreenKtTest {
         //given
         setupTodoListScreen()
         runBlocking {
-            val todo = networkDataSource.get(1L, user.token)
+            val todo = networkDataSource.fetch(1L, user.token)
             assertThat(todo.done, `is`(true))
         }
 
@@ -137,7 +137,7 @@ class TodoListScreenKtTest {
 
         //then
         runBlocking {
-            val todo = networkDataSource.get(1L, user.token)
+            val todo = networkDataSource.fetch(1L, user.token)
             assertThat(todo.done, `is`(false))
         }
     }

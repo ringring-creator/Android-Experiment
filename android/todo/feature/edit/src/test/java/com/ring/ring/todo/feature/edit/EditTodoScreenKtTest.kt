@@ -120,7 +120,7 @@ class EditTodoScreenKtTest {
 
         //then
         runBlocking {
-            val actual = networkDataSource.list(user.token).find { it.id == todo.id }!!
+            val actual = networkDataSource.fetchList(user.token).find { it.id == todo.id }!!
             MatcherAssert.assertThat(actual.title, equalTo("title"))
             MatcherAssert.assertThat(actual.description, equalTo("description"))
             MatcherAssert.assertThat(actual.done, `is`(false))
@@ -175,7 +175,7 @@ class EditTodoScreenKtTest {
 
         //then
         runBlocking {
-            val actual = networkDataSource.list(user.token).find { it.id == todo.id }
+            val actual = networkDataSource.fetchList(user.token).find { it.id == todo.id }
             MatcherAssert.assertThat(actual, nullValue())
         }
     }

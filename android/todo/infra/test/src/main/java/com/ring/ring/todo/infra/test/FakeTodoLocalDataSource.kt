@@ -6,7 +6,7 @@ import com.ring.ring.todo.infra.domain.TodoLocalDataSource
 class FakeTodoLocalDataSource(
     private var values: MutableList<Todo> = mutableListOf(),
 ) : TodoLocalDataSource {
-    override suspend fun list(): List<Todo> {
+    override suspend fun load(): List<Todo> {
         return values
     }
 

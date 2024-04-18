@@ -52,7 +52,7 @@ class TodoRetrofitDataSourceTest {
         mockWebServer.enqueue(response)
 
         //when
-        val actual = subject.list("fakeToken")
+        val actual = subject.fetchList("fakeToken")
 
         //then
         assertThat(actual.count(), equalTo(2))
@@ -76,7 +76,7 @@ class TodoRetrofitDataSourceTest {
 
         //when
         val token = "fakeToken"
-        subject.list(token)
+        subject.fetchList(token)
 
         //then
         val request = mockWebServer.takeRequest()
@@ -95,7 +95,7 @@ class TodoRetrofitDataSourceTest {
         //when
         val id = 1L
         val token = "fakeToken"
-        subject.get(todoId = id, token = token)
+        subject.fetch(todoId = id, token = token)
 
         //then
         val request = mockWebServer.takeRequest()
@@ -115,7 +115,7 @@ class TodoRetrofitDataSourceTest {
 
         //when
         val id = 1L
-        val actual = subject.get(todoId = id, token = "fakeToken")
+        val actual = subject.fetch(todoId = id, token = "fakeToken")
 
         //then
         assertThat(actual.id, equalTo(id))
@@ -171,7 +171,7 @@ class TodoRetrofitDataSourceTest {
         val done = false
         val deadline = Instant.parse("2024-01-01T00:00:00Z")
         val token = "fakeToken"
-        subject.edit(
+        subject.update(
             todo = Todo(id, title, description, done, deadline),
             token = token,
         )
@@ -225,7 +225,7 @@ class TodoRetrofitDataSourceTest {
         val token = "fakeToken"
         val done = true
         val todoId = 1L
-        subject.editDone(todoId = todoId, done = done, token)
+        subject.updateDone(todoId = todoId, done = done, token)
 
         //then
         val request = mockWebServer.takeRequest()

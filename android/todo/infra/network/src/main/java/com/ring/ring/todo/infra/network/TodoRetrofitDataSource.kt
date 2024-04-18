@@ -13,14 +13,14 @@ import javax.inject.Inject
 class TodoRetrofitDataSource @Inject constructor(
     private val networkApi: RetrofitTodoNetworkApi,
 ) : TodoNetworkDataSource {
-    override suspend fun list(token: String): List<Todo> {
+    override suspend fun fetchList(token: String): List<Todo> {
         return networkApi
             .list("Bearer $token")
             .todoList
             .map(TodoModel::toTodo)
     }
 
-    override suspend fun get(todoId: Long, token: String): Todo {
+    override suspend fun fetch(todoId: Long, token: String): Todo {
         return networkApi.get(
             GetRequest(todoId = todoId), "Bearer $token"
         )
@@ -35,14 +35,14 @@ class TodoRetrofitDataSource @Inject constructor(
         )
     }
 
-    override suspend fun edit(todo: Todo, token: String) {
+    override suspend fun update(todo: Todo, token: String) {
         networkApi.edit(
             EditRequest(todo = todo.toTodoModel()),
             "Bearer $token",
         )
     }
 
-    override suspend fun editDone(todoId: Long, done: Boolean, token: String) {
+    override suspend fun updateDone(todoId: Long, done: Boolean, token: String) {
         networkApi.editDone(
             EditDoneRequest(todoId, done),
             "Bearer $token"

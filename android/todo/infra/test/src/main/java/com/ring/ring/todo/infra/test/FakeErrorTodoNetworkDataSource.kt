@@ -4,11 +4,11 @@ import com.ring.ring.todo.infra.domain.Todo
 import com.ring.ring.todo.infra.domain.TodoNetworkDataSource
 
 class FakeErrorTodoNetworkDataSource : TodoNetworkDataSource {
-    override suspend fun list(token: String): List<Todo> {
+    override suspend fun fetchList(token: String): List<Todo> {
         throw Exception()
     }
 
-    override suspend fun get(todoId: Long, token: String): Todo {
+    override suspend fun fetch(todoId: Long, token: String): Todo {
         throw Exception()
     }
 
@@ -16,11 +16,11 @@ class FakeErrorTodoNetworkDataSource : TodoNetworkDataSource {
         throw Exception()
     }
 
-    override suspend fun edit(todo: Todo, token: String) {
+    override suspend fun update(todo: Todo, token: String) {
         throw Exception()
     }
 
-    override suspend fun editDone(todoId: Long, done: Boolean, token: String) {
+    override suspend fun updateDone(todoId: Long, done: Boolean, token: String) {
         throw Exception()
     }
 

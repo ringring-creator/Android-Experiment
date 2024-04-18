@@ -91,7 +91,7 @@ class TodoListViewModelTest {
         advanceUntilIdle()
 
         //then
-        val actual = localDataSource.list()
+        val actual = localDataSource.load()
 
         assertThat(actual.count(), equalTo(2))
         val firstElement = actual.first()

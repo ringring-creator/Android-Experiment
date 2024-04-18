@@ -18,11 +18,11 @@ internal class TodoListRepository @Inject constructor(
     suspend fun list(): List<TodoListUiState.Todo> {
         return try {
             val user = userLocalDataSource.getUser()!!
-            fetchedTodoList = networkDataSource.list(user.token)
+            fetchedTodoList = networkDataSource.fetchList(user.token)
             fetchedTodoList.mapNotNull(this::convert)
         } catch (e: Throwable) {
             localDataSource
-                .list()
+                .load()
                 .mapNotNull(this::convert)
         }
     }
@@ -34,7 +34,7 @@ internal class TodoListRepository @Inject constructor(
 
     suspend fun editDone(id: Long, done: Boolean) {
         val user = userLocalDataSource.getUser()!!
-        networkDataSource.editDone(id, done, user.token)
+        networkDataSource.updateDone(id, done, user.token)
     }
 
     private fun convert(todo: Todo): TodoListUiState.Todo? {

@@ -68,7 +68,7 @@ class CreateTodoScreenKtTest {
 
         //then
         runBlocking {
-            val actual = networkDataSource.list(user.token).find { it.title == "title" }!!
+            val actual = networkDataSource.fetchList(user.token).find { it.title == "title" }!!
             assertThat(actual.description, equalTo("description"))
             assertThat(actual.done, `is`(true))
         }

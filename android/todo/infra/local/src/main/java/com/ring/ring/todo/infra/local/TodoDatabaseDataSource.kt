@@ -9,7 +9,7 @@ import javax.inject.Inject
 class TodoDatabaseDataSource @Inject constructor(
     private val dao: TodoDao
 ) : TodoLocalDataSource {
-    override suspend fun list(): List<Todo> {
+    override suspend fun load(): List<Todo> {
         return dao.getAll().map { it.toTodo() }
     }
 

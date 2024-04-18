@@ -47,7 +47,7 @@ class CreateTodoViewModelTest {
         advanceUntilIdle()
 
         //then
-        val element = networkDataSource.list(user.token)
+        val element = networkDataSource.fetchList(user.token)
             .find { it.deadline == Instant.fromEpochMilliseconds(1L) }!!
         assertThat(element, notNullValue())
     }
