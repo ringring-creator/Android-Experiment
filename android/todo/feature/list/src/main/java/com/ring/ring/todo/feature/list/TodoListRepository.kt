@@ -13,18 +13,23 @@ internal class TodoListRepository @Inject constructor(
     private val userLocalDataSource: UserLocalDataSource,
     private val dateUtil: DateUtil,
 ) {
+    private var fetchedTodoList: List<Todo> = emptyList()
+
     suspend fun list(): List<TodoListUiState.Todo> {
         return try {
             val user = userLocalDataSource.getUser()!!
-            val fetchedTodoList = networkDataSource.list(user.token)
-            localDataSource.deleteAll()
-            localDataSource.upsert(fetchedTodoList)
+            fetchedTodoList = networkDataSource.list(user.token)
             fetchedTodoList.mapNotNull(this::convert)
         } catch (e: Throwable) {
             localDataSource
                 .list()
                 .mapNotNull(this::convert)
         }
+    }
+
+    suspend fun refresh() {
+        localDataSource.deleteAll()
+        localDataSource.upsert(fetchedTodoList)
     }
 
     suspend fun editDone(id: Long, done: Boolean) {

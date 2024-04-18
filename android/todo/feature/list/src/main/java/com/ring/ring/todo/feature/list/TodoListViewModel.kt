@@ -30,7 +30,9 @@ internal class TodoListViewModel @Inject constructor(
 
     fun fetchTodoList() {
         viewModelScope.launch(fetchErrorHandler) {
-            _uiState.value = uiState.value.copy(todoList = todoRepository.list())
+            val todoList = todoRepository.list()
+            _uiState.value = uiState.value.copy(todoList = todoList)
+            todoRepository.refresh()
         }
     }
 

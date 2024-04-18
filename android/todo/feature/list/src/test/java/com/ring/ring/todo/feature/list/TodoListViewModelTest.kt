@@ -29,7 +29,7 @@ class TodoListViewModelTest {
     val mainDispatcherRule = MainDispatcherRule(StandardTestDispatcher())
 
     private var user = User.generate(10L, "email@example.com", "fakeToken")
-    private var todoList = listOf(
+    private var networkTodoList = listOf(
         Todo(
             id = 1,
             title = "fakeTitle",
@@ -45,11 +45,20 @@ class TodoListViewModelTest {
             deadline = Instant.parse("2024-12-31T00:00:00Z"),
         ),
     )
+    private var localTodoList = listOf(
+        Todo(
+            id = 3,
+            title = "fakeTitle3",
+            description = "fakeDescription3",
+            done = false,
+            deadline = Instant.parse("2024-01-01T00:00:00Z"),
+        ),
+    )
     private var networkDataSource: TodoNetworkDataSource = FakeTodoNetworkDataSource(
-        user.token, todoList.toMutableList()
+        user.token, networkTodoList.toMutableList()
     )
     private var localDataSource: TodoLocalDataSource =
-        FakeTodoLocalDataSource(todoList.toMutableList())
+        FakeTodoLocalDataSource(localTodoList.toMutableList())
     private var userLocalDataSource = FakeUserLocalDataSource(user)
     private val dateUtil = DateUtil()
 
@@ -86,7 +95,7 @@ class TodoListViewModelTest {
 
         assertThat(actual.count(), equalTo(2))
         val firstElement = actual.first()
-        val expected = networkDataSource.list(user.token).first()
+        val expected = networkTodoList.first()
         assertThat(firstElement.id, equalTo(1))
         assertThat(firstElement.title, equalTo(expected.title))
         assertThat(firstElement.description, equalTo(expected.description))
@@ -106,10 +115,10 @@ class TodoListViewModelTest {
 
         //then
         val todoList = subject.uiState.value.todoList
-        assertThat(todoList.count(), equalTo(2))
+        assertThat(todoList.count(), equalTo(1))
 
         val firstElement = todoList.first()
-        val expected = localDataSource.list().first()
+        val expected = localTodoList.first()
         assertThat(firstElement.id, equalTo(expected.id))
         assertThat(firstElement.title, equalTo(expected.title))
         assertThat(firstElement.done, equalTo(expected.done))
