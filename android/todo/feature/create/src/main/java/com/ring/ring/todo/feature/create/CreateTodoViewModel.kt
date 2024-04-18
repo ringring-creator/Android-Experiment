@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 internal class CreateTodoViewModel @Inject constructor(
-    private val todoRepository: TodoRepository,
+    private val todoRepository: CreateTodoRepository,
     private val dateUtil: DateUtil,
 ) : ViewModel() {
     private var deadline: Instant = dateUtil.currentInstant()
@@ -33,9 +33,7 @@ internal class CreateTodoViewModel @Inject constructor(
     fun saveTodo() {
         viewModelScope.launch(handler) {
             todoRepository.create(
-                title = uiState.value.title,
-                description = uiState.value.description,
-                done = uiState.value.done,
+                uiState = uiState.value,
                 deadline = deadline
             )
             _event.trySend(CreateTodoEvent.CreateTodoSuccess)

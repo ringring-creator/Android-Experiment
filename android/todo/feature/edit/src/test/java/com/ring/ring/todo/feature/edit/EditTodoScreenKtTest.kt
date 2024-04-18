@@ -203,9 +203,10 @@ class EditTodoScreenKtTest {
         composeTestRule.setContent {
             EditTodoScreen(
                 viewModel = EditTodoViewModel(
-                    todoRepository = TodoRepository(
+                    todoRepository = EditTodoRepository(
                         networkDataSource = networkDataSource,
                         userLocalDataSource = userLocalDataSource,
+                        dateUtil = dateUtil
                     ),
                     dateUtil = dateUtil,
                     savedStateHandle = savedStateHandle,

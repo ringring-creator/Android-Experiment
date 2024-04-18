@@ -113,7 +113,7 @@ class CreateTodoScreenKtTest {
             CreateTodoScreen(
                 toTodoListScreen = toTodoListScreen,
                 viewModel = CreateTodoViewModel(
-                    todoRepository = TodoRepository(
+                    todoRepository = CreateTodoRepository(
                         networkDataSource = networkDataSource,
                         userLocalDataSource = localDataSource
                     ),

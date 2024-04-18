@@ -7,7 +7,7 @@ import com.ring.ring.user.infra.model.UserLocalDataSource
 import com.ring.ring.util.date.DateUtil
 import javax.inject.Inject
 
-internal class TodoRepository @Inject constructor(
+internal class TodoListRepository @Inject constructor(
     private val networkDataSource: TodoNetworkDataSource,
     private val localDataSource: TodoLocalDataSource,
     private val userLocalDataSource: UserLocalDataSource,

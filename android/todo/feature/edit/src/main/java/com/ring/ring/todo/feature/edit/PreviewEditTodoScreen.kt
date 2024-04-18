@@ -25,8 +25,10 @@ internal fun PreviewEditTodoScreen() {
 internal fun PreviewEditTodoScreenWithLongValue() {
     EditTodoScreen(
         value.copy(
-            title = "fakeTitle".repeat(20),
-            description = "fakeDescription".repeat(20)
+            todo = value.todo.copy(
+                title = "fakeTitle".repeat(20),
+                description = "fakeDescription".repeat(20),
+            ),
         )
     )
 }
@@ -58,10 +60,12 @@ private fun EditTodoScreen(uiState: EditTodoUiState) {
 private val dateUtil = DateUtil()
 
 private val value: EditTodoUiState = EditTodoUiState(
-    title = "title",
-    description = "description",
-    done = true,
-    deadline = dateUtil.format(Clock.System.now()),
+    todo = EditTodoUiState.Todo(
+        title = "title",
+        description = "description",
+        done = true,
+        deadline = dateUtil.format(Clock.System.now()),
+    ),
     isShowDatePicker = false,
 )
 

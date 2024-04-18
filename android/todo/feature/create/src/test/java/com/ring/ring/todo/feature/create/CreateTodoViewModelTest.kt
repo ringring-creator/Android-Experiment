@@ -85,7 +85,7 @@ class CreateTodoViewModelTest {
 
     private fun setupSubject() {
         subject = CreateTodoViewModel(
-            todoRepository = TodoRepository(
+            todoRepository = CreateTodoRepository(
                 networkDataSource = networkDataSource,
                 userLocalDataSource = userLocalDataSource,
             ),

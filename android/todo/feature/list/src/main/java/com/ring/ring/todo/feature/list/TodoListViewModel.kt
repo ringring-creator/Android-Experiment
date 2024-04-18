@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 internal class TodoListViewModel @Inject constructor(
-    private val todoRepository: TodoRepository,
+    private val todoRepository: TodoListRepository,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(TodoListUiState(todoList = emptyList()))
     val uiState = _uiState.asStateFlow()

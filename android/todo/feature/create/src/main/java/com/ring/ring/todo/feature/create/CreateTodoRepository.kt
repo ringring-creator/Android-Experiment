@@ -6,22 +6,20 @@ import com.ring.ring.user.infra.model.UserLocalDataSource
 import kotlinx.datetime.Instant
 import javax.inject.Inject
 
-class TodoRepository @Inject constructor(
+internal class CreateTodoRepository @Inject constructor(
     private val networkDataSource: TodoNetworkDataSource,
     private val userLocalDataSource: UserLocalDataSource,
 ) {
     suspend fun create(
-        title: String,
-        description: String,
-        done: Boolean,
+        uiState: CreateTodoUiState,
         deadline: Instant,
     ) {
         networkDataSource.create(
             Todo(
                 id = null,
-                title = title,
-                description = description,
-                done = done,
+                title = uiState.title,
+                description = uiState.description,
+                done = uiState.done,
                 deadline = deadline,
             ),
             userLocalDataSource.getUser()!!.token

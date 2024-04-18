@@ -198,7 +198,7 @@ class TodoListScreenKtTest {
         composeTestRule.setContent {
             TodoListScreen(
                 viewModel = TodoListViewModel(
-                    todoRepository = TodoRepository(
+                    todoRepository = TodoListRepository(
                         networkDataSource = networkDataSource,
                         localDataSource = localDataSource,
                         userLocalDataSource = userLocalDataSource,

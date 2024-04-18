@@ -41,7 +41,7 @@ class EditTodoViewModelTest {
         subject.setDeadline(expected)
 
         //then
-        assertThat(subject.uiState.value.deadline, equalTo("1970-01-01"))
+        assertThat(subject.uiState.value.todo.deadline, equalTo("1970-01-01"))
     }
 
     @Test
@@ -64,9 +64,10 @@ class EditTodoViewModelTest {
 
     private fun setupSubject() {
         subject = EditTodoViewModel(
-            todoRepository = TodoRepository(
+            todoRepository = EditTodoRepository(
                 networkDataSource = networkDataSource,
                 userLocalDataSource = userLocalDataSource,
+                dateUtil = dateUtil,
             ),
             dateUtil = dateUtil,
             savedStateHandle = savedStateHandle,

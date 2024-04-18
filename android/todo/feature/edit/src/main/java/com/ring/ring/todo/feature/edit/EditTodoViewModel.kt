@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 internal class EditTodoViewModel @Inject constructor(
-    private val todoRepository: TodoRepository,
+    private val todoRepository: EditTodoRepository,
     private val dateUtil: DateUtil,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
@@ -42,23 +42,23 @@ internal class EditTodoViewModel @Inject constructor(
     }
 
     fun setTitle(title: String) {
-        if (this.uiState.value.title == title) return
-        _uiState.value = uiState.value.copy(title = title)
+        if (this.uiState.value.todo.title == title) return
+        _uiState.value = uiState.value.replaceTitle(title = title)
     }
 
     fun setDescription(description: String) {
-        if (this.uiState.value.description == description) return
-        _uiState.value = uiState.value.copy(description = description)
+        if (this.uiState.value.todo.description == description) return
+        _uiState.value = uiState.value.replaceDescription(description = description)
     }
 
     fun setDone(done: Boolean) {
-        if (this.uiState.value.done == done) return
-        _uiState.value = uiState.value.copy(done = done)
+        if (this.uiState.value.todo.done == done) return
+        _uiState.value = uiState.value.replaceDone(done = done)
     }
 
     fun setDeadline(dateMillis: Long) {
         deadline = dateUtil.toInstant(dateMillis)
-        _uiState.value = uiState.value.copy(deadline = dateUtil.format(deadline))
+        _uiState.value = uiState.value.replaceDeadline(deadline = dateUtil.format(deadline))
     }
 
     fun showDatePicker() {
@@ -73,12 +73,7 @@ internal class EditTodoViewModel @Inject constructor(
         viewModelScope.launch(getErrorHandler) {
             val response = todoRepository.getTodo(id)
             deadline = response.deadline
-            _uiState.value = uiState.value.copy(
-                title = response.title,
-                description = response.description,
-                done = response.done,
-                deadline = dateUtil.format(deadline),
-            )
+            _uiState.value = uiState.value.copy(todo = response.todo)
         }
     }
 
@@ -86,9 +81,7 @@ internal class EditTodoViewModel @Inject constructor(
         viewModelScope.launch(editErrorHandler) {
             todoRepository.editTodo(
                 id = id,
-                title = uiState.value.title,
-                description = uiState.value.description,
-                done = uiState.value.done,
+                uiState.value.todo,
                 deadline = deadline,
             )
             _events.trySend(EditTodoEvent.EditSuccess)
@@ -103,10 +96,36 @@ internal class EditTodoViewModel @Inject constructor(
     }
 
     private fun initEditTodoUiState() = EditTodoUiState(
-        title = "",
-        description = "",
-        done = false,
-        deadline = dateUtil.format(deadline),
+        todo = EditTodoUiState.Todo(
+            title = "",
+            description = "",
+            done = false,
+            deadline = dateUtil.format(deadline),
+        ),
         isShowDatePicker = false,
+    )
+}
+
+private fun EditTodoUiState.replaceTitle(title: String): EditTodoUiState {
+    return this.copy(
+        todo = todo.copy(title = title)
+    )
+}
+
+private fun EditTodoUiState.replaceDescription(description: String): EditTodoUiState {
+    return this.copy(
+        todo = todo.copy(description = description)
+    )
+}
+
+private fun EditTodoUiState.replaceDone(done: Boolean): EditTodoUiState {
+    return this.copy(
+        todo = todo.copy(done = done)
+    )
+}
+
+private fun EditTodoUiState.replaceDeadline(deadline: String): EditTodoUiState {
+    return this.copy(
+        todo = todo.copy(deadline = deadline)
     )
 }

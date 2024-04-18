@@ -81,10 +81,10 @@ internal fun EditTodoScreen(
             modifier = Modifier
                 .padding(padding)
                 .padding(16.dp),
-            title = uiState.title,
-            description = uiState.description,
-            done = uiState.done,
-            deadline = uiState.deadline,
+            title = uiState.todo.title,
+            description = uiState.todo.description,
+            done = uiState.todo.done,
+            deadline = uiState.todo.deadline,
             isShowDatePicker = uiState.isShowDatePicker,
             updater = updater
         )

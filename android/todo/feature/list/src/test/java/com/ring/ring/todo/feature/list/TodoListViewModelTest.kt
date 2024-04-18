@@ -118,7 +118,7 @@ class TodoListViewModelTest {
 
     private fun setupSubject() {
         subject = TodoListViewModel(
-            todoRepository = TodoRepository(
+            todoRepository = TodoListRepository(
                 networkDataSource = networkDataSource,
                 localDataSource = localDataSource,
                 userLocalDataSource = userLocalDataSource,
