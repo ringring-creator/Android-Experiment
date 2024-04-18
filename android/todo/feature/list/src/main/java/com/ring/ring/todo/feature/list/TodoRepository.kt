@@ -19,11 +19,11 @@ internal class TodoRepository @Inject constructor(
             val fetchedTodoList = networkDataSource.list(user.token)
             localDataSource.deleteAll()
             localDataSource.upsert(fetchedTodoList)
-            fetchedTodoList.mapNotNull { convert(it) }
+            fetchedTodoList.mapNotNull(this::convert)
         } catch (e: Throwable) {
             localDataSource
                 .list()
-                .mapNotNull(Todo::toTodo)
+                .mapNotNull(this::convert)
         }
     }
 

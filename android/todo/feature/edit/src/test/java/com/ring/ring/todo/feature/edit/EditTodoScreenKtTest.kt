@@ -59,6 +59,7 @@ class EditTodoScreenKtTest {
     private var userLocalDataSource = FakeUserLocalDataSource(user)
     private var snackbarHostState = SnackbarHostState()
     private lateinit var savedStateHandle: SavedStateHandle
+    private val dateUtil = DateUtil()
 
     @Before
     fun setUp() {
@@ -80,7 +81,6 @@ class EditTodoScreenKtTest {
         composeTestRule
             .onNodeWithTag("DoneCheckBox")
             .assertIsOn()
-        val dateUtil = DateUtil()
         composeTestRule
             .onNodeWithText(dateUtil.format(todo.deadline))
             .assertExists()
@@ -207,7 +207,7 @@ class EditTodoScreenKtTest {
                         networkDataSource = networkDataSource,
                         userLocalDataSource = userLocalDataSource,
                     ),
-                    dateUtil = DateUtil(),
+                    dateUtil = dateUtil,
                     savedStateHandle = savedStateHandle,
                 ),
                 toTodoListScreen = toTodoListScreen,

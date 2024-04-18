@@ -51,6 +51,7 @@ class TodoListViewModelTest {
     private var localDataSource: TodoLocalDataSource =
         FakeTodoLocalDataSource(todoList.toMutableList())
     private var userLocalDataSource = FakeUserLocalDataSource(user)
+    private val dateUtil = DateUtil()
 
     @Before
     fun setUp() {
@@ -112,7 +113,7 @@ class TodoListViewModelTest {
         assertThat(firstElement.id, equalTo(expected.id))
         assertThat(firstElement.title, equalTo(expected.title))
         assertThat(firstElement.done, equalTo(expected.done))
-        assertThat(firstElement.deadline, equalTo(DateUtil().format(expected.deadline)))
+        assertThat(firstElement.deadline, equalTo(dateUtil.format(expected.deadline)))
     }
 
     private fun setupSubject() {
@@ -121,7 +122,7 @@ class TodoListViewModelTest {
                 networkDataSource = networkDataSource,
                 localDataSource = localDataSource,
                 userLocalDataSource = userLocalDataSource,
-                dateUtil = DateUtil()
+                dateUtil = dateUtil
             ),
         )
     }

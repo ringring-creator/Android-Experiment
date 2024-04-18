@@ -40,6 +40,7 @@ class CreateTodoScreenKtTest {
     private var networkDataSource: TodoNetworkDataSource =
         FakeTodoNetworkDataSource(token = user.token)
     private var localDataSource = FakeUserLocalDataSource(user = user)
+    private val dateUtil = DateUtil()
 
     @Before
     fun setUp() {
@@ -116,7 +117,7 @@ class CreateTodoScreenKtTest {
                         networkDataSource = networkDataSource,
                         userLocalDataSource = localDataSource
                     ),
-                    dateUtil = DateUtil()
+                    dateUtil = dateUtil
                 )
             )
         }

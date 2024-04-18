@@ -30,7 +30,7 @@ class CreateTodoViewModelTest {
     private var networkDataSource: TodoNetworkDataSource =
         FakeTodoNetworkDataSource(user.token)
     private var userLocalDataSource = FakeUserLocalDataSource(user = user)
-
+    private val dateUtil = DateUtil()
 
     @Before
     fun setUp() {
@@ -59,7 +59,6 @@ class CreateTodoViewModelTest {
         subject.setDeadline(expected)
 
         //then
-        val dateUtil = DateUtil()
         assertThat(
             subject.uiState.value.deadline,
             equalTo(dateUtil.format(dateUtil.toInstant(expected)))
@@ -90,7 +89,7 @@ class CreateTodoViewModelTest {
                 networkDataSource = networkDataSource,
                 userLocalDataSource = userLocalDataSource,
             ),
-            dateUtil = DateUtil(),
+            dateUtil = dateUtil,
         )
     }
 }

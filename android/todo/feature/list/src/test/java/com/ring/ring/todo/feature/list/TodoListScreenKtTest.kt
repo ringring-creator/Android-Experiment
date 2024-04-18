@@ -54,6 +54,7 @@ class TodoListScreenKtTest {
     private var localDataSource: TodoLocalDataSource = FakeTodoLocalDataSource()
     private var userLocalDataSource = FakeUserLocalDataSource(user = user)
     private var snackbarHostState: SnackbarHostState = SnackbarHostState()
+    private val dateUtil = DateUtil()
 
     @Before
     fun setUp() {
@@ -201,7 +202,7 @@ class TodoListScreenKtTest {
                         networkDataSource = networkDataSource,
                         localDataSource = localDataSource,
                         userLocalDataSource = userLocalDataSource,
-                        dateUtil = DateUtil()
+                        dateUtil = dateUtil
                     ),
                 ),
                 toCreateTodoScreen = toCreateTodoScreen,

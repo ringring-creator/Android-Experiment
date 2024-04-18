@@ -55,11 +55,13 @@ private fun EditTodoScreen(uiState: EditTodoUiState) {
     )
 }
 
+private val dateUtil = DateUtil()
+
 private val value: EditTodoUiState = EditTodoUiState(
     title = "title",
     description = "description",
     done = true,
-    deadline = DateUtil().format(Clock.System.now()),
+    deadline = dateUtil.format(Clock.System.now()),
     isShowDatePicker = false,
 )
 

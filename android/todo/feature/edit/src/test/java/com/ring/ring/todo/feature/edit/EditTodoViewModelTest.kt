@@ -25,7 +25,7 @@ class EditTodoViewModelTest {
     private var networkDataSource: TodoNetworkDataSource = FakeTodoNetworkDataSource(user.token)
     private var userLocalDataSource = FakeUserLocalDataSource(user)
     private lateinit var savedStateHandle: SavedStateHandle
-
+    private val dateUtil = DateUtil()
     private val id = 1L
 
     @Before
@@ -68,7 +68,7 @@ class EditTodoViewModelTest {
                 networkDataSource = networkDataSource,
                 userLocalDataSource = userLocalDataSource,
             ),
-            dateUtil = DateUtil(),
+            dateUtil = dateUtil,
             savedStateHandle = savedStateHandle,
         )
     }

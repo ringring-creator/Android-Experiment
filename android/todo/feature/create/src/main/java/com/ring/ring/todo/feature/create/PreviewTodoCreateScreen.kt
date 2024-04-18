@@ -45,11 +45,13 @@ private fun CreateTodoScreen(uiState: CreateTodoUiState) {
     CreateTodoScreen(uiState, updater, {}, SnackbarHostState())
 }
 
+private val dateUtil = DateUtil()
+
 private val value: CreateTodoUiState = CreateTodoUiState(
     title = "title",
     description = "description",
     done = true,
-    deadline = DateUtil().format(DateUtil().currentInstant()),
+    deadline = dateUtil.format(dateUtil.currentInstant()),
     isShowDatePicker = false,
 )
 
