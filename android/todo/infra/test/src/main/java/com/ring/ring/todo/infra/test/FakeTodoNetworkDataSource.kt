@@ -2,29 +2,11 @@ package com.ring.ring.todo.infra.test
 
 import com.ring.ring.todo.infra.domain.Todo
 import com.ring.ring.todo.infra.domain.TodoNetworkDataSource
-import kotlinx.datetime.Instant
 
 class FakeTodoNetworkDataSource(
-    private val token: String = ""
+    private val token: String = "",
+    private var values: MutableList<Todo> = mutableListOf(),
 ) : TodoNetworkDataSource {
-    private var values = mutableListOf(
-        Todo(
-            1,
-            "fakeTitle",
-            "fakeDescription",
-            false,
-            Instant.parse("2024-01-01T00:00:00Z"),
-        ),
-        Todo(
-            2,
-            "fakeTitle2",
-            "fakeDescription2",
-            true,
-            Instant.parse("2024-12-31T00:00:00Z"),
-        ),
-    )
-
-
     override suspend fun list(token: String): List<Todo> {
         if (token != this.token) throw Exception()
         return values
@@ -37,7 +19,7 @@ class FakeTodoNetworkDataSource(
 
     override suspend fun create(todo: Todo, token: String) {
         if (token != this.token) throw Exception()
-        val id = values.maxOf { it.id ?: 0 }
+        val id = if (values.isEmpty()) 0 else values.maxOf { it.id ?: 0 }
         values.add(element = todo.copy(id = id + 1L))
     }
 

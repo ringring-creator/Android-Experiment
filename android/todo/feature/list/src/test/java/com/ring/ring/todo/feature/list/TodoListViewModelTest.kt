@@ -1,6 +1,7 @@
 package com.ring.ring.todo.feature.list
 
 import com.ring.ring.infra.test.MainDispatcherRule
+import com.ring.ring.todo.infra.domain.Todo
 import com.ring.ring.todo.infra.domain.TodoLocalDataSource
 import com.ring.ring.todo.infra.domain.TodoNetworkDataSource
 import com.ring.ring.todo.infra.test.FakeErrorTodoLocalDataSource
@@ -16,6 +17,7 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import kotlinx.datetime.Instant
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
@@ -31,7 +33,25 @@ class TodoListViewModelTest {
     val mainDispatcherRule = MainDispatcherRule(StandardTestDispatcher())
 
     private var user = User.generate(10L, "email@example.com", "Abcdefg1")
-    private var networkDataSource: TodoNetworkDataSource = FakeTodoNetworkDataSource(user.token)
+    private var todoList = mutableListOf(
+        Todo(
+            id = 1,
+            title = "fakeTitle",
+            description = "fakeDescription",
+            done = false,
+            deadline = Instant.parse("2024-01-01T00:00:00Z"),
+        ),
+        Todo(
+            id = 2,
+            title = "fakeTitle2",
+            description = "fakeDescription2",
+            done = true,
+            deadline = Instant.parse("2024-12-31T00:00:00Z"),
+        ),
+    )
+    private var networkDataSource: TodoNetworkDataSource = FakeTodoNetworkDataSource(
+        user.token, todoList
+    )
     private var localDataSource: TodoLocalDataSource = FakeTodoLocalDataSource()
     private var userLocalDataSource = FakeUserLocalDataSource(user)
 

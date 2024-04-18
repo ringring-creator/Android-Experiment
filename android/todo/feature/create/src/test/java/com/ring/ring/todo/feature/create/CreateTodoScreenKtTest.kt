@@ -6,6 +6,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import com.ring.ring.todo.infra.domain.TodoNetworkDataSource
+import com.ring.ring.todo.infra.test.FakeErrorTodoNetworkDataSource
 import com.ring.ring.todo.infra.test.FakeTodoNetworkDataSource
 import com.ring.ring.user.infra.model.User
 import com.ring.ring.user.infra.test.FakeUserLocalDataSource
@@ -36,7 +37,8 @@ class CreateTodoScreenKtTest {
     val composeTestRule = createAndroidComposeRule<TestActivity>()
 
     private var user = User.generate(id = 1L, email = "email@example.com", token = "fakeToken")
-    private var networkDataSource: TodoNetworkDataSource = FakeTodoNetworkDataSource(user.token)
+    private var networkDataSource: TodoNetworkDataSource =
+        FakeTodoNetworkDataSource(token = user.token)
     private var localDataSource = FakeUserLocalDataSource(user = user)
 
     @Before
@@ -89,7 +91,7 @@ class CreateTodoScreenKtTest {
     @Test
     fun `tapped createButton show snackbar when createTodo fails`() {
         //given
-        networkDataSource = FakeTodoNetworkDataSource()
+        networkDataSource = FakeErrorTodoNetworkDataSource()
         setupCreateTodoScreen()
 
         //when

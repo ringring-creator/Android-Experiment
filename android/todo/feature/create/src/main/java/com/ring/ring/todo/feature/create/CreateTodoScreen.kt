@@ -267,7 +267,8 @@ private fun CustomDatePicker(
                         .clickable {
                             datePickerState.selectedDateMillis?.let { setDate(it) }
                             dismissDatePicker()
-                        })
+                        }
+                )
             }
         ) {
             DatePicker(datePickerState)
