@@ -54,7 +54,8 @@ class TodoController(
     suspend fun edit(call: ApplicationCall) {
         editTodo(
             req = EditTodo.Req(
-                todo = call.receive<EditTodo.Req.Body>(),
+                todoId = getTodoId(call),
+                body = call.receive<EditTodo.Req.Body>(),
                 email = receiveEmail(call)
             )
         )
@@ -71,14 +72,18 @@ class TodoController(
         call.respond(HttpStatusCode.OK)
     }
 
-    private fun getTodoId(call: ApplicationCall) =
-        call.parameters["todoId"]?.toLongOrNull() ?: throw IllegalArgumentException()
-
     suspend fun editDone(call: ApplicationCall) {
-        val req = call.receive<EditTodoDone.Req>()
-        editTodoDone(req = req)
+        editTodoDone(
+            req = EditTodoDone.Req(
+                todoId = getTodoId(call),
+                body = call.receive<EditTodoDone.Req.Body>(),
+            )
+        )
         call.respond(HttpStatusCode.OK)
     }
+
+    private fun getTodoId(call: ApplicationCall) =
+        call.parameters["todoId"]?.toLongOrNull() ?: throw IllegalArgumentException()
 
     private fun receiveEmail(call: ApplicationCall): String {
         val principal = call.principal<JWTPrincipal>() ?: throw NotLoggedInException()

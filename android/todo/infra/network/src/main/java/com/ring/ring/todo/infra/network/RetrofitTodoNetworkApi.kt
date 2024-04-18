@@ -15,37 +15,39 @@ import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface RetrofitTodoNetworkApi {
-    @GET("todo/list")
+    @GET("todos")
     suspend fun list(
         @Header("Authorization") authorization: String,
     ): ListResponse
 
-    @GET("todo/get/{todoId}")
+    @GET("todos/{todoId}")
     suspend fun get(
         @Path("todoId") todoId: Long,
         @Header("Authorization") authorization: String,
     ): GetResponse
 
-    @POST("todo/create")
+    @POST("todos")
     suspend fun create(
         @Body request: CreateRequest,
         @Header("Authorization") authorization: String,
     )
 
-    @PUT("todo/edit")
+    @PUT("todos/{todoId}")
     suspend fun edit(
+        @Path("todoId") todoId: Long,
         @Body request: EditRequest,
         @Header("Authorization") authorization: String,
     )
 
-    @DELETE("todo/delete/{todoId}")
+    @DELETE("todos/{todoId}")
     suspend fun delete(
         @Path("todoId") todoId: Long,
         @Header("Authorization") authorization: String,
     )
 
-    @PATCH("todo/edit-done")
+    @PATCH("todos/edit-done/{todoId}")
     suspend fun editDone(
+        @Path("todoId") todoId: Long,
         @Body request: EditDoneRequest,
         @Header("Authorization") authorization: String,
     )

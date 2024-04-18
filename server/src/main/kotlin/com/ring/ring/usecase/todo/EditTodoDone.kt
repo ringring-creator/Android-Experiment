@@ -11,7 +11,7 @@ class EditTodoDone(
     override suspend fun execute(req: Req): Res {
         repository.updateDone(
             id = req.todoId,
-            done = req.done,
+            done = req.body.done,
         )
         return Res()
     }
@@ -19,8 +19,13 @@ class EditTodoDone(
     @Serializable
     data class Req(
         val todoId: Long,
-        val done: Boolean,
-    ) : UseCase.Req
+        val body: Body,
+    ) : UseCase.Req {
+        @Serializable
+        data class Body(
+            val done: Boolean,
+        )
+    }
 
     class Res : UseCase.Res
 }

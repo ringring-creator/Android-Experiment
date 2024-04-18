@@ -81,7 +81,8 @@ class TodoRetrofitDataSourceTest {
         //then
         val request = mockWebServer.takeRequest()
         assertThat(request.getHeader("Authorization"), equalTo("Bearer $token"))
-        assertThat(request.path, equalTo("/todo/list"))
+        assertThat(request.path, equalTo("/todos"))
+        assertThat(request.method, equalTo("GET"))
     }
 
     @Test
@@ -99,10 +100,9 @@ class TodoRetrofitDataSourceTest {
 
         //then
         val request = mockWebServer.takeRequest()
-        val body = request.body.readUtf8()
-        assertThat(body.contains("\"todoId\":$id"), `is`(true))
         assertThat(request.getHeader("Authorization"), equalTo("Bearer $token"))
-        assertThat(request.path, equalTo("/todo/get"))
+        assertThat(request.path, equalTo("/todos/$id"))
+        assertThat(request.method, equalTo("GET"))
     }
 
     @Test
@@ -154,7 +154,8 @@ class TodoRetrofitDataSourceTest {
             `is`(true)
         )
         assertThat(request.getHeader("Authorization"), equalTo("Bearer $token"))
-        assertThat(request.path, equalTo("/todo/create"))
+        assertThat(request.path, equalTo("/todos"))
+        assertThat(request.method, equalTo("POST"))
     }
 
     @Test
@@ -179,7 +180,6 @@ class TodoRetrofitDataSourceTest {
         //then
         val request = mockWebServer.takeRequest()
         val body = request.body.readUtf8()
-        assertThat(body.contains("\"id\":$id"), `is`(true))
         assertThat(body.contains("\"title\":\"$title\""), `is`(true))
         assertThat(body.contains("\"description\":\"$description\""), `is`(true))
         assertThat(body.contains("\"done\":$done"), `is`(true))
@@ -188,7 +188,8 @@ class TodoRetrofitDataSourceTest {
             `is`(true)
         )
         assertThat(request.getHeader("Authorization"), equalTo("Bearer $token"))
-        assertThat(request.path, equalTo("/todo/edit"))
+        assertThat(request.path, equalTo("/todos/${id}"))
+        assertThat(request.method, equalTo("PUT"))
     }
 
     @Test
@@ -208,10 +209,9 @@ class TodoRetrofitDataSourceTest {
 
         //then
         val request = mockWebServer.takeRequest()
-        val body = request.body.readUtf8()
-        assertThat(body.contains("\"todoId\":$id"), `is`(true))
         assertThat(request.getHeader("Authorization"), equalTo("Bearer $token"))
-        assertThat(request.path, equalTo("/todo/delete"))
+        assertThat(request.path, equalTo("/todos/$id"))
+        assertThat(request.method, equalTo("DELETE"))
     }
 
     @Test
@@ -230,9 +230,9 @@ class TodoRetrofitDataSourceTest {
         //then
         val request = mockWebServer.takeRequest()
         val body = request.body.readUtf8()
-        assertThat(body.contains("\"todoId\":$todoId"), `is`(true))
         assertThat(body.contains("\"done\":$done"), `is`(true))
         assertThat(request.getHeader("Authorization"), equalTo("Bearer $token"))
-        assertThat(request.path, equalTo("/todo/edit-done"))
+        assertThat(request.path, equalTo("/todos/edit-done/${todoId}"))
+        assertThat(request.method, equalTo("PATCH"))
     }
 }

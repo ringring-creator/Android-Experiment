@@ -34,7 +34,9 @@ class TodoRetrofitDataSource @Inject constructor(
     }
 
     override suspend fun update(todo: Todo, token: String) {
+        val todoId = todo.id ?: return
         networkApi.edit(
+            todoId = todoId,
             EditRequest(todo = todo.toTodoModel()),
             "Bearer $token",
         )
@@ -42,7 +44,8 @@ class TodoRetrofitDataSource @Inject constructor(
 
     override suspend fun updateDone(todoId: Long, done: Boolean, token: String) {
         networkApi.editDone(
-            EditDoneRequest(todoId, done),
+            todoId = todoId,
+            EditDoneRequest(done),
             "Bearer $token"
         )
     }

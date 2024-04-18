@@ -14,28 +14,29 @@ class EditTodo(
 ) : UseCase<EditTodo.Req, EditTodo.Res>() {
     override suspend fun execute(req: Req): Res {
         val userId = userRepository.loadId(req.email) ?: throw NotLoggedInException()
-        repository.save(todo = req.todo.toTodo(userId))
+        repository.save(todo = req.toTodo(userId))
         return Res()
     }
 
     @Serializable
     data class Req(
-        val todo: Body,
+        val todoId: Long,
+        val body: Body,
         val email: String,
     ) : UseCase.Req {
         @Serializable
         data class Body(
             val todo: TodoModel,
-        ) {
-            fun toTodo(userId: Long): Todo = Todo(
-                id = todo.id,
-                title = todo.title,
-                description = todo.description,
-                done = todo.done,
-                deadline = todo.deadline,
-                userId = userId,
-            )
-        }
+        )
+
+        fun toTodo(userId: Long): Todo = Todo(
+            id = todoId,
+            title = body.todo.title,
+            description = body.todo.description,
+            done = body.todo.done,
+            deadline = body.todo.deadline,
+            userId = userId,
+        )
     }
 
     class Res : UseCase.Res

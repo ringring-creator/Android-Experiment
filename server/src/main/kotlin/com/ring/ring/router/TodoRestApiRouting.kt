@@ -14,14 +14,14 @@ import io.ktor.server.routing.route
 fun Route.todoRouting(
     controller: TodoController = TodoController(),
 ) {
-    route("/todo") {
+    route("/todos") {
         authenticate("auth-jwt") {
-            get("get/{todoId}") { controller.get(call) }
-            get("list") { controller.list(call) }
-            post("create") { controller.create(call) }
-            put("edit") { controller.edit(call) }
-            delete("delete/{todoId}") { controller.delete(call) }
-            patch("edit-done") { controller.editDone(call) }
+            get("{todoId}") { controller.get(call) }
+            get("") { controller.list(call) }
+            post("") { controller.create(call) }
+            put("{todoId}") { controller.edit(call) }
+            delete("{todoId}") { controller.delete(call) }
+            patch("edit-done/{todoId}") { controller.editDone(call) }
         }
     }
 }
