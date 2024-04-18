@@ -4,12 +4,14 @@ import com.ring.ring.todo.infra.domain.Todo
 import com.ring.ring.todo.infra.domain.TodoLocalDataSource
 import com.ring.ring.todo.infra.domain.TodoNetworkDataSource
 import com.ring.ring.user.infra.model.UserLocalDataSource
+import com.ring.ring.util.date.DateUtil
 import javax.inject.Inject
 
 internal class TodoRepository @Inject constructor(
     private val networkDataSource: TodoNetworkDataSource,
     private val localDataSource: TodoLocalDataSource,
     private val userLocalDataSource: UserLocalDataSource,
+    private val dateUtil: DateUtil,
 ) {
     suspend fun list(): List<TodoListUiState.Todo> {
         return try {
@@ -36,7 +38,7 @@ internal class TodoRepository @Inject constructor(
                 id = it,
                 title = todo.title,
                 done = todo.done,
-                deadline = todo.deadline.toString(),
+                deadline = dateUtil.format(todo.deadline),
             )
         }
     }

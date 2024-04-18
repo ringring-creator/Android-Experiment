@@ -42,6 +42,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.android.infra.util)
     implementation(projects.android.todo.infra.model)
     implementation(projects.android.todo.infra.network)
     implementation(projects.android.todo.infra.local)
@@ -60,6 +61,9 @@ dependencies {
     testImplementation(projects.android.user.infra.test)
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.compose.ui.test.junit)
+    testImplementation(libs.hilt.android.testing)
 }
 
 kapt {

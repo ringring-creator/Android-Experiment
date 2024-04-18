@@ -42,6 +42,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -55,18 +56,17 @@ internal fun TodoListScreen(
     viewModel: TodoListViewModel = hiltViewModel(),
     toCreateTodoScreen: () -> Unit,
     toEditTodoScreen: (id: String) -> Unit,
-    snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
-
     TodoListScreen(
         uiState = rememberTodoListUiState(viewModel = viewModel),
         updater = remember { toUpdater(viewModel = viewModel) },
         toCreateTodoScreen = toCreateTodoScreen,
         toEditTodoScreen = toEditTodoScreen,
-        snackBarHostState = snackBarHostState,
+        snackBarHostState = snackbarHostState,
     )
 
-    SetupSideEffect(viewModel, snackBarHostState)
+    SetupSideEffect(viewModel, snackbarHostState)
 }
 
 @Composable
@@ -88,9 +88,7 @@ internal fun TodoListScreen(
             topBar = { TopBar(scope, drawerState) },
             snackbarHost = { SnackbarHost(snackBarHostState) },
             floatingActionButton = {
-                FloatingActionButton(onClick = toCreateTodoScreen) {
-                    Icon(Icons.Filled.Add, contentDescription = null)
-                }
+                CreateTodoActionButton(toCreateTodoScreen)
             },
         ) {
             Content(
@@ -108,9 +106,6 @@ private fun SetupSideEffect(
     viewModel: TodoListViewModel,
     snackBarHostState: SnackbarHostState
 ) {
-    LaunchedEffect(Unit) {
-        viewModel.fetchTodoList()
-    }
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
@@ -130,6 +125,21 @@ private fun SetupSideEffect(
                 )
             }
         }
+    }
+    LaunchedEffect(Unit) {
+        viewModel.fetchTodoList()
+    }
+}
+
+@Composable
+private fun CreateTodoActionButton(
+    toCreateTodoScreen: () -> Unit
+) {
+    FloatingActionButton(
+        onClick = toCreateTodoScreen,
+        modifier = Modifier.testTag("CreateTodoActionButton"),
+    ) {
+        Icon(Icons.Filled.Add, contentDescription = null)
     }
 }
 
@@ -218,7 +228,8 @@ private fun Content(
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(16.dp)
+            .testTag("Content"),
     ) {
         items(todoList) { todo ->
             Item(
@@ -239,7 +250,8 @@ private fun Item(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(8.dp)
+            .testTag("Item"),
         onClick = { toEditTodoScreen(todo.id.toString()) }
     ) {
         Row(
@@ -269,7 +281,9 @@ private fun DoneCheckBox(
     Checkbox(
         checked = done,
         onCheckedChange = { onCheckedChange() },
-        modifier = Modifier.padding(end = 8.dp)
+        modifier = Modifier
+            .padding(end = 8.dp)
+            .testTag("DoneCheckBox")
     )
 }
 
@@ -283,6 +297,6 @@ private fun DeadlineText(modifier: Modifier, deadline: String) {
     Text(
         stringResource(R.string.deadline, deadline),
         style = MaterialTheme.typography.bodyMedium,
-        modifier = modifier
+        modifier = modifier.testTag("DeadlineText")
     )
 }

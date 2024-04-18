@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ring.ring.todo.infra.domain.Todo
+import com.ring.ring.util.date.DateUtil
 
 internal data class TodoListUiState(
     val todoList: List<Todo>
@@ -21,7 +22,7 @@ internal fun Todo.toTodo(): TodoListUiState.Todo? {
         id = id ?: return null,
         title = title,
         done = done,
-        deadline = DateUtil.format(deadline),
+        deadline = DateUtil().format(deadline),
     )
 }
 

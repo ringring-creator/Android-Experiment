@@ -32,6 +32,7 @@ class FakeTodoNetworkDataSource(
 
     override suspend fun editDone(todoId: Long, done: Boolean, token: String) {
         if (token != this.token) throw Exception()
+        if (values.any { it.id == todoId }.not()) throw Exception()
         values = values.map {
             if (it.id == todoId) it.copy(done = done) else it
         }.toMutableList()

@@ -20,10 +20,6 @@ internal class TodoListViewModel @Inject constructor(
 
     private val _event = Channel<TodoListEvent>()
     val event = _event.receiveAsFlow()
-//    private val _fetchErrorEvent = Channel<Unit>()
-//    val fetchErrorEvent = _fetchErrorEvent.receiveAsFlow()
-//    private val _toggleDoneErrorEvent = Channel<Unit>()
-//    val toggleDoneErrorEvent = _toggleDoneErrorEvent.receiveAsFlow()
 
     private val fetchErrorHandler = CoroutineExceptionHandler { _, _ ->
         _event.trySend(TodoListEvent.FetchErrorEvent)

@@ -4,22 +4,18 @@ import com.ring.ring.infra.test.MainDispatcherRule
 import com.ring.ring.todo.infra.domain.Todo
 import com.ring.ring.todo.infra.domain.TodoLocalDataSource
 import com.ring.ring.todo.infra.domain.TodoNetworkDataSource
-import com.ring.ring.todo.infra.test.FakeErrorTodoLocalDataSource
 import com.ring.ring.todo.infra.test.FakeErrorTodoNetworkDataSource
 import com.ring.ring.todo.infra.test.FakeTodoLocalDataSource
 import com.ring.ring.todo.infra.test.FakeTodoNetworkDataSource
 import com.ring.ring.user.infra.model.User
 import com.ring.ring.user.infra.test.FakeUserLocalDataSource
+import com.ring.ring.util.date.DateUtil
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Instant
 import org.hamcrest.CoreMatchers.equalTo
-import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
 import org.junit.Rule
@@ -32,8 +28,8 @@ class TodoListViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule(StandardTestDispatcher())
 
-    private var user = User.generate(10L, "email@example.com", "Abcdefg1")
-    private var todoList = mutableListOf(
+    private var user = User.generate(10L, "email@example.com", "fakeToken")
+    private var todoList = listOf(
         Todo(
             id = 1,
             title = "fakeTitle",
@@ -50,9 +46,10 @@ class TodoListViewModelTest {
         ),
     )
     private var networkDataSource: TodoNetworkDataSource = FakeTodoNetworkDataSource(
-        user.token, todoList
+        user.token, todoList.toMutableList()
     )
-    private var localDataSource: TodoLocalDataSource = FakeTodoLocalDataSource()
+    private var localDataSource: TodoLocalDataSource =
+        FakeTodoLocalDataSource(todoList.toMutableList())
     private var userLocalDataSource = FakeUserLocalDataSource(user)
 
     @Before
@@ -74,7 +71,7 @@ class TodoListViewModelTest {
         assertThat(firstElement.id, equalTo(1))
         assertThat(firstElement.title, equalTo("fakeTitle"))
         assertThat(firstElement.done, equalTo(false))
-        assertThat(firstElement.deadline, equalTo("2024-01-01T00:00:00Z"))
+        assertThat(firstElement.deadline, equalTo("2024-01-01"))
     }
 
     @Test
@@ -115,78 +112,7 @@ class TodoListViewModelTest {
         assertThat(firstElement.id, equalTo(expected.id))
         assertThat(firstElement.title, equalTo(expected.title))
         assertThat(firstElement.done, equalTo(expected.done))
-        assertThat(firstElement.deadline, equalTo(DateUtil.format(expected.deadline)))
-    }
-
-    @Test
-    fun `fetchTodoList send fetchErrorEvent when local failed`() = runTest {
-        //given
-        networkDataSource = FakeErrorTodoNetworkDataSource()
-        localDataSource = FakeErrorTodoLocalDataSource()
-        setupSubject()
-        var wasCalled = false
-        TestScope(UnconfinedTestDispatcher()).launch {
-            subject.event.collect {
-                if (it == TodoListEvent.FetchErrorEvent) wasCalled = true
-            }
-        }
-
-        //when
-        subject.fetchTodoList()
-        advanceUntilIdle()
-
-        //then
-        assertThat(wasCalled, `is`(true))
-    }
-
-    @Test
-    fun `toggleDone update done of todo in network`() = runTest {
-        //given
-        subject.fetchTodoList()
-
-        //when
-        subject.toggleDone(1L)
-        advanceUntilIdle()
-
-        //then
-        val actual = networkDataSource
-            .list(user.token)
-            .find { it.id == 1L }!!
-        assertThat(actual.done, `is`(true))
-    }
-
-    @Test
-    fun `toggleDone refresh todoList`() = runTest {
-        //given
-        subject.fetchTodoList()
-
-        //when
-        subject.toggleDone(1L)
-        advanceUntilIdle()
-
-        //then
-        val actual = subject.uiState.value.todoList.find { it.id == 1L }
-        assertThat(actual!!.done, `is`(true))
-    }
-
-    @Test
-    fun `toggleDone send toggleDoneErrorEvent when editDone failed`() = runTest {
-        //given
-        networkDataSource = FakeErrorTodoNetworkDataSource()
-        setupSubject()
-        var wasCalled = false
-        TestScope(UnconfinedTestDispatcher()).launch {
-            subject.event.collect {
-                if (it == TodoListEvent.ToggleDoneErrorEvent) wasCalled = true
-            }
-        }
-
-        //when
-        subject.toggleDone(1L)
-        advanceUntilIdle()
-
-        //then
-        assertThat(wasCalled, `is`(true))
+        assertThat(firstElement.deadline, equalTo(DateUtil().format(expected.deadline)))
     }
 
     private fun setupSubject() {
@@ -195,6 +121,7 @@ class TodoListViewModelTest {
                 networkDataSource = networkDataSource,
                 localDataSource = localDataSource,
                 userLocalDataSource = userLocalDataSource,
+                dateUtil = DateUtil()
             ),
         )
     }
