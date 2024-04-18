@@ -13,6 +13,7 @@ internal class TodoListRepository @Inject constructor(
     private val userLocalDataSource: UserLocalDataSource,
     private val dateUtil: DateUtil,
 ) {
+    //Todo default value is null
     private var fetchedTodoList: List<Todo> = emptyList()
 
     suspend fun list(): List<TodoListUiState.Todo> {

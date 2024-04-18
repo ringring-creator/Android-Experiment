@@ -4,7 +4,11 @@ import com.ring.ring.controller.TodoController
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
 import io.ktor.server.routing.Route
+import io.ktor.server.routing.delete
+import io.ktor.server.routing.get
+import io.ktor.server.routing.patch
 import io.ktor.server.routing.post
+import io.ktor.server.routing.put
 import io.ktor.server.routing.route
 
 fun Route.todoRouting(
@@ -12,12 +16,12 @@ fun Route.todoRouting(
 ) {
     route("/todo") {
         authenticate("auth-jwt") {
-        post("create") { controller.create(call) }
-            post("get") { controller.get(call) }
-            post("list") { controller.list(call) }
-            post("edit") { controller.edit(call) }
-            post("delete") { controller.delete(call) }
-            post("edit-done") { controller.editDone(call) }
+            get("get/{todoId}") { controller.get(call) }
+            get("list") { controller.list(call) }
+            post("create") { controller.create(call) }
+            put("edit") { controller.edit(call) }
+            delete("delete/{todoId}") { controller.delete(call) }
+            patch("edit-done") { controller.editDone(call) }
         }
     }
 }

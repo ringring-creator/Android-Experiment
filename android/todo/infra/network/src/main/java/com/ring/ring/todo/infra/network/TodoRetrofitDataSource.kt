@@ -3,10 +3,8 @@ package com.ring.ring.todo.infra.network
 import com.ring.ring.todo.infra.domain.Todo
 import com.ring.ring.todo.infra.domain.TodoNetworkDataSource
 import com.ring.ring.todo.infra.network.dto.CreateRequest
-import com.ring.ring.todo.infra.network.dto.DeleteRequest
 import com.ring.ring.todo.infra.network.dto.EditDoneRequest
 import com.ring.ring.todo.infra.network.dto.EditRequest
-import com.ring.ring.todo.infra.network.dto.GetRequest
 import com.ring.ring.todo.infra.network.dto.TodoModel
 import javax.inject.Inject
 
@@ -22,7 +20,7 @@ class TodoRetrofitDataSource @Inject constructor(
 
     override suspend fun fetch(todoId: Long, token: String): Todo {
         return networkApi.get(
-            GetRequest(todoId = todoId), "Bearer $token"
+            todoId = todoId, "Bearer $token"
         )
             .todo
             .toTodo()
@@ -51,8 +49,8 @@ class TodoRetrofitDataSource @Inject constructor(
 
     override suspend fun delete(todoId: Long, token: String) {
         networkApi.delete(
-            DeleteRequest(todoId = todoId),
-            "Bearer $token"
+            todoId = todoId,
+            authorization = "Bearer $token"
         )
     }
 

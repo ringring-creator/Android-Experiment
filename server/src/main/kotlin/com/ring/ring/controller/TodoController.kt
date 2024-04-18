@@ -35,7 +35,7 @@ class TodoController(
     suspend fun get(call: ApplicationCall) {
         val res = getTodo(
             req = GetTodo.Req(
-                body = call.receive<GetTodo.Req.Body>(),
+                todoId = getTodoId(call),
                 email = receiveEmail(call),
             )
         )
@@ -64,12 +64,15 @@ class TodoController(
     suspend fun delete(call: ApplicationCall) {
         deleteTodo(
             req = DeleteTodo.Req(
-                body = call.receive<DeleteTodo.Req.Body>(),
+                todoId = getTodoId(call),
                 email = receiveEmail(call)
             )
         )
         call.respond(HttpStatusCode.OK)
     }
+
+    private fun getTodoId(call: ApplicationCall) =
+        call.parameters["todoId"]?.toLongOrNull() ?: throw IllegalArgumentException()
 
     suspend fun editDone(call: ApplicationCall) {
         val req = call.receive<EditTodoDone.Req>()

@@ -17,21 +17,16 @@ class GetTodo(
 ) : UseCase<GetTodo.Req, GetTodo.Res>() {
     override suspend fun execute(req: Req): Res {
         val userId = userRepository.loadId(req.email) ?: throw NotLoggedInException()
-        val todo = repository.get(req.body.todoId)
+        val todo = repository.get(req.todoId)
         if (todo.userId != userId) throw AuthorizationException("I'm trying to access another user's Todos. This operation is not allowed.")
         return Res(todo = todo.toGetTodo())
     }
 
     @Serializable
     data class Req(
-        val body: Body,
+        val todoId: Long,
         val email: String,
-    ) : UseCase.Req {
-        @Serializable
-        data class Body(
-            val todoId: Long,
-        )
-    }
+    ) : UseCase.Req
 
     @Serializable
     data class Res(

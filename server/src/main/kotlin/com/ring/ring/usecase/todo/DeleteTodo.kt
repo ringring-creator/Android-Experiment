@@ -14,23 +14,18 @@ class DeleteTodo(
 ) : UseCase<DeleteTodo.Req, DeleteTodo.Res>() {
     override suspend fun execute(req: Req): Res {
         val userId = userRepository.loadId(req.email) ?: throw NotLoggedInException()
-        if (repository.verifyTodoOwner(req.body.todoId, userId).not()) {
+        if (repository.verifyTodoOwner(req.todoId, userId).not()) {
             throw AuthorizationException("")
         }
-        repository.delete(req.body.todoId)
+        repository.delete(req.todoId)
         return Res()
     }
 
     @Serializable
     data class Req(
-        val body: Body,
+        val todoId: Long,
         val email: String,
-    ) : UseCase.Req {
-        @Serializable
-        data class Body(
-            val todoId: Long,
-        )
-    }
+    ) : UseCase.Req
 
     class Res : UseCase.Res
 }
