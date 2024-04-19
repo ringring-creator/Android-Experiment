@@ -12,12 +12,24 @@ class AuthenticationController(
     private val signUp: SignUp = SignUp(),
 ) {
     suspend fun login(call: ApplicationCall) {
+        when (getVersion(call)) {
+            1 -> loginV1(call)
+        }
+    }
+
+    private suspend fun loginV1(call: ApplicationCall) {
         val req = call.receive<Login.Req>()
         val res = login(req)
         call.respond(HttpStatusCode.OK, res)
     }
 
     suspend fun signUp(call: ApplicationCall) {
+        when (getVersion(call)) {
+            1 -> signUpV1(call)
+        }
+    }
+
+    private suspend fun signUpV1(call: ApplicationCall) {
         try {
             val req = call.receive<SignUp.Req>()
             signUp(req)
@@ -26,4 +38,7 @@ class AuthenticationController(
             call.respond(HttpStatusCode.BadRequest)
         }
     }
+
+    private fun getVersion(call: ApplicationCall) =
+        call.request.headers["API-Version"]?.toIntOrNull() ?: 1
 }
