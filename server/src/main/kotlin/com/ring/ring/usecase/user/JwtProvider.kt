@@ -19,7 +19,7 @@ object JwtProvider {
         .withIssuer(ISSUER)
         .build()
 
-    fun createJWT(user: User): String? =
+    fun createJWT(user: User): String =
         JWT.create()
             .withIssuedAt(Date())
             .withSubject("Authentication")

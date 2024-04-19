@@ -23,7 +23,6 @@ suspend fun ApplicationCall.respondError(
     respond(httpStatusCode, ErrorMessage(e.message ?: "Unknown"))
 }
 
-
 fun Application.configureStatusPages() {
     install(StatusPages) {
         exception<Throwable> { call, cause ->

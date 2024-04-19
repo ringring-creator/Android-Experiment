@@ -3,7 +3,7 @@ package com.ring.ring.usecase.user
 import com.ring.ring.data.User
 import com.ring.ring.data.repository.UserRepository
 import com.ring.ring.di.DataModules
-import com.ring.ring.exception.LoginFailureException
+import com.ring.ring.exception.BadRequestException
 import com.ring.ring.usecase.UseCase
 import kotlinx.serialization.Serializable
 
@@ -15,15 +15,12 @@ class Login(
             it.copy(password = Cipher.hashWithSHA256(it.password))
         }
         val userId = userRepository.loadId(user)
-            ?: throw LoginFailureException(message = "Id is not found.")
+            ?: throw BadRequestException(message = "Id is not found.")
 
         return Res(userId, generateJwtToken(user))
     }
 
-    private fun generateJwtToken(user: User): String {
-        return JwtProvider.createJWT(user)
-            ?: throw LoginFailureException(message = "Cannot generate JWT Token")
-    }
+    private fun generateJwtToken(user: User): String = JwtProvider.createJWT(user)
 
     @Serializable
     data class Req(
