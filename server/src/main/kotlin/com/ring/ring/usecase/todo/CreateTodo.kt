@@ -4,7 +4,7 @@ import com.ring.ring.data.Todo
 import com.ring.ring.data.repository.TodoRepository
 import com.ring.ring.data.repository.UserRepository
 import com.ring.ring.di.DataModules
-import com.ring.ring.exception.NotLoggedInException
+import com.ring.ring.exception.UnauthorizedException
 import com.ring.ring.usecase.UseCase
 import kotlinx.serialization.Serializable
 
@@ -13,7 +13,8 @@ class CreateTodo(
     private val userRepository: UserRepository = DataModules.userRepository,
 ) : UseCase<CreateTodo.Req, CreateTodo.Res>() {
     override suspend fun execute(req: Req): Res {
-        val userId = userRepository.loadId(req.email) ?: throw NotLoggedInException()
+        val userId = userRepository.loadId(req.email)
+            ?: throw UnauthorizedException("This is an unregistered email")
         todoRepository.save(todo = req.todoReq.toTodo(userId))
         return Res()
     }

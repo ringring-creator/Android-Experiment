@@ -1,6 +1,6 @@
 package com.ring.ring.exception
 
-class NotLoggedInException(
+class UnauthorizedException(
     message: String? = null,
     throwable: Throwable? = null
 ) : Throwable(message, throwable)

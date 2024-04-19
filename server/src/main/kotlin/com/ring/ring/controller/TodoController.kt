@@ -1,6 +1,7 @@
 package com.ring.ring.controller
 
-import com.ring.ring.exception.NotLoggedInException
+import com.ring.ring.exception.BadRequestException
+import com.ring.ring.exception.UnauthorizedException
 import com.ring.ring.usecase.todo.CreateTodo
 import com.ring.ring.usecase.todo.DeleteTodo
 import com.ring.ring.usecase.todo.EditTodo
@@ -29,7 +30,7 @@ class TodoController(
                 email = receiveEmail(call),
             )
         )
-        call.respond(HttpStatusCode.OK)
+        call.respond(HttpStatusCode.Created)
     }
 
     suspend fun get(call: ApplicationCall) {
@@ -59,7 +60,7 @@ class TodoController(
                 email = receiveEmail(call)
             )
         )
-        call.respond(HttpStatusCode.OK)
+        call.respond(HttpStatusCode.NoContent)
     }
 
     suspend fun delete(call: ApplicationCall) {
@@ -69,7 +70,7 @@ class TodoController(
                 email = receiveEmail(call)
             )
         )
-        call.respond(HttpStatusCode.OK)
+        call.respond(HttpStatusCode.NoContent)
     }
 
     suspend fun editDone(call: ApplicationCall) {
@@ -77,16 +78,19 @@ class TodoController(
             req = EditTodoDone.Req(
                 todoId = getTodoId(call),
                 body = call.receive<EditTodoDone.Req.Body>(),
+                email = receiveEmail(call),
             )
         )
-        call.respond(HttpStatusCode.OK)
+        call.respond(HttpStatusCode.NoContent)
     }
 
     private fun getTodoId(call: ApplicationCall) =
-        call.parameters["todoId"]?.toLongOrNull() ?: throw IllegalArgumentException()
+        call.parameters["todoId"]?.toLongOrNull()
+            ?: throw BadRequestException("todoId is not found")
 
     private fun receiveEmail(call: ApplicationCall): String {
-        val principal = call.principal<JWTPrincipal>() ?: throw NotLoggedInException()
+        val principal = call.principal<JWTPrincipal>()
+            ?: throw UnauthorizedException("Not logged in")
         return principal.payload.getClaim("email").asString()
     }
 }

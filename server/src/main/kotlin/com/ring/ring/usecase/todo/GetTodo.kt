@@ -4,8 +4,8 @@ import com.ring.ring.data.Todo
 import com.ring.ring.data.repository.TodoRepository
 import com.ring.ring.data.repository.UserRepository
 import com.ring.ring.di.DataModules
-import com.ring.ring.exception.AuthorizationException
-import com.ring.ring.exception.NotLoggedInException
+import com.ring.ring.exception.ForbiddenException
+import com.ring.ring.exception.UnauthorizedException
 import com.ring.ring.usecase.InstantSerializer
 import com.ring.ring.usecase.UseCase
 import kotlinx.datetime.Instant
@@ -16,9 +16,10 @@ class GetTodo(
     private val userRepository: UserRepository = DataModules.userRepository,
 ) : UseCase<GetTodo.Req, GetTodo.Res>() {
     override suspend fun execute(req: Req): Res {
-        val userId = userRepository.loadId(req.email) ?: throw NotLoggedInException()
+        val userId = userRepository.loadId(req.email)
+            ?: throw UnauthorizedException("Your email address is not registered")
         val todo = repository.get(req.todoId)
-        if (todo.userId != userId) throw AuthorizationException("I'm trying to access another user's Todos. This operation is not allowed.")
+        if (todo.userId != userId) throw ForbiddenException("You try to access another user's Todos")
         return Res(todo = todo.toGetTodo())
     }
 
