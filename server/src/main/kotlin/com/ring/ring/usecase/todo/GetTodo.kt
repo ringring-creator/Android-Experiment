@@ -4,6 +4,7 @@ import com.ring.ring.data.Todo
 import com.ring.ring.data.repository.TodoRepository
 import com.ring.ring.data.repository.UserRepository
 import com.ring.ring.di.DataModules
+import com.ring.ring.exception.BadRequestException
 import com.ring.ring.exception.ForbiddenException
 import com.ring.ring.exception.UnauthorizedException
 import com.ring.ring.usecase.InstantSerializer
@@ -18,7 +19,7 @@ class GetTodo(
     override suspend fun execute(req: Req): Res {
         val userId = userRepository.loadId(req.email)
             ?: throw UnauthorizedException("Your email address is not registered")
-        val todo = repository.get(req.todoId)
+        val todo = repository.get(req.todoId) ?: throw BadRequestException("User not found")
         if (todo.userId != userId) throw ForbiddenException("You try to access another user's Todos")
         return Res(todo = todo.toGetTodo())
     }

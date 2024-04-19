@@ -12,7 +12,7 @@ class TodoRepository(
         dataSource.list(userId)
     }
 
-    suspend fun get(id: Long): Todo = withContext(Dispatchers.IO) {
+    suspend fun get(id: Long): Todo? = withContext(Dispatchers.IO) {
         dataSource.get(id = id)
     }
 

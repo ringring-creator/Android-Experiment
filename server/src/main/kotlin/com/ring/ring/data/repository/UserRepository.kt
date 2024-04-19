@@ -9,7 +9,7 @@ import kotlinx.coroutines.withContext
 class UserRepository(
     private val dataSource: UserDataSource = DataModules.userDataSource,
 ) {
-    suspend fun get(id: Long): User = withContext(Dispatchers.IO) {
+    suspend fun get(id: Long): User? = withContext(Dispatchers.IO) {
         dataSource.get(id = id)
     }
 

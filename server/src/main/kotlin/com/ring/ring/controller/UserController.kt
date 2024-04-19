@@ -1,53 +1,52 @@
 package com.ring.ring.controller
 
+import com.ring.ring.exception.UnauthorizedException
 import com.ring.ring.usecase.user.EditUser
 import com.ring.ring.usecase.user.GetUser
-import com.ring.ring.usecase.user.Login
-import com.ring.ring.usecase.user.SignUp
 import com.ring.ring.usecase.user.WithdrawalUser
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
+import io.ktor.server.auth.jwt.JWTPrincipal
+import io.ktor.server.auth.principal
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 
 class UserController(
-    private val login: Login = Login(),
     private val getUser: GetUser = GetUser(),
-    private val signUp: SignUp = SignUp(),
     private val editUser: EditUser = EditUser(),
     private val withdrawalUser: WithdrawalUser = WithdrawalUser(),
 ) {
-    suspend fun login(call: ApplicationCall) {
-        val req = call.receive<Login.Req>()
-        val res = login(req)
+    suspend fun get(call: ApplicationCall) {
+        val res = getUser(
+            req = GetUser.Req(
+                email = receiveEmail(call)
+            )
+        )
         call.respond(HttpStatusCode.OK, res)
     }
 
-    suspend fun signUp(call: ApplicationCall) {
-        try {
-            val req = call.receive<SignUp.Req>()
-            signUp(req)
-            call.respond(HttpStatusCode.OK)
-        } catch (e: Throwable) {
-            call.respond(HttpStatusCode.BadRequest)
-        }
-    }
-
-    suspend fun get(call: ApplicationCall) {
-        val req = call.receive<GetUser.Req>()
-        val res = getUser(req)
-        call.respond(HttpStatusCode.OK, res.user)
-    }
-
     suspend fun edit(call: ApplicationCall) {
-        val req = call.receive<EditUser.Req>()
-        editUser(req)
-        call.respond(HttpStatusCode.OK)
+        editUser(
+            req = EditUser.Req(
+                currentEmail = receiveEmail(call),
+                user = call.receive<EditUser.Req.Body>()
+            )
+        )
+        call.respond(HttpStatusCode.NoContent)
     }
 
     suspend fun withdrawal(call: ApplicationCall) {
-        val req = call.receive<WithdrawalUser.Req>()
-        withdrawalUser(req)
-        call.respond(HttpStatusCode.OK)
+        withdrawalUser(
+            req = WithdrawalUser.Req(
+                email = receiveEmail(call),
+            )
+        )
+        call.respond(HttpStatusCode.NoContent)
+    }
+
+    private fun receiveEmail(call: ApplicationCall): String {
+        val principal = call.principal<JWTPrincipal>()
+            ?: throw UnauthorizedException("Not logged in")
+        return principal.payload.getClaim("email").asString()
     }
 }

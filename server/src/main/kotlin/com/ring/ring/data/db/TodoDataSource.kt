@@ -22,10 +22,10 @@ class TodoDataSource(private val queries: TodoQueries) {
         .executeAsList()
         .map { convert(it) }
 
-    fun get(id: Long): Todo = queries
+    fun get(id: Long): Todo? = queries
         .selectById(id)
-        .executeAsOne()
-        .let { convert(it) }
+        .executeAsOneOrNull()
+        ?.let { convert(it) }
 
     fun upsert(todo: Todo) {
         if (todo.id == null) {
