@@ -4,6 +4,8 @@ import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFact
 import com.ring.ring.todo.infra.domain.Todo
 import com.ring.ring.todo.infra.network.RetrofitTodoNetworkApi
 import com.ring.ring.todo.infra.network.TodoRetrofitDataSource
+import com.ring.ring.todo.infra.network.exception.UnauthorizedException
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Instant
 import kotlinx.serialization.json.Json
@@ -14,6 +16,7 @@ import okhttp3.mockwebserver.MockWebServer
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
+import org.junit.Assert.assertThrows
 import org.junit.Before
 import org.junit.Test
 import retrofit2.Retrofit
@@ -43,7 +46,7 @@ class TodoRetrofitDataSourceTest {
     }
 
     @Test
-    fun `list parse json and fetch todos`() = runTest {
+    fun `fetchList parse json and fetch todos`() = runTest {
         //given
         val response = MockResponse()
             .setBody(""" { "todoList": [ { "id": 1, "title": "fakeTitle", "description": "fakeDescription", "done": false, "deadline": 1704067200000, "userId": 1 }, { "id": 2, "title": "fakeTitle2", "description": "fakeDescription2", "done": true, "deadline": 1735603200000, "userId": 1 } ] } """.trimIndent())
@@ -64,9 +67,8 @@ class TodoRetrofitDataSourceTest {
         assertThat(firstElement.deadline.toString(), equalTo("2024-01-01T00:00:00Z"))
     }
 
-
     @Test
-    fun `list request correct parameters`() = runTest {
+    fun `fetchList request correct parameters`() = runTest {
         //given
         val response = MockResponse()
             .setBody(""" { "todoList": [ { "id": 1, "title": "fakeTitle", "description": "fakeDescription", "done": false, "deadline": 1704067200000, "userId": 1 }, { "id": 2, "title": "fakeTitle2", "description": "fakeDescription2", "done": true, "deadline": 1735603200000, "userId": 1 } ] } """.trimIndent())
@@ -86,7 +88,24 @@ class TodoRetrofitDataSourceTest {
     }
 
     @Test
-    fun `get request correct parameters`() = runTest {
+    fun `fetchList throw UnauthorizedException when http status code is HTTP_UNAUTHORIZED`() {
+        //given
+        val response = MockResponse()
+            .setBody(""" { "message": "Not logged in" } """.trimIndent())
+            .addHeader("Content-Type", "application/json")
+            .setResponseCode(401)
+        mockWebServer.enqueue(response)
+
+        //when,then
+        assertThrows(UnauthorizedException::class.java) {
+            runBlocking {
+                subject.fetchList("fakeToken")
+            }
+        }
+    }
+
+    @Test
+    fun `fetch request correct parameters`() = runTest {
         //given
         val response = MockResponse()
             .setBody(""" { "todo": {"id": 1, "title": "fakeTitle", "description": "fakeDescription", "done": false, "deadline": 1704067200000 } } """.trimIndent())
@@ -106,7 +125,7 @@ class TodoRetrofitDataSourceTest {
     }
 
     @Test
-    fun `get parse json and fetch todos`() = runTest {
+    fun `fetch parse json and fetch todos`() = runTest {
         //given
         val response = MockResponse()
             .setBody(""" { "todo": {"id": 1, "title": "fakeTitle", "description": "fakeDescription", "done": false, "deadline": 1704067200000 } } """.trimIndent())
@@ -114,15 +133,31 @@ class TodoRetrofitDataSourceTest {
         mockWebServer.enqueue(response)
 
         //when
-        val id = 1L
-        val actual = subject.fetch(todoId = id, token = "fakeToken")
+        val actual = subject.fetch(todoId = 1L, token = "fakeToken")
 
         //then
-        assertThat(actual.id, equalTo(id))
+        assertThat(actual.id, equalTo(1L))
         assertThat(actual.title, equalTo("fakeTitle"))
         assertThat(actual.description, equalTo("fakeDescription"))
         assertThat(actual.done, equalTo(false))
         assertThat(actual.deadline.toString(), equalTo("2024-01-01T00:00:00Z"))
+    }
+
+    @Test
+    fun `fetch throw UnauthorizedException when http status code is HTTP_UNAUTHORIZED`() {
+        //given
+        val response = MockResponse()
+            .setBody(""" { "message": "Not logged in" } """.trimIndent())
+            .addHeader("Content-Type", "application/json")
+            .setResponseCode(401)
+        mockWebServer.enqueue(response)
+
+        //when,then
+        assertThrows(UnauthorizedException::class.java) {
+            runBlocking {
+                subject.fetch(todoId = 1L, token = "fakeToken")
+            }
+        }
     }
 
     @Test
@@ -159,10 +194,36 @@ class TodoRetrofitDataSourceTest {
     }
 
     @Test
-    fun `edit request correct parameters`() = runTest {
+    fun `create throw UnauthorizedException when http status code is HTTP_UNAUTHORIZED`() {
         //given
         val response = MockResponse()
-            .setResponseCode(200)
+            .setBody(""" { "message": "Not logged in" } """.trimIndent())
+            .addHeader("Content-Type", "application/json")
+            .setResponseCode(401)
+        mockWebServer.enqueue(response)
+
+        //when,then
+        assertThrows(UnauthorizedException::class.java) {
+            runBlocking {
+                subject.create(
+                    todo = Todo(
+                        null,
+                        "fakeTitle",
+                        "fakeDescription",
+                        false,
+                        Instant.parse("2024-01-01T00:00:00Z")
+                    ),
+                    token = "fakeToken",
+                )
+            }
+        }
+    }
+
+    @Test
+    fun `update request correct parameters`() = runTest {
+        //given
+        val response = MockResponse()
+            .setResponseCode(204)
         mockWebServer.enqueue(response)
 
         //when
@@ -193,10 +254,36 @@ class TodoRetrofitDataSourceTest {
     }
 
     @Test
+    fun `update throw UnauthorizedException when http status code is HTTP_UNAUTHORIZED`() {
+        //given
+        val response = MockResponse()
+            .setBody(""" { "message": "Not logged in" } """.trimIndent())
+            .addHeader("Content-Type", "application/json")
+            .setResponseCode(401)
+        mockWebServer.enqueue(response)
+
+        //when,then
+        assertThrows(UnauthorizedException::class.java) {
+            runBlocking {
+                subject.update(
+                    todo = Todo(
+                        1L,
+                        "fakeTitle",
+                        "fakeDescription",
+                        false,
+                        Instant.parse("2024-01-01T00:00:00Z")
+                    ),
+                    token = "fakeToken",
+                )
+            }
+        }
+    }
+
+    @Test
     fun `delete request correct parameters`() = runTest {
         //given
         val response = MockResponse()
-            .setResponseCode(200)
+            .setResponseCode(204)
         mockWebServer.enqueue(response)
 
         //when
@@ -215,10 +302,25 @@ class TodoRetrofitDataSourceTest {
     }
 
     @Test
+    fun `delete throw UnauthorizedException when http status code is HTTP_UNAUTHORIZED`() {
+        //given
+        val response = MockResponse()
+            .setBody(""" { "message": "Not logged in" } """.trimIndent())
+            .addHeader("Content-Type", "application/json")
+            .setResponseCode(401)
+        mockWebServer.enqueue(response)
+
+        //when,then
+        assertThrows(UnauthorizedException::class.java) {
+            runBlocking { subject.delete(todoId = 1L, token = "fakeToken") }
+        }
+    }
+
+    @Test
     fun `editDone request correct parameters`() = runTest {
         //given
         val response = MockResponse()
-            .setResponseCode(200)
+            .setResponseCode(204)
         mockWebServer.enqueue(response)
 
         //when
@@ -234,5 +336,20 @@ class TodoRetrofitDataSourceTest {
         assertThat(request.getHeader("Authorization"), equalTo("Bearer $token"))
         assertThat(request.path, equalTo("/todos/edit-done/${todoId}"))
         assertThat(request.method, equalTo("PATCH"))
+    }
+
+    @Test
+    fun `editDone throw UnauthorizedException when http status code is HTTP_UNAUTHORIZED`() {
+        //given
+        val response = MockResponse()
+            .setBody(""" { "message": "Not logged in" } """.trimIndent())
+            .addHeader("Content-Type", "application/json")
+            .setResponseCode(401)
+        mockWebServer.enqueue(response)
+
+        //when,then
+        assertThrows(UnauthorizedException::class.java) {
+            runBlocking { subject.updateDone(todoId = 1L, done = true, "fakeToken") }
+        }
     }
 }

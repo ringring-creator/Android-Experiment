@@ -5,7 +5,6 @@ import com.ring.ring.todo.infra.network.dto.EditDoneRequest
 import com.ring.ring.todo.infra.network.dto.EditRequest
 import com.ring.ring.todo.infra.network.dto.GetResponse
 import com.ring.ring.todo.infra.network.dto.ListResponse
-import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -43,14 +42,14 @@ interface RetrofitTodoNetworkApi {
         @Path("todoId") todoId: Long,
         @Body request: EditRequest,
         @Header("Authorization") authorization: String,
-    ): Response<Unit>
+    )
 
     @Headers("API-Version: 1")
     @DELETE("todos/{todoId}")
     suspend fun delete(
         @Path("todoId") todoId: Long,
         @Header("Authorization") authorization: String,
-    ): Response<Unit>
+    )
 
     @Headers("API-Version: 1")
     @PATCH("todos/edit-done/{todoId}")
@@ -58,5 +57,5 @@ interface RetrofitTodoNetworkApi {
         @Path("todoId") todoId: Long,
         @Body request: EditDoneRequest,
         @Header("Authorization") authorization: String,
-    ): Response<Unit>
+    )
 }

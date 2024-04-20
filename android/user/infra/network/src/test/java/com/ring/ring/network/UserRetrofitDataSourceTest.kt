@@ -84,7 +84,7 @@ class UserRetrofitDataSourceTest {
         val body = request.body.readUtf8()
         assertThat(body.contains("\"email\":\"$email\""), `is`(true))
         assertThat(body.contains("\"password\":\"$password\""), `is`(true))
-        assertThat(request.path, equalTo("/user/login"))
+        assertThat(request.path, equalTo("/login"))
     }
 
     @Test
@@ -104,6 +104,6 @@ class UserRetrofitDataSourceTest {
         val body = request.body.readUtf8()
         assertThat(body.contains("\"email\":\"$email\""), `is`(true))
         assertThat(body.contains("\"password\":\"$password\""), `is`(true))
-        assertThat(request.path, equalTo("/user/signup"))
+        assertThat(request.path, equalTo("/signup"))
     }
 }
