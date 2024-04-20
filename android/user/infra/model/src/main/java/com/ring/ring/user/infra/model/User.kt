@@ -1,6 +1,6 @@
 package com.ring.ring.user.infra.model
 
-class User(
+data class User(
     val id: Id,
     val email: Email,
     val token: String,

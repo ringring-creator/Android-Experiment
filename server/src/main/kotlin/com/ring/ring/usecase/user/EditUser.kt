@@ -14,7 +14,7 @@ class EditUser(
         val userId = repository.loadId(req.currentEmail)
             ?: throw UnauthorizedException("This is an unregistered email")
         repository.save(
-            user = req.user.toUser(userId)
+            user = req.credentials.toUser(userId)
         )
         return Res()
     }
@@ -22,7 +22,7 @@ class EditUser(
     @Serializable
     data class Req(
         val currentEmail: String,
-        val user: Body,
+        val credentials: Body,
     ) : UseCase.Req {
         @Serializable
         data class Body(

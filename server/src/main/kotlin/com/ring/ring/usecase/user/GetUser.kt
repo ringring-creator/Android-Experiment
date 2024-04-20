@@ -15,7 +15,7 @@ class GetUser(
         val userId = repository.loadId(req.email)
             ?: throw UnauthorizedException("This is an unregistered email")
         val user = repository.get(userId) ?: throw BadRequestException("User not found")
-        return Res(user = user.toReqUser())
+        return user.toReq()
     }
 
     @Serializable
@@ -25,18 +25,13 @@ class GetUser(
 
     @Serializable
     data class Res(
-        val user: ReqUser
-    ) : UseCase.Res {
-        @Serializable
-        data class ReqUser(
-            val id: Long,
-            val email: String,
-            val password: String,
-        )
-    }
+        val id: Long,
+        val email: String,
+        val password: String,
+    ) : UseCase.Res
 
-    private fun User.toReqUser(): Res.ReqUser {
-        return Res.ReqUser(
+    private fun User.toReq(): Res {
+        return Res(
             id = id ?: throw IllegalStateException(),
             email = email,
             password = password
