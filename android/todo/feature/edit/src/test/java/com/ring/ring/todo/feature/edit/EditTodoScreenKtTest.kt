@@ -17,7 +17,7 @@ import com.ring.ring.todo.infra.test.FakeTodoNetworkDataSource
 import com.ring.ring.user.infra.model.User
 import com.ring.ring.user.infra.test.FakeUserLocalDataSource
 import com.ring.ring.user.infra.test.TestActivity
-import com.ring.ring.util.date.DateUtil
+import com.ring.ring.util.date.DefaultDateUtil
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
@@ -62,7 +62,7 @@ class EditTodoScreenKtTest {
     private var userLocalDataSource = FakeUserLocalDataSource(user)
     private var snackbarHostState = SnackbarHostState()
     private lateinit var savedStateHandle: SavedStateHandle
-    private val dateUtil = DateUtil()
+    private val dateUtil = DefaultDateUtil()
 
     @Before
     fun setUp() {

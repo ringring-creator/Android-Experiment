@@ -3,7 +3,7 @@ package com.ring.ring.todo.feature.create
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.ring.ring.util.date.DateUtil
+import com.ring.ring.util.date.DefaultDateUtil
 
 @Preview(
     group = "normal scenario",
@@ -45,7 +45,7 @@ private fun CreateTodoScreen(uiState: CreateTodoUiState) {
     CreateTodoScreen(uiState, updater, {}, SnackbarHostState())
 }
 
-private val dateUtil = DateUtil()
+private val dateUtil = DefaultDateUtil()
 
 private val value: CreateTodoUiState = CreateTodoUiState(
     title = "title",

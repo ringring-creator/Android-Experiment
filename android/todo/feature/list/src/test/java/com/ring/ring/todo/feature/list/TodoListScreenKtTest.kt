@@ -22,7 +22,7 @@ import com.ring.ring.user.infra.model.User
 import com.ring.ring.user.infra.model.UserLocalDataSource
 import com.ring.ring.user.infra.test.FakeUserLocalDataSource
 import com.ring.ring.user.infra.test.TestActivity
-import com.ring.ring.util.date.DateUtil
+import com.ring.ring.util.date.DefaultDateUtil
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
@@ -55,7 +55,7 @@ class TodoListScreenKtTest {
     private var localDataSource: TodoLocalDataSource = FakeTodoLocalDataSource()
     private var userLocalDataSource: UserLocalDataSource = FakeUserLocalDataSource(user = user)
     private var snackbarHostState: SnackbarHostState = SnackbarHostState()
-    private val dateUtil = DateUtil()
+    private val dateUtil = DefaultDateUtil()
 
     @Before
     fun setUp() {

@@ -3,7 +3,7 @@ package com.ring.ring.todo.feature.edit
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.ring.ring.util.date.DateUtil
+import com.ring.ring.util.date.DefaultDateUtil
 import kotlinx.datetime.Clock
 
 @Preview(
@@ -57,7 +57,7 @@ private fun EditTodoScreen(uiState: EditTodoUiState) {
     )
 }
 
-private val dateUtil = DateUtil()
+private val dateUtil = DefaultDateUtil()
 
 private val value: EditTodoUiState = EditTodoUiState(
     todo = EditTodoUiState.Todo(

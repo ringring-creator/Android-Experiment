@@ -6,7 +6,7 @@ import com.ring.ring.todo.infra.test.FakeTodoNetworkDataSource
 import com.ring.ring.user.infra.model.User
 import com.ring.ring.user.infra.model.UserLocalDataSource
 import com.ring.ring.user.infra.test.FakeUserLocalDataSource
-import com.ring.ring.util.date.DateUtil
+import com.ring.ring.util.date.DefaultDateUtil
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -36,7 +36,7 @@ class CreateTodoViewModelTest {
     private var networkDataSource: TodoNetworkDataSource =
         FakeTodoNetworkDataSource(user.token)
     private var userLocalDataSource: UserLocalDataSource = FakeUserLocalDataSource(user = user)
-    private val dateUtil = DateUtil()
+    private val dateUtil = DefaultDateUtil()
 
     @Before
     fun setUp() {
