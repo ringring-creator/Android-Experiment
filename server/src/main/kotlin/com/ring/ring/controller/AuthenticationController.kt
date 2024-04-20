@@ -30,13 +30,9 @@ class AuthenticationController(
     }
 
     private suspend fun signUpV1(call: ApplicationCall) {
-        try {
-            val req = call.receive<SignUp.Req>()
-            signUp(req)
-            call.respond(HttpStatusCode.OK)
-        } catch (e: Throwable) {
-            call.respond(HttpStatusCode.BadRequest)
-        }
+        val req = call.receive<SignUp.Req>()
+        signUp(req)
+        call.respond(HttpStatusCode.OK)
     }
 
     private fun getVersion(call: ApplicationCall) =

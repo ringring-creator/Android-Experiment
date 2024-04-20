@@ -21,6 +21,10 @@ class UserRepository(
         dataSource.loadId(email)
     }
 
+    suspend fun exist(email: String): Boolean = withContext(Dispatchers.IO) {
+        dataSource.exist(email)
+    }
+
     suspend fun save(user: User) = withContext(Dispatchers.IO) {
         dataSource.upsert(user = user)
     }

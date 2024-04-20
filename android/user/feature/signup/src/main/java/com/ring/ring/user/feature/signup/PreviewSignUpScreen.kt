@@ -23,7 +23,21 @@ internal fun PreviewSignUpScreen() {
 internal fun PreviewSignUpScreenWhenEmailInvalid() {
     SignUpScreen(
         uiState = uiState.copy(
-            email = SignUpUiState.Email("test", true)
+            email = SignUpUiState.Email("test", true, false)
+        ),
+    )
+}
+
+@Preview(
+    group = "error scenario",
+    showSystemUi = true,
+    apiLevel = 34,
+)
+@Composable
+internal fun PreviewSignUpScreenWhenShowSupportingText() {
+    SignUpScreen(
+        uiState = uiState.copy(
+            email = SignUpUiState.Email("test", true, true)
         ),
     )
 }
@@ -53,7 +67,7 @@ private fun SignUpScreen(uiState: SignUpUiState) {
 }
 
 private val uiState = SignUpUiState(
-    email = SignUpUiState.Email("test@gmail.com", false),
+    email = SignUpUiState.Email("test@gmail.com", false, false),
     password = SignUpUiState.Password("Testtest1", false)
 )
 

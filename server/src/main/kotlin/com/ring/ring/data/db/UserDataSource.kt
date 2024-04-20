@@ -13,13 +13,17 @@ class UserDataSource(
         .executeAsOneOrNull()
         ?.let { convert(it) }
 
-    fun loadId(user: User): Long? = queries
+    fun loadId(user: User): Long = queries
         .selectIdByEmailAndPassword(user.email, user.password)
         .executeAsOneOrNull()
 
-    fun loadId(email: String): Long? = queries
+    fun loadId(email: String): Long = queries
         .selectIdByEmail(email)
         .executeAsOneOrNull()
+
+    fun exist(email: String): Boolean = queries
+        .exist(email)
+        .executeAsOne()
 
     fun upsert(user: User) {
         if (user.id == null) {

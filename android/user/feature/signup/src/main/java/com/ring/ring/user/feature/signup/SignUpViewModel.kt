@@ -2,6 +2,7 @@ package com.ring.ring.user.feature.signup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ring.ring.network.exception.ConflictException
 import com.ring.ring.user.infra.model.Email
 import com.ring.ring.user.infra.model.Password
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,7 +24,10 @@ internal class SignUpViewModel @Inject constructor(
     private val _event = Channel<SignUpEvent>(capacity = 5, BufferOverflow.DROP_OLDEST)
     val event = _event.receiveAsFlow()
 
-    private val handler = CoroutineExceptionHandler { _, _ ->
+    private val handler = CoroutineExceptionHandler { _, th ->
+        if (th is ConflictException) {
+            _uiState.value = uiState.value.replaceIsShowSupportText(true)
+        }
         _event.trySend(SignUpEvent.SignUpError)
     }
 
@@ -45,7 +49,7 @@ internal class SignUpViewModel @Inject constructor(
     }
 
     private fun defaultSignUpUiState() = SignUpUiState(
-        email = SignUpUiState.Email("", isError = false),
+        email = SignUpUiState.Email("", isError = false, isShowSupportingText = false),
         password = SignUpUiState.Password("", isError = false),
     )
 }
@@ -55,6 +59,17 @@ private fun SignUpUiState.replaceEmail(value: String): SignUpUiState {
         email = SignUpUiState.Email(
             value = value,
             isError = Email.isInvalidEmail(value),
+            isShowSupportingText = false,
+        ),
+    )
+}
+
+private fun SignUpUiState.replaceIsShowSupportText(value: Boolean): SignUpUiState {
+    return this.copy(
+        email = SignUpUiState.Email(
+            value = this.email.value,
+            isError = value,
+            isShowSupportingText = value,
         ),
     )
 }

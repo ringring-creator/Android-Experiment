@@ -78,19 +78,6 @@ internal fun SignUpScreen(
     }
 }
 
-private suspend fun showSignUpFailedSnackbar(
-    snackBarHostState: SnackbarHostState,
-    context: Context,
-    scope: CoroutineScope
-) {
-    scope.launch {
-        snackBarHostState.showSnackbar(
-            message = context.getString(R.string.failed_to_sign_up),
-            withDismissAction = true,
-        )
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun SignUpScreen(
@@ -117,6 +104,19 @@ internal fun SignUpScreen(
             email = uiState.email,
             password = uiState.password,
             updater = updater,
+        )
+    }
+}
+
+private suspend fun showSignUpFailedSnackbar(
+    snackBarHostState: SnackbarHostState,
+    context: Context,
+    scope: CoroutineScope
+) {
+    scope.launch {
+        snackBarHostState.showSnackbar(
+            message = context.getString(R.string.failed_to_sign_up),
+            withDismissAction = true,
         )
     }
 }
@@ -155,6 +155,11 @@ private fun EmailTextField(
             .fillMaxWidth()
             .testTag("EmailTextField"),
         isError = email.isError,
+        supportingText = {
+            if (email.isShowSupportingText) {
+                Text(stringResource(R.string.email_is_already_registered))
+            }
+        },
         singleLine = true,
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
     )

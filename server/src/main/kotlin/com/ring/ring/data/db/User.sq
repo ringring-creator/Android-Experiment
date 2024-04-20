@@ -15,6 +15,11 @@ selectIdByEmail:
 SELECT id FROM UserTable
 WHERE email = :email;
 
+exist:
+SELECT Count(email) > 0 FROM UserTable
+WHERE email = :email;
+
+
 selectIdByEmailAndPassword:
 SELECT id FROM UserTable
 WHERE email = :email AND password = :password;

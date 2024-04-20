@@ -1,6 +1,7 @@
 package com.ring.ring.plugin
 
 import com.ring.ring.exception.BadRequestException
+import com.ring.ring.exception.ConflictException
 import com.ring.ring.exception.ForbiddenException
 import com.ring.ring.exception.UnauthorizedException
 import io.ktor.http.HttpStatusCode
@@ -30,6 +31,7 @@ fun Application.configureStatusPages() {
                 is BadRequestException -> call.respondError(HttpStatusCode.BadRequest, cause)
                 is UnauthorizedException -> call.respondError(HttpStatusCode.Unauthorized, cause)
                 is ForbiddenException -> call.respondError(HttpStatusCode.Forbidden, cause)
+                is ConflictException -> call.respondError(HttpStatusCode.Conflict, cause)
                 else -> {
                     call.respond(
                         status = HttpStatusCode.InternalServerError,

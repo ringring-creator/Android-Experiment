@@ -1,8 +1,10 @@
 package com.ring.ring.network
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import com.ring.ring.network.exception.ConflictException
 import com.ring.ring.user.infra.model.Credentials
 import com.ring.ring.user.infra.model.Id
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -13,6 +15,7 @@ import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.After
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import retrofit2.Retrofit
@@ -106,4 +109,23 @@ class UserRetrofitDataSourceTest {
         assertThat(body.contains("\"password\":\"$password\""), `is`(true))
         assertThat(request.path, equalTo("/signup"))
     }
+
+    @Test
+    fun `signUp throw UnauthorizedException when http status code is HTTP_UNAUTHORIZED`() {
+        //given
+        val response = MockResponse()
+            .setBody(""" { "message": "Email is already registered" } """.trimIndent())
+            .addHeader("Content-Type", "application/json")
+            .setResponseCode(409)
+        mockWebServer.enqueue(response)
+
+        //when,then
+        Assert.assertThrows(ConflictException::class.java) {
+            runBlocking {
+                subject.signUp(Credentials.issue("email@example.com", "Abcdefg1"))
+
+            }
+        }
+    }
+
 }

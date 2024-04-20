@@ -5,6 +5,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
+import com.ring.ring.network.exception.ConflictException
 import com.ring.ring.user.infra.model.Credentials
 import com.ring.ring.user.infra.model.UserNetworkDataSource
 import com.ring.ring.user.infra.test.FakeErrorUserNetworkDataSource
@@ -13,6 +14,8 @@ import com.ring.ring.user.infra.test.TestActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
+import io.mockk.coEvery
+import io.mockk.mockk
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 
@@ -76,6 +79,31 @@ class SignUpScreenKtTest {
 
         //then
         composeTestRule.onNodeWithText("Failed to sign up").assertExists()
+    }
+
+    @Test
+    fun `tapped sign up button show supportText when email conflicted`() {
+        //given
+        networkDataSource = mockk(relaxed = true) {
+            coEvery { signUp(any()) } throws ConflictException()
+        }
+        setupSignUpScreen()
+        composeTestRule
+            .onNodeWithTag("EmailTextField")
+            .performTextInput(savedCredentials.email.value)
+        composeTestRule
+            .onNodeWithTag("PasswordTextField")
+            .performTextInput(savedCredentials.password.value)
+
+        //when
+        composeTestRule
+            .onNodeWithTag("SignUpButton")
+            .performClick()
+
+        //then
+        composeTestRule
+            .onNodeWithText("Email is already registered")
+            .assertExists()
     }
 
     private fun setupSignUpScreen(toLoginScreen: () -> Unit = {}) {

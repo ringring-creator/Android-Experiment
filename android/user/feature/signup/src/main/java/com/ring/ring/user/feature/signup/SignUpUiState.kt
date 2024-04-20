@@ -11,6 +11,7 @@ internal data class SignUpUiState(
     internal data class Email(
         val value: String,
         val isError: Boolean,
+        val isShowSupportingText: Boolean,
     )
 
     internal data class Password(
