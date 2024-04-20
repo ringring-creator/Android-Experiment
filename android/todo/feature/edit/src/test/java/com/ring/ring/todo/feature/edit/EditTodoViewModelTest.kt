@@ -5,9 +5,18 @@ import com.ring.ring.infra.test.MainDispatcherRule
 import com.ring.ring.todo.infra.domain.TodoNetworkDataSource
 import com.ring.ring.todo.infra.test.FakeTodoNetworkDataSource
 import com.ring.ring.user.infra.model.User
+import com.ring.ring.user.infra.model.UserLocalDataSource
 import com.ring.ring.user.infra.test.FakeUserLocalDataSource
 import com.ring.ring.util.date.DateUtil
+import io.mockk.coEvery
+import io.mockk.mockk
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
@@ -15,6 +24,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class EditTodoViewModelTest {
     private lateinit var subject: EditTodoViewModel
 
@@ -23,7 +33,7 @@ class EditTodoViewModelTest {
 
     private var user = User.generate(10L, "email@example.com", "Abcdefg1")
     private var networkDataSource: TodoNetworkDataSource = FakeTodoNetworkDataSource(user.token)
-    private var userLocalDataSource = FakeUserLocalDataSource(user)
+    private var userLocalDataSource: UserLocalDataSource = FakeUserLocalDataSource(user)
     private lateinit var savedStateHandle: SavedStateHandle
     private val dateUtil = DateUtil()
     private val id = 1L
@@ -60,6 +70,72 @@ class EditTodoViewModelTest {
 
         //then
         assertThat(subject.uiState.value.isShowDatePicker, `is`(false))
+    }
+
+    @Test
+    fun `getTodo send UnauthorizedError when user does not saved`() = runTest {
+        //given
+        userLocalDataSource = mockk(relaxed = true) {
+            coEvery { getUser() } returns null
+        }
+        setupSubject()
+        var wasCalled = false
+        TestScope(UnconfinedTestDispatcher()).launch {
+            subject.event.collect {
+                if (it == EditTodoEvent.UnauthorizedError) wasCalled = true
+            }
+        }
+
+        //when
+        subject.getTodo()
+        advanceUntilIdle()
+
+        //then
+        assertThat(wasCalled, `is`(true))
+    }
+
+    @Test
+    fun `editTodo send UnauthorizedError when user does not saved`() = runTest {
+        //given
+        userLocalDataSource = mockk(relaxed = true) {
+            coEvery { getUser() } returns null
+        }
+        setupSubject()
+        var wasCalled = false
+        TestScope(UnconfinedTestDispatcher()).launch {
+            subject.event.collect {
+                if (it == EditTodoEvent.UnauthorizedError) wasCalled = true
+            }
+        }
+
+        //when
+        subject.editTodo()
+        advanceUntilIdle()
+
+        //then
+        assertThat(wasCalled, `is`(true))
+    }
+
+    @Test
+    fun `deleteTodo send UnauthorizedError when user does not saved`() = runTest {
+        //given
+        userLocalDataSource = mockk(relaxed = true) {
+            coEvery { getUser() } returns null
+        }
+        setupSubject()
+        var wasCalled = false
+        TestScope(UnconfinedTestDispatcher()).launch {
+            subject.event.collect {
+                if (it == EditTodoEvent.UnauthorizedError) wasCalled = true
+            }
+        }
+
+        //when
+        subject.deleteTodo()
+        advanceUntilIdle()
+
+        //then
+        assertThat(wasCalled, `is`(true))
     }
 
     private fun setupSubject() {

@@ -19,6 +19,7 @@ import com.ring.ring.todo.infra.test.FakeErrorTodoNetworkDataSource
 import com.ring.ring.todo.infra.test.FakeTodoLocalDataSource
 import com.ring.ring.todo.infra.test.FakeTodoNetworkDataSource
 import com.ring.ring.user.infra.model.User
+import com.ring.ring.user.infra.model.UserLocalDataSource
 import com.ring.ring.user.infra.test.FakeUserLocalDataSource
 import com.ring.ring.user.infra.test.TestActivity
 import com.ring.ring.util.date.DateUtil
@@ -52,7 +53,7 @@ class TodoListScreenKtTest {
     private var networkDataSource: TodoNetworkDataSource =
         FakeTodoNetworkDataSource(token = user.token, values = todoList)
     private var localDataSource: TodoLocalDataSource = FakeTodoLocalDataSource()
-    private var userLocalDataSource = FakeUserLocalDataSource(user = user)
+    private var userLocalDataSource: UserLocalDataSource = FakeUserLocalDataSource(user = user)
     private var snackbarHostState: SnackbarHostState = SnackbarHostState()
     private val dateUtil = DateUtil()
 

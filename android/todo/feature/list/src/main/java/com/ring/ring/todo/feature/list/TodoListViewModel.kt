@@ -48,7 +48,7 @@ internal class TodoListViewModel @Inject constructor(
     private fun findTargetIndex(todoId: Long) =
         uiState.value.todoList.indexOfFirst { it.id == todoId }
 
-    private fun getTodoWithToggleDone(index: Int) =
+    private fun getTodoWithToggleDone(index: Int): TodoListUiState.Todo =
         uiState.value.todoList[index].copy(done = uiState.value.todoList[index].done.not())
 
     private fun updateTodoList(index: Int, newTodo: TodoListUiState.Todo) {

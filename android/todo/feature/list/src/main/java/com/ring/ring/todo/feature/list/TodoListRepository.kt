@@ -3,6 +3,7 @@ package com.ring.ring.todo.feature.list
 import com.ring.ring.todo.infra.domain.Todo
 import com.ring.ring.todo.infra.domain.TodoLocalDataSource
 import com.ring.ring.todo.infra.domain.TodoNetworkDataSource
+import com.ring.ring.todo.infra.network.exception.UnauthorizedException
 import com.ring.ring.user.infra.model.UserLocalDataSource
 import com.ring.ring.util.date.DateUtil
 import javax.inject.Inject
@@ -13,14 +14,13 @@ internal class TodoListRepository @Inject constructor(
     private val userLocalDataSource: UserLocalDataSource,
     private val dateUtil: DateUtil,
 ) {
-    //Todo default value is null
-    private var fetchedTodoList: List<Todo> = emptyList()
+    private var fetchedTodoList: List<Todo>? = null
 
     suspend fun list(): List<TodoListUiState.Todo> {
         return try {
-            val user = userLocalDataSource.getUser()!!
-            fetchedTodoList = networkDataSource.fetchList(user.token)
-            fetchedTodoList.mapNotNull(this::convert)
+            val token = userLocalDataSource.getUser()?.token ?: throw UnauthorizedException()
+            fetchedTodoList = networkDataSource.fetchList(token)
+            fetchedTodoList?.mapNotNull(this::convert) ?: emptyList()
         } catch (e: Throwable) {
             localDataSource
                 .load()
@@ -29,13 +29,15 @@ internal class TodoListRepository @Inject constructor(
     }
 
     suspend fun refresh() {
-        localDataSource.deleteAll()
-        localDataSource.upsert(fetchedTodoList)
+        fetchedTodoList?.let {
+            localDataSource.deleteAll()
+            localDataSource.upsert(it)
+        }
     }
 
     suspend fun editDone(id: Long, done: Boolean) {
-        val user = userLocalDataSource.getUser()!!
-        networkDataSource.updateDone(id, done, user.token)
+        val token = userLocalDataSource.getUser()?.token ?: throw UnauthorizedException()
+        networkDataSource.updateDone(id, done, token)
     }
 
     private fun convert(todo: Todo): TodoListUiState.Todo? {

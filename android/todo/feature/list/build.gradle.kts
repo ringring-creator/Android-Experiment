@@ -64,6 +64,7 @@ dependencies {
     testImplementation(libs.robolectric)
     testImplementation(libs.compose.ui.test.junit)
     testImplementation(libs.hilt.android.testing)
+    testImplementation(libs.mockk)
 }
 
 kapt {

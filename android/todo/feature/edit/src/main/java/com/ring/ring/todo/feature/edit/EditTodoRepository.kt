@@ -2,6 +2,7 @@ package com.ring.ring.todo.feature.edit
 
 import com.ring.ring.todo.infra.domain.Todo
 import com.ring.ring.todo.infra.domain.TodoNetworkDataSource
+import com.ring.ring.todo.infra.network.exception.UnauthorizedException
 import com.ring.ring.user.infra.model.UserLocalDataSource
 import com.ring.ring.util.date.DateUtil
 import kotlinx.datetime.Instant
@@ -18,7 +19,7 @@ internal class EditTodoRepository @Inject constructor(
     )
 
     suspend fun fetchTodo(id: Long): FetchTodoResponse {
-        val token = userLocalDataSource.getUser()!!.token
+        val token = userLocalDataSource.getUser()?.token ?: throw UnauthorizedException()
         val todo = networkDataSource.fetch(todoId = id, token)
         return FetchTodoResponse(
             todo = convert(todo),
@@ -31,7 +32,6 @@ internal class EditTodoRepository @Inject constructor(
         todo: EditTodoUiState.Todo,
         deadline: Instant
     ) {
-        val token = userLocalDataSource.getUser()!!.token
         networkDataSource.update(
             todo = Todo(
                 id = id,
@@ -40,12 +40,12 @@ internal class EditTodoRepository @Inject constructor(
                 done = todo.done,
                 deadline = deadline
             ),
-            token = token,
+            token = userLocalDataSource.getUser()?.token ?: throw UnauthorizedException(),
         )
     }
 
     suspend fun deleteTodo(id: Long) {
-        val token = userLocalDataSource.getUser()!!.token
+        val token = userLocalDataSource.getUser()?.token ?: throw UnauthorizedException()
         networkDataSource.delete(todoId = id, token)
     }
 

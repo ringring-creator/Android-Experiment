@@ -8,14 +8,21 @@ import com.ring.ring.todo.infra.test.FakeErrorTodoNetworkDataSource
 import com.ring.ring.todo.infra.test.FakeTodoLocalDataSource
 import com.ring.ring.todo.infra.test.FakeTodoNetworkDataSource
 import com.ring.ring.user.infra.model.User
+import com.ring.ring.user.infra.model.UserLocalDataSource
 import com.ring.ring.user.infra.test.FakeUserLocalDataSource
 import com.ring.ring.util.date.DateUtil
+import io.mockk.coEvery
+import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Instant
 import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
 import org.junit.Rule
@@ -59,7 +66,7 @@ class TodoListViewModelTest {
     )
     private var localDataSource: TodoLocalDataSource =
         FakeTodoLocalDataSource(localTodoList.toMutableList())
-    private var userLocalDataSource = FakeUserLocalDataSource(user)
+    private var userLocalDataSource: UserLocalDataSource = FakeUserLocalDataSource(user)
     private val dateUtil = DateUtil()
 
     @Before
@@ -123,6 +130,28 @@ class TodoListViewModelTest {
         assertThat(firstElement.title, equalTo(expected.title))
         assertThat(firstElement.done, equalTo(expected.done))
         assertThat(firstElement.deadline, equalTo(dateUtil.format(expected.deadline)))
+    }
+
+    @Test
+    fun `editDone send UnauthorizedError when user does not saved`() = runTest {
+        //given
+        userLocalDataSource = mockk(relaxed = true) {
+            coEvery { getUser() } returns null
+        }
+        setupSubject()
+        subject.fetchTodoList()
+
+        var wasCalled = false
+        TestScope(UnconfinedTestDispatcher()).launch {
+            subject.event.collect { wasCalled = true }
+        }
+
+        //when
+        subject.toggleDone(localTodoList.first().id!!)
+        advanceUntilIdle()
+
+        //then
+        assertThat(wasCalled, `is`(true))
     }
 
     private fun setupSubject() {
