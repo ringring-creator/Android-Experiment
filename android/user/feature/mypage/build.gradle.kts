@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.ring.ring.user.feature.signup"
+    namespace = "com.ring.ring.mypage"
     compileSdk = 34
 
     defaultConfig {
@@ -36,7 +36,6 @@ android {
         jvmTarget = "1.8"
     }
     buildFeatures {
-        buildConfig = true
         compose = true
     }
     testOptions.unitTests.isIncludeAndroidResources = true
@@ -50,7 +49,6 @@ dependencies {
     implementation(libs.bundles.hilt)
     kapt(libs.hilt.compiler)
     implementation(libs.bundles.compose.ui.tool)
-    implementation(libs.androidx.appcompat)
 
     testImplementation(projects.android.infra.test)
     testImplementation(projects.android.user.infra.test)
