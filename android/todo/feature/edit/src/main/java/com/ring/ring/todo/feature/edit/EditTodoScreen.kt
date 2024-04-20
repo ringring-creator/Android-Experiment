@@ -47,6 +47,7 @@ import com.ring.ring.todo.feature.edit.EditTodoEvent.GetTodoError
 internal fun EditTodoScreen(
     viewModel: EditTodoViewModel = hiltViewModel(),
     toTodoListScreen: () -> Unit,
+    toLoginScreen: () -> Unit,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
 
@@ -57,7 +58,7 @@ internal fun EditTodoScreen(
         snackBarHostState = snackbarHostState,
     )
 
-    SetupSideEffect(viewModel, toTodoListScreen, snackbarHostState)
+    SetupSideEffect(viewModel, toTodoListScreen, toLoginScreen, snackbarHostState)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -102,14 +103,13 @@ private fun NavigationIcon(toTodoListScreen: () -> Unit) {
 private fun SetupSideEffect(
     viewModel: EditTodoViewModel,
     toTodoListScreen: () -> Unit,
+    toLoginScreen: () -> Unit,
     snackBarHostState: SnackbarHostState,
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     LaunchedEffect(Unit) {
-        viewModel.getTodo()
-
-        viewModel.events.collect {
+        viewModel.event.collect {
             when (it) {
                 DeleteError -> showSnackbar(
                     snackBarHostState,
@@ -137,8 +137,19 @@ private fun SetupSideEffect(
                     viewModel::getTodo,
                     scope
                 )
+
+                EditTodoEvent.UnauthorizedError -> showRetrySnackbar(
+                    snackBarHostState = snackBarHostState,
+                    message = context.getString(R.string.not_logged_in),
+                    actionLabel = context.getString(R.string.to_login),
+                    action = toLoginScreen,
+                    scope = scope
+                )
             }
         }
+    }
+    LaunchedEffect(Unit) {
+        viewModel.getTodo()
     }
 }
 

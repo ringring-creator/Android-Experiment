@@ -3,6 +3,7 @@ package com.ring.ring.todo.feature.edit
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ring.ring.todo.infra.network.exception.UnauthorizedException
 import com.ring.ring.util.date.DateUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -28,17 +29,26 @@ internal class EditTodoViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(initEditTodoUiState())
     val uiState = _uiState.asStateFlow()
 
-    private val _events = Channel<EditTodoEvent>(capacity = 5, BufferOverflow.DROP_OLDEST)
-    val events = _events.receiveAsFlow()
+    private val _event = Channel<EditTodoEvent>(capacity = 5, BufferOverflow.DROP_OLDEST)
+    val event = _event.receiveAsFlow()
 
-    private val getErrorHandler = CoroutineExceptionHandler { _, _ ->
-        _events.trySend(EditTodoEvent.GetTodoError)
+    private val getErrorHandler = CoroutineExceptionHandler { _, th ->
+        if (th is UnauthorizedException) {
+            _event.trySend(EditTodoEvent.UnauthorizedError)
+        }
+        _event.trySend(EditTodoEvent.GetTodoError)
     }
-    private val editErrorHandler = CoroutineExceptionHandler { _, _ ->
-        _events.trySend(EditTodoEvent.EditError)
+    private val editErrorHandler = CoroutineExceptionHandler { _, th ->
+        if (th is UnauthorizedException) {
+            _event.trySend(EditTodoEvent.UnauthorizedError)
+        }
+        _event.trySend(EditTodoEvent.EditError)
     }
-    private val deleteErrorHandler = CoroutineExceptionHandler { _, _ ->
-        _events.trySend(EditTodoEvent.DeleteError)
+    private val deleteErrorHandler = CoroutineExceptionHandler { _, th ->
+        if (th is UnauthorizedException) {
+            _event.trySend(EditTodoEvent.UnauthorizedError)
+        }
+        _event.trySend(EditTodoEvent.DeleteError)
     }
 
     fun setTitle(title: String) {
@@ -84,14 +94,14 @@ internal class EditTodoViewModel @Inject constructor(
                 uiState.value.todo,
                 deadline = deadline,
             )
-            _events.trySend(EditTodoEvent.EditSuccess)
+            _event.trySend(EditTodoEvent.EditSuccess)
         }
     }
 
     fun deleteTodo() {
         viewModelScope.launch(deleteErrorHandler) {
             todoRepository.deleteTodo(id)
-            _events.trySend(EditTodoEvent.DeleteSuccess)
+            _event.trySend(EditTodoEvent.DeleteSuccess)
         }
     }
 

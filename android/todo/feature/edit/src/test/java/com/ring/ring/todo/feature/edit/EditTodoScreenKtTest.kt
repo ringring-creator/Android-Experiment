@@ -11,6 +11,7 @@ import androidx.compose.ui.test.performTextInput
 import androidx.lifecycle.SavedStateHandle
 import com.ring.ring.todo.infra.domain.Todo
 import com.ring.ring.todo.infra.domain.TodoNetworkDataSource
+import com.ring.ring.todo.infra.network.exception.UnauthorizedException
 import com.ring.ring.todo.infra.test.FakeErrorTodoNetworkDataSource
 import com.ring.ring.todo.infra.test.FakeTodoNetworkDataSource
 import com.ring.ring.user.infra.model.User
@@ -20,12 +21,14 @@ import com.ring.ring.util.date.DateUtil
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
+import io.mockk.coEvery
+import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Instant
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.nullValue
-import org.hamcrest.MatcherAssert
+import org.hamcrest.MatcherAssert.assertThat
 
 import org.junit.Before
 import org.junit.Rule
@@ -99,6 +102,22 @@ class EditTodoScreenKtTest {
     }
 
     @Test
+    fun `get todo toLoginScreen when not authenticated`() {
+        //given
+        networkDataSource = mockk<TodoNetworkDataSource>(relaxed = true) {
+            coEvery { fetch(any(), any()) } throws UnauthorizedException()
+        }
+        var wasCalled = false
+        setupEditTodoScreen(toLoginScreen = { wasCalled = true })
+
+        //when
+        snackbarHostState.currentSnackbarData?.performAction()
+
+        //then
+        assertThat(wasCalled, `is`(true))
+    }
+
+    @Test
     fun `tapped editButton save todo`() {
         //given
         setupEditTodoScreen()
@@ -121,9 +140,9 @@ class EditTodoScreenKtTest {
         //then
         runBlocking {
             val actual = networkDataSource.fetchList(user.token).find { it.id == todo.id }!!
-            MatcherAssert.assertThat(actual.title, equalTo("title"))
-            MatcherAssert.assertThat(actual.description, equalTo("description"))
-            MatcherAssert.assertThat(actual.done, `is`(false))
+            assertThat(actual.title, equalTo("title"))
+            assertThat(actual.description, equalTo("description"))
+            assertThat(actual.done, `is`(false))
         }
     }
 
@@ -163,6 +182,26 @@ class EditTodoScreenKtTest {
     }
 
     @Test
+    fun `tapped editButton toLoginScreen when unauthorized`() {
+        //given
+        networkDataSource = mockk<TodoNetworkDataSource>(relaxed = true) {
+            coEvery { fetch(any(), any()) } returns todo
+            coEvery { update(any(), any()) } throws UnauthorizedException()
+        }
+        var wasCalled = false
+        setupEditTodoScreen(toLoginScreen = { wasCalled = true })
+
+        //when
+        composeTestRule
+            .onNodeWithTag("EditButton")
+            .performClick()
+        snackbarHostState.currentSnackbarData?.performAction()
+
+        //then
+        assertThat(wasCalled, `is`(true))
+    }
+
+    @Test
     fun `tapped deleteButton delete todo`() {
         //given
         setupEditTodoScreen()
@@ -176,29 +215,33 @@ class EditTodoScreenKtTest {
         //then
         runBlocking {
             val actual = networkDataSource.fetchList(user.token).find { it.id == todo.id }
-            MatcherAssert.assertThat(actual, nullValue())
+            assertThat(actual, nullValue())
         }
     }
 
     @Test
-    fun `tapped deleteButton show snackbar when delete failed`() {
-        //given
-        networkDataSource = FakeErrorTodoNetworkDataSource()
-        setupEditTodoScreen()
-        snackbarHostState.currentSnackbarData?.dismiss()
+    fun `tapped deleteButton toLoginScreen when unauthorized`() {
+        networkDataSource = mockk<TodoNetworkDataSource>(relaxed = true) {
+            coEvery { fetch(any(), any()) } returns todo
+            coEvery { delete(any(), any()) } throws UnauthorizedException()
+        }
+        var wasCalled = false
+        setupEditTodoScreen(toLoginScreen = { wasCalled = true })
 
         //when
         composeTestRule
             .onNodeWithTag("DeleteButton")
             .performClick()
+        snackbarHostState.currentSnackbarData?.performAction()
 
         //then
-        composeTestRule
-            .onNodeWithText("Failed to delete")
-            .assertExists()
+        assertThat(wasCalled, `is`(true))
     }
 
-    private fun setupEditTodoScreen(toTodoListScreen: () -> Unit = {}) {
+    private fun setupEditTodoScreen(
+        toTodoListScreen: () -> Unit = {},
+        toLoginScreen: () -> Unit = {},
+    ) {
         savedStateHandle = SavedStateHandle(mapOf(EditTodoNav.ID to todo.id))
         composeTestRule.setContent {
             EditTodoScreen(
@@ -212,6 +255,7 @@ class EditTodoScreenKtTest {
                     savedStateHandle = savedStateHandle,
                 ),
                 toTodoListScreen = toTodoListScreen,
+                toLoginScreen = toLoginScreen,
                 snackbarHostState = snackbarHostState,
             )
         }

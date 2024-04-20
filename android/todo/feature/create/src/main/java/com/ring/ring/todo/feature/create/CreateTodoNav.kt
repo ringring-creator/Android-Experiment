@@ -7,10 +7,12 @@ const val CREATE_TODO_ROUTE = "CreateTodoRoute"
 
 fun NavGraphBuilder.createTodoScreen(
     toTodoListScreen: () -> Unit,
+    toLoginScreen: () -> Unit,
 ) {
     composable(CREATE_TODO_ROUTE) {
         CreateTodoScreen(
-            toTodoListScreen = toTodoListScreen
+            toTodoListScreen = toTodoListScreen,
+            toLoginScreen = toLoginScreen,
         )
     }
 }

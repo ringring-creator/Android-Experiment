@@ -6,4 +6,5 @@ sealed class EditTodoEvent {
     object EditError : EditTodoEvent()
     object DeleteError : EditTodoEvent()
     object GetTodoError : EditTodoEvent()
+    object UnauthorizedError : EditTodoEvent()
 }

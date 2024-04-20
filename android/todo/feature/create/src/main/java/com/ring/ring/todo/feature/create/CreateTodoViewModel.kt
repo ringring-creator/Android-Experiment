@@ -2,6 +2,7 @@ package com.ring.ring.todo.feature.create
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ring.ring.todo.infra.network.exception.UnauthorizedException
 import com.ring.ring.util.date.DateUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -26,7 +27,10 @@ internal class CreateTodoViewModel @Inject constructor(
     private val _event = Channel<CreateTodoEvent>(capacity = 5, BufferOverflow.DROP_OLDEST)
     val event = _event.receiveAsFlow()
 
-    private val handler = CoroutineExceptionHandler { _, _ ->
+    private val handler = CoroutineExceptionHandler { _, th ->
+        if (th is UnauthorizedException) {
+            _event.trySend(CreateTodoEvent.UnauthorizedError)
+        }
         _event.trySend(CreateTodoEvent.CreateTodoError)
     }
 

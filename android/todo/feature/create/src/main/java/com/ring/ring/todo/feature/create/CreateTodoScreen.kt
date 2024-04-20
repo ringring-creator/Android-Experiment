@@ -1,6 +1,5 @@
 package com.ring.ring.todo.feature.create
 
-import android.content.Context
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -45,13 +44,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ring.ring.todo.feature.create.CreateTodoEvent.CreateTodoError
 import com.ring.ring.todo.feature.create.CreateTodoEvent.CreateTodoSuccess
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 @Composable
 internal fun CreateTodoScreen(
     viewModel: CreateTodoViewModel = hiltViewModel(),
     toTodoListScreen: () -> Unit,
+    toLoginScreen: () -> Unit,
     snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     CreateTodoScreen(
@@ -61,13 +59,14 @@ internal fun CreateTodoScreen(
         snackBarHostState = snackBarHostState,
     )
 
-    SetupSideEffect(viewModel, toTodoListScreen, snackBarHostState)
+    SetupSideEffect(viewModel, toTodoListScreen, toLoginScreen, snackBarHostState)
 }
 
 @Composable
 private fun SetupSideEffect(
     viewModel: CreateTodoViewModel,
     toTodoListScreen: () -> Unit,
+    toLoginScreen: () -> Unit,
     snackBarHostState: SnackbarHostState
 ) {
     val context = LocalContext.current
@@ -76,22 +75,21 @@ private fun SetupSideEffect(
         viewModel.event.collect {
             when (it) {
                 CreateTodoSuccess -> toTodoListScreen()
-                CreateTodoError -> showCreateTodoFailedSnackbar(snackBarHostState, context, scope)
+                CreateTodoError -> showSnackbar(
+                    snackBarHostState,
+                    context.getString(R.string.failed_to_create),
+                    scope
+                )
+
+                CreateTodoEvent.UnauthorizedError -> showRetrySnackbar(
+                    snackBarHostState = snackBarHostState,
+                    message = context.getString(R.string.not_logged_in),
+                    actionLabel = context.getString(R.string.to_login),
+                    action = toLoginScreen,
+                    scope = scope
+                )
             }
         }
-    }
-}
-
-private fun showCreateTodoFailedSnackbar(
-    snackBarHostState: SnackbarHostState,
-    context: Context,
-    scope: CoroutineScope
-) {
-    scope.launch {
-        snackBarHostState.showSnackbar(
-            message = context.getString(R.string.failed_to_create),
-            withDismissAction = true,
-        )
     }
 }
 

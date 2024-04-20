@@ -1,11 +1,13 @@
 package com.ring.ring.todo.feature.create
 
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import com.ring.ring.todo.infra.domain.TodoNetworkDataSource
+import com.ring.ring.todo.infra.network.exception.UnauthorizedException
 import com.ring.ring.todo.infra.test.FakeErrorTodoNetworkDataSource
 import com.ring.ring.todo.infra.test.FakeTodoNetworkDataSource
 import com.ring.ring.user.infra.model.User
@@ -15,6 +17,8 @@ import com.ring.ring.util.date.DateUtil
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
+import io.mockk.coEvery
+import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.`is`
@@ -30,6 +34,7 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(application = HiltTestApplication::class)
 class CreateTodoScreenKtTest {
+
     @get:Rule(order = 0)
     var hiltRule = HiltAndroidRule(this)
 
@@ -40,6 +45,7 @@ class CreateTodoScreenKtTest {
     private var networkDataSource: TodoNetworkDataSource =
         FakeTodoNetworkDataSource(token = user.token)
     private var localDataSource = FakeUserLocalDataSource(user = user)
+    private var snackbarHostState: SnackbarHostState = SnackbarHostState()
     private val dateUtil = DateUtil()
 
     @Before
@@ -78,7 +84,7 @@ class CreateTodoScreenKtTest {
     fun `tapped createButton navigates to TodoListScreen`() {
         //given
         var wasCalled = false
-        setupCreateTodoScreen { wasCalled = true }
+        setupCreateTodoScreen(toTodoListScreen = { wasCalled = true })
 
         //when
         composeTestRule
@@ -106,19 +112,41 @@ class CreateTodoScreenKtTest {
             .assertExists()
     }
 
+    @Test
+    fun `tapped createButton and toLoginScreen of snackbar to login screen when unauthorized`() {
+        //given
+        networkDataSource = mockk<TodoNetworkDataSource>(relaxed = true) {
+            coEvery { create(any(), any()) } throws UnauthorizedException()
+        }
+        var wasCalled = false
+        setupCreateTodoScreen(toLoginScreen = { wasCalled = true })
+
+        //when
+        composeTestRule
+            .onNodeWithTag("CreateButton")
+            .performClick()
+        snackbarHostState.currentSnackbarData?.performAction()
+
+        //then
+        assertThat(wasCalled, `is`(true))
+    }
+
     private fun setupCreateTodoScreen(
         toTodoListScreen: () -> Unit = {},
+        toLoginScreen: () -> Unit = {},
     ) {
         composeTestRule.setContent {
             CreateTodoScreen(
                 toTodoListScreen = toTodoListScreen,
+                toLoginScreen = toLoginScreen,
                 viewModel = CreateTodoViewModel(
                     todoRepository = CreateTodoRepository(
                         networkDataSource = networkDataSource,
                         userLocalDataSource = localDataSource
                     ),
                     dateUtil = dateUtil
-                )
+                ),
+                snackBarHostState = snackbarHostState,
             )
         }
     }

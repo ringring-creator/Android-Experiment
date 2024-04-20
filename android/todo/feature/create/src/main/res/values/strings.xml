@@ -7,4 +7,6 @@
     <string name="create">Create</string>
     <string name="set">Set</string>
     <string name="create_todo">Create Todo</string>
+    <string name="not_logged_in">Not logged in</string>
+    <string name="to_login">Transit login screen</string>
 </resources>

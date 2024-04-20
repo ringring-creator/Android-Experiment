@@ -16,6 +16,7 @@ class EditTodoNav {
 
 fun NavGraphBuilder.editTodoScreen(
     toTodoListScreen: () -> Unit,
+    toLoginScreen: () -> Unit,
 ) {
     composable(
         route = EditTodoNav().route,
@@ -23,6 +24,9 @@ fun NavGraphBuilder.editTodoScreen(
             type = NavType.LongType
         }),
     ) {
-        EditTodoScreen(toTodoListScreen = toTodoListScreen)
+        EditTodoScreen(
+            toTodoListScreen = toTodoListScreen,
+            toLoginScreen = toLoginScreen,
+        )
     }
 }

@@ -38,6 +38,12 @@ private fun NavGraphBuilder.todoScreens(navController: NavHostController) {
         toCreateTodoScreen = { navController.navigate(CREATE_TODO_ROUTE) },
         toEditTodoScreen = { navController.navigate(EditTodoNav.editRoute(it)) }
     )
-    createTodoScreen(toTodoListScreen = { navController.navigate(TODO_LIST_ROUTE) })
-    editTodoScreen(toTodoListScreen = { navController.navigate(TODO_LIST_ROUTE) })
+    createTodoScreen(
+        toTodoListScreen = { navController.navigate(TODO_LIST_ROUTE) },
+        toLoginScreen = { navController.navigate(LOGIN_ROUTE) },
+    )
+    editTodoScreen(
+        toTodoListScreen = { navController.navigate(TODO_LIST_ROUTE) },
+        toLoginScreen = { navController.navigate(LOGIN_ROUTE) },
+    )
 }
