@@ -7,9 +7,9 @@ import com.ring.ring.todo.infra.domain.TodoNetworkDataSource
 import com.ring.ring.todo.infra.test.FakeErrorTodoNetworkDataSource
 import com.ring.ring.todo.infra.test.FakeTodoLocalDataSource
 import com.ring.ring.todo.infra.test.FakeTodoNetworkDataSource
-import com.ring.ring.user.infra.model.User
 import com.ring.ring.user.infra.model.UserLocalDataSource
 import com.ring.ring.user.infra.test.FakeUserLocalDataSource
+import com.ring.ring.user.infra.test.userTestData
 import com.ring.ring.util.date.DefaultDateUtil
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -35,7 +35,6 @@ class TodoListViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule(StandardTestDispatcher())
 
-    private var user = User.generate(10L, "email@example.com", "fakeToken")
     private var networkTodoList = listOf(
         Todo(
             id = 1,
@@ -62,11 +61,11 @@ class TodoListViewModelTest {
         ),
     )
     private var networkDataSource: TodoNetworkDataSource = FakeTodoNetworkDataSource(
-        user.token, networkTodoList.toMutableList()
+        userTestData.token, networkTodoList.toMutableList()
     )
     private var localDataSource: TodoLocalDataSource =
         FakeTodoLocalDataSource(localTodoList.toMutableList())
-    private var userLocalDataSource: UserLocalDataSource = FakeUserLocalDataSource(user)
+    private var userLocalDataSource: UserLocalDataSource = FakeUserLocalDataSource(userTestData)
     private val dateUtil = DefaultDateUtil()
 
     @Before

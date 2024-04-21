@@ -10,9 +10,9 @@ import com.ring.ring.todo.infra.domain.TodoNetworkDataSource
 import com.ring.ring.todo.infra.network.exception.UnauthorizedException
 import com.ring.ring.todo.infra.test.FakeErrorTodoNetworkDataSource
 import com.ring.ring.todo.infra.test.FakeTodoNetworkDataSource
-import com.ring.ring.user.infra.model.User
 import com.ring.ring.user.infra.test.FakeUserLocalDataSource
 import com.ring.ring.user.infra.test.TestActivity
+import com.ring.ring.user.infra.test.userTestData
 import com.ring.ring.util.date.DefaultDateUtil
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -41,10 +41,9 @@ class CreateTodoScreenKtTest {
     @get:Rule(order = 1)
     val composeTestRule = createAndroidComposeRule<TestActivity>()
 
-    private var user = User.generate(id = 1L, email = "email@example.com", token = "fakeToken")
     private var networkDataSource: TodoNetworkDataSource =
-        FakeTodoNetworkDataSource(token = user.token)
-    private var localDataSource = FakeUserLocalDataSource(user = user)
+        FakeTodoNetworkDataSource(token = userTestData.token)
+    private var localDataSource = FakeUserLocalDataSource(user = userTestData)
     private var snackbarHostState: SnackbarHostState = SnackbarHostState()
     private val dateUtil = DefaultDateUtil()
 
@@ -74,7 +73,8 @@ class CreateTodoScreenKtTest {
 
         //then
         runBlocking {
-            val actual = networkDataSource.fetchList(user.token).find { it.title == "title" }!!
+            val actual =
+                networkDataSource.fetchList(userTestData.token).find { it.title == "title" }!!
             assertThat(actual.description, equalTo("description"))
             assertThat(actual.done, `is`(true))
         }

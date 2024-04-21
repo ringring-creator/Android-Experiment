@@ -6,3 +6,10 @@ data class MyPageUiUpdater(
     val edit: () -> Unit,
     val withdrawal: () -> Unit,
 )
+
+internal fun toUpdater(viewModel: MyPageViewModel) = MyPageUiUpdater(
+    setEmail = viewModel::setEmail,
+    setPassword = viewModel::setPassword,
+    edit = viewModel::edit,
+    withdrawal = viewModel::withdrawal,
+)

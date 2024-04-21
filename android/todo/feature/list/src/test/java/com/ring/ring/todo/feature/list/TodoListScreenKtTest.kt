@@ -18,10 +18,10 @@ import com.ring.ring.todo.infra.test.FakeErrorTodoLocalDataSource
 import com.ring.ring.todo.infra.test.FakeErrorTodoNetworkDataSource
 import com.ring.ring.todo.infra.test.FakeTodoLocalDataSource
 import com.ring.ring.todo.infra.test.FakeTodoNetworkDataSource
-import com.ring.ring.user.infra.model.User
 import com.ring.ring.user.infra.model.UserLocalDataSource
 import com.ring.ring.user.infra.test.FakeUserLocalDataSource
 import com.ring.ring.user.infra.test.TestActivity
+import com.ring.ring.user.infra.test.userTestData
 import com.ring.ring.util.date.DefaultDateUtil
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -48,12 +48,12 @@ class TodoListScreenKtTest {
     @get:Rule(order = 1)
     val composeTestRule = createAndroidComposeRule<TestActivity>()
 
-    private var user = User.generate(id = 1L, email = "email@example.com", token = "fakeToken")
     private var todoList = (1L..10L).map { createTodo(id = it) }.toMutableList()
     private var networkDataSource: TodoNetworkDataSource =
-        FakeTodoNetworkDataSource(token = user.token, values = todoList)
+        FakeTodoNetworkDataSource(token = userTestData.token, values = todoList)
     private var localDataSource: TodoLocalDataSource = FakeTodoLocalDataSource()
-    private var userLocalDataSource: UserLocalDataSource = FakeUserLocalDataSource(user = user)
+    private var userLocalDataSource: UserLocalDataSource =
+        FakeUserLocalDataSource(user = userTestData)
     private var snackbarHostState: SnackbarHostState = SnackbarHostState()
     private val dateUtil = DefaultDateUtil()
 
@@ -126,7 +126,7 @@ class TodoListScreenKtTest {
         //given
         setupTodoListScreen()
         runBlocking {
-            val todo = networkDataSource.fetch(1L, user.token)
+            val todo = networkDataSource.fetch(1L, userTestData.token)
             assertThat(todo.done, `is`(true))
         }
 
@@ -138,7 +138,7 @@ class TodoListScreenKtTest {
 
         //then
         runBlocking {
-            val todo = networkDataSource.fetch(1L, user.token)
+            val todo = networkDataSource.fetch(1L, userTestData.token)
             assertThat(todo.done, `is`(false))
         }
     }
@@ -147,7 +147,7 @@ class TodoListScreenKtTest {
     fun `tapped toggleDone show snackbar when failed to edit done`() {
         //given
         setupTodoListScreen()
-        runBlocking { networkDataSource.delete(1L, user.token) }
+        runBlocking { networkDataSource.delete(1L, userTestData.token) }
 
         //when
         composeTestRule

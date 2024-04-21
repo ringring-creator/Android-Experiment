@@ -3,10 +3,8 @@ package com.ring.ring.user.infra.test
 import com.ring.ring.user.infra.model.User
 import com.ring.ring.user.infra.model.UserLocalDataSource
 
-private val defaultUser = User.generate(id = 1L, email = "email@example.com", token = "fakeToken")
-
 class FakeUserLocalDataSource(
-    private var user: User = defaultUser
+    private var user: User = userTestData
 ) : UserLocalDataSource {
 
     override suspend fun save(user: User) {

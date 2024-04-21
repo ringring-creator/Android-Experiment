@@ -27,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -34,7 +35,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.ring.ring.mypage.R
+
+@Composable
+internal fun MyPageScreen(
+    viewModel: MyPageViewModel = hiltViewModel(),
+) {
+    MyPageScreen(
+        uiState = rememberSignUpUiState(viewModel),
+        updater = remember { toUpdater(viewModel) },
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -22,6 +22,8 @@ class UserDataStoreDataSource @Inject constructor(
             dataStore.edit {
                 it[USER_ID_KEY] = user.id.value
                 it[EMAIL_KEY] = user.email.value
+                //Todo encrypt
+                it[PASSWORD_KEY] = user.password.value
                 it[TOKEN_KEY] = user.token
             }
         } catch (e: Throwable) {
@@ -45,10 +47,12 @@ class UserDataStoreDataSource @Inject constructor(
     private fun toUser(it: Preferences): User? {
         val userId = it[USER_ID_KEY] ?: return null
         val email = it[EMAIL_KEY] ?: return null
+        val password = it[PASSWORD_KEY] ?: return null
         val token = it[TOKEN_KEY] ?: return null
         return User.generate(
             id = userId,
             email = email,
+            password = password,
             token = token,
         )
     }
@@ -56,6 +60,7 @@ class UserDataStoreDataSource @Inject constructor(
     companion object {
         private val USER_ID_KEY = longPreferencesKey("userId")
         private val EMAIL_KEY = stringPreferencesKey("email")
+        private val PASSWORD_KEY = stringPreferencesKey("password")
         private val TOKEN_KEY = stringPreferencesKey("token")
     }
 }

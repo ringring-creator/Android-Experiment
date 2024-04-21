@@ -4,9 +4,9 @@ import androidx.lifecycle.SavedStateHandle
 import com.ring.ring.infra.test.MainDispatcherRule
 import com.ring.ring.todo.infra.domain.TodoNetworkDataSource
 import com.ring.ring.todo.infra.test.FakeTodoNetworkDataSource
-import com.ring.ring.user.infra.model.User
 import com.ring.ring.user.infra.model.UserLocalDataSource
 import com.ring.ring.user.infra.test.FakeUserLocalDataSource
+import com.ring.ring.user.infra.test.userTestData
 import com.ring.ring.util.date.DefaultDateUtil
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -31,9 +31,9 @@ class EditTodoViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule(StandardTestDispatcher())
 
-    private var user = User.generate(10L, "email@example.com", "Abcdefg1")
-    private var networkDataSource: TodoNetworkDataSource = FakeTodoNetworkDataSource(user.token)
-    private var userLocalDataSource: UserLocalDataSource = FakeUserLocalDataSource(user)
+    private var networkDataSource: TodoNetworkDataSource =
+        FakeTodoNetworkDataSource(userTestData.token)
+    private var userLocalDataSource: UserLocalDataSource = FakeUserLocalDataSource(userTestData)
     private lateinit var savedStateHandle: SavedStateHandle
     private val dateUtil = DefaultDateUtil()
     private val id = 1L

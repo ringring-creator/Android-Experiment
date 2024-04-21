@@ -9,10 +9,6 @@ class FakeUserNetworkDataSource(
 ) : UserNetworkDataSource {
     private var user: User? = null
 
-    override suspend fun fetch(): User {
-        return user ?: throw Exception()
-    }
-
     override suspend fun edit(credentials: Credentials) {
         val index = credentialsList.indexOfFirst { it == credentials }
         credentialsList[index] = credentials
@@ -24,8 +20,8 @@ class FakeUserNetworkDataSource(
 
     override suspend fun login(credentials: Credentials): User {
         if (credentialsList.contains(credentials).not()) throw Exception()
-        user = User.generate(1L, credentials.email.value, credentials.password.value)
-        return User.generate(1L, credentials.email.value, credentials.password.value)
+        user = User.generate(1L, "fakeToken", credentials)
+        return User.generate(1L, "fakeToken", credentials)
     }
 
     override suspend fun signUp(credentials: Credentials) {

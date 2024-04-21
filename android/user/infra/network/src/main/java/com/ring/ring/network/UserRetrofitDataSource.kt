@@ -15,15 +15,6 @@ import javax.inject.Singleton
 class UserRetrofitDataSource @Inject constructor(
     private val networkApi: RetrofitUserNetworkApi,
 ) : UserNetworkDataSource {
-    override suspend fun fetch(): User {
-        return try {
-            networkApi.fetch().toUser()
-        } catch (e: Throwable) {
-            throwUnauthorizedExceptionIfNeeded(e)
-            throw e
-        }
-    }
-
     override suspend fun edit(credentials: Credentials) {
         return try {
             networkApi.edit(
@@ -56,7 +47,7 @@ class UserRetrofitDataSource @Inject constructor(
                     credentials.email.value, credentials.password.value
                 )
             )
-        ).toUser(credentials.email.value)
+        ).toUser(credentials)
     }
 
     override suspend fun signUp(credentials: Credentials) {

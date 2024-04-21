@@ -51,60 +51,6 @@ class UserRetrofitDataSourceTest {
     }
 
     @Test
-    fun `fetch parse json and user`() = runTest {
-        //given
-        val expectedUserId = 1L
-        val expectedEmail = "fakeEmail@example.com"
-        val expectedToken = "fakeToken"
-        val response = MockResponse()
-            .setBody(""" { "userId": $expectedUserId, "email": "$expectedEmail", "token": "$expectedToken" } """.trimIndent())
-            .addHeader("Content-Type", "application/json")
-            .setResponseCode(200)
-        mockWebServer.enqueue(response)
-
-        //when
-        val actual = subject.fetch()
-
-        //then
-        assertThat(actual.id.value, equalTo(expectedUserId))
-        assertThat(actual.email.value, equalTo(expectedEmail))
-        assertThat(actual.token, equalTo(expectedToken))
-    }
-
-    @Test
-    fun `fetch request correct parameters`() = runTest {
-        //given
-        val response = MockResponse()
-            .setBody(""" { "userId": 1, "email": "fakeEmail@example.com", "token": "fakeToken" } """.trimIndent())
-            .addHeader("Content-Type", "application/json")
-            .setResponseCode(200)
-        mockWebServer.enqueue(response)
-
-        //when
-        subject.fetch()
-
-        //then
-        val request = mockWebServer.takeRequest()
-        assertThat(request.path, equalTo("/users"))
-        assertThat(request.method, equalTo("GET"))
-    }
-
-    @Test
-    fun `fetch throw UnauthorizedException when http status code is HTTP_UNAUTHORIZED`() {
-        //given
-        val response = MockResponse()
-            .setBody(""" { "message": "Not logged in" } """.trimIndent())
-            .addHeader("Content-Type", "application/json")
-            .setResponseCode(401)
-        mockWebServer.enqueue(response)
-
-        //when,then
-        Assert.assertThrows(UnauthorizedException::class.java) {
-            runBlocking { subject.fetch() }
-        }
-    }
-
-    @Test
     fun `edit request correct parameters`() = runTest {
         //given
         val response = MockResponse()

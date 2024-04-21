@@ -53,7 +53,12 @@ class UserDataStoreDataSourceTest {
     @Test
     fun `get user data saved`() = runTest {
         //given
-        val expected = User.generate(id = 1L, email = "email@example.com", token = "fakeToken")
+        val expected = User.generate(
+            id = 1L,
+            email = "email@example.com",
+            password = "Abcdefg1",
+            token = "fakeToken"
+        )
         subject.save(expected)
         advanceUntilIdle()
 
@@ -63,6 +68,7 @@ class UserDataStoreDataSourceTest {
         //then
         assertThat(actual.id, equalTo(expected.id))
         assertThat(actual.email, equalTo(expected.email))
+        assertThat(actual.password, equalTo(expected.password))
         assertThat(actual.token, equalTo(expected.token))
     }
 
@@ -77,7 +83,12 @@ class UserDataStoreDataSourceTest {
         assertThrows(IOException::class.java) {
             runBlocking {
                 subject.save(
-                    User.generate(id = 1L, email = "email@example.com", token = "fakeToken")
+                    User.generate(
+                        id = 1L,
+                        email = "email@example.com",
+                        password = "Abcdefg1",
+                        token = "fakeToken"
+                    )
                 )
             }
         }

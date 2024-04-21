@@ -14,9 +14,9 @@ import com.ring.ring.todo.infra.domain.TodoNetworkDataSource
 import com.ring.ring.todo.infra.network.exception.UnauthorizedException
 import com.ring.ring.todo.infra.test.FakeErrorTodoNetworkDataSource
 import com.ring.ring.todo.infra.test.FakeTodoNetworkDataSource
-import com.ring.ring.user.infra.model.User
 import com.ring.ring.user.infra.test.FakeUserLocalDataSource
 import com.ring.ring.user.infra.test.TestActivity
+import com.ring.ring.user.infra.test.userTestData
 import com.ring.ring.util.date.DefaultDateUtil
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -47,7 +47,6 @@ class EditTodoScreenKtTest {
     @get:Rule(order = 1)
     val composeTestRule = createAndroidComposeRule<TestActivity>()
 
-    private var user = User.generate(10L, "email@example.com", "fakeToken")
     private val todo = Todo(
         1L,
         "fakeTitle",
@@ -57,9 +56,9 @@ class EditTodoScreenKtTest {
     )
 
     private var networkDataSource: TodoNetworkDataSource = FakeTodoNetworkDataSource(
-        user.token, values = mutableListOf(todo)
+        userTestData.token, values = mutableListOf(todo)
     )
-    private var userLocalDataSource = FakeUserLocalDataSource(user)
+    private var userLocalDataSource = FakeUserLocalDataSource(userTestData)
     private var snackbarHostState = SnackbarHostState()
     private lateinit var savedStateHandle: SavedStateHandle
     private val dateUtil = DefaultDateUtil()
@@ -121,7 +120,7 @@ class EditTodoScreenKtTest {
     fun `tapped editButton save todo`() {
         //given
         setupEditTodoScreen()
-        runBlocking { networkDataSource.create(todo, user.token) }
+        runBlocking { networkDataSource.create(todo, userTestData.token) }
         val titleTextField = composeTestRule.onNodeWithTag("TitleTextField")
         titleTextField.performTextClearance()
         titleTextField.performTextInput("title")
@@ -139,7 +138,7 @@ class EditTodoScreenKtTest {
 
         //then
         runBlocking {
-            val actual = networkDataSource.fetchList(user.token).find { it.id == todo.id }!!
+            val actual = networkDataSource.fetchList(userTestData.token).find { it.id == todo.id }!!
             assertThat(actual.title, equalTo("title"))
             assertThat(actual.description, equalTo("description"))
             assertThat(actual.done, `is`(false))
@@ -150,7 +149,7 @@ class EditTodoScreenKtTest {
     fun `tapped editButton show snackbar`() {
         //given
         setupEditTodoScreen()
-        runBlocking { networkDataSource.create(todo, user.token) }
+        runBlocking { networkDataSource.create(todo, userTestData.token) }
 
         //when
         composeTestRule
@@ -205,7 +204,7 @@ class EditTodoScreenKtTest {
     fun `tapped deleteButton delete todo`() {
         //given
         setupEditTodoScreen()
-        runBlocking { networkDataSource.create(todo, user.token) }
+        runBlocking { networkDataSource.create(todo, userTestData.token) }
 
         //when
         composeTestRule
@@ -214,7 +213,7 @@ class EditTodoScreenKtTest {
 
         //then
         runBlocking {
-            val actual = networkDataSource.fetchList(user.token).find { it.id == todo.id }
+            val actual = networkDataSource.fetchList(userTestData.token).find { it.id == todo.id }
             assertThat(actual, nullValue())
         }
     }
