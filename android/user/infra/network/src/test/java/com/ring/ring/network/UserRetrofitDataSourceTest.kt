@@ -147,7 +147,7 @@ class UserRetrofitDataSourceTest {
     fun `login request correct parameters`() = runTest {
         //given
         val response = MockResponse()
-            .setBody(""" { "userId": ${1L}, "token": "${"fakeToken"}" } """.trimIndent())
+            .setBody(""" { "userId": 1L, "token": "fakeToken" } """.trimIndent())
             .addHeader("Content-Type", "application/json")
             .setResponseCode(200)
         mockWebServer.enqueue(response)

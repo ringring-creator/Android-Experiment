@@ -71,7 +71,7 @@ class TodoRetrofitDataSourceTest {
     fun `fetchList request correct parameters`() = runTest {
         //given
         val response = MockResponse()
-            .setBody(""" { "todoList": [ { "id": 1, "title": "fakeTitle", "description": "fakeDescription", "done": false, "deadline": 1704067200000, "userId": 1 }, { "id": 2, "title": "fakeTitle2", "description": "fakeDescription2", "done": true, "deadline": 1735603200000, "userId": 1 } ] } """.trimIndent())
+            .setBody(""" { "todoList": [ { "id": 1, "title": "fakeTitle", "description": "fakeDescription", "done": false, "deadline": 1704067200000, "userId": 1 }] } """.trimIndent())
             .addHeader("Content-Type", "application/json")
             .setResponseCode(200)
         mockWebServer.enqueue(response)
@@ -168,27 +168,29 @@ class TodoRetrofitDataSourceTest {
         mockWebServer.enqueue(response)
 
         //when
-        val token = "fakeToken"
-        val title = "fakeTitle"
-        val description = "fakeDescription"
-        val done = false
-        val deadline = Instant.parse("2024-01-01T00:00:00Z")
+        val todo = Todo(
+            id = null,
+            title = "fakeTitle",
+            description = "fakeDescription",
+            done = false,
+            deadline = Instant.parse("2024-01-01T00:00:00Z")
+        )
         subject.create(
-            todo = Todo(null, title, description, done, deadline),
-            token = token,
+            todo = todo,
+            token = "fakeToken",
         )
 
         //then
         val request = mockWebServer.takeRequest()
         val body = request.body.readUtf8()
-        assertThat(body.contains("\"title\":\"$title\""), `is`(true))
-        assertThat(body.contains("\"description\":\"$description\""), `is`(true))
-        assertThat(body.contains("\"done\":$done"), `is`(true))
+        assertThat(body.contains("\"title\":\"${todo.title}\""), `is`(true))
+        assertThat(body.contains("\"description\":\"${todo.description}\""), `is`(true))
+        assertThat(body.contains("\"done\":${todo.done}"), `is`(true))
         assertThat(
-            body.contains("\"deadline\":${deadline.toEpochMilliseconds()}"),
+            body.contains("\"deadline\":${todo.deadline.toEpochMilliseconds()}"),
             `is`(true)
         )
-        assertThat(request.getHeader("Authorization"), equalTo("Bearer $token"))
+        assertThat(request.getHeader("Authorization"), equalTo("Bearer fakeToken"))
         assertThat(request.path, equalTo("/todos"))
         assertThat(request.method, equalTo("POST"))
     }
@@ -227,29 +229,31 @@ class TodoRetrofitDataSourceTest {
         mockWebServer.enqueue(response)
 
         //when
-        val id = 1L
-        val title = "fakeTitle"
-        val description = "fakeDescription"
-        val done = false
-        val deadline = Instant.parse("2024-01-01T00:00:00Z")
         val token = "fakeToken"
+        val todo = Todo(
+            id = 1L,
+            title = "fakeTitle",
+            description = "fakeDescription",
+            done = false,
+            deadline = Instant.parse("2024-01-01T00:00:00Z")
+        )
         subject.update(
-            todo = Todo(id, title, description, done, deadline),
+            todo = todo,
             token = token,
         )
 
         //then
         val request = mockWebServer.takeRequest()
         val body = request.body.readUtf8()
-        assertThat(body.contains("\"title\":\"$title\""), `is`(true))
-        assertThat(body.contains("\"description\":\"$description\""), `is`(true))
-        assertThat(body.contains("\"done\":$done"), `is`(true))
+        assertThat(body.contains("\"title\":\"${todo.title}\""), `is`(true))
+        assertThat(body.contains("\"description\":\"${todo.description}\""), `is`(true))
+        assertThat(body.contains("\"done\":${todo.done}"), `is`(true))
         assertThat(
-            body.contains("\"deadline\":${deadline.toEpochMilliseconds()}"),
+            body.contains("\"deadline\":${todo.deadline.toEpochMilliseconds()}"),
             `is`(true)
         )
         assertThat(request.getHeader("Authorization"), equalTo("Bearer $token"))
-        assertThat(request.path, equalTo("/todos/${id}"))
+        assertThat(request.path, equalTo("/todos/${1L}"))
         assertThat(request.method, equalTo("PUT"))
     }
 
