@@ -18,7 +18,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.`is`
-import org.hamcrest.MatcherAssert
+import org.hamcrest.CoreMatchers.nullValue
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Assert.assertThrows
 import org.junit.Assert.fail
@@ -126,6 +126,20 @@ class MyPageViewModelTest {
                     )
                 }
             }
+        }
+
+        @Test
+        fun `withdrawal delete user in local`() = runTest {
+            //given
+            setupSubject()
+
+            //when
+            subject.withdrawal()
+            advanceUntilIdle()
+
+            //then
+            val actual = localDataSource.getUser()
+            assertThat(actual, nullValue())
         }
 
         @Test

@@ -159,26 +159,8 @@ class MyPageScreenKtTest {
     }
 
     @Test
-    fun `tapped withdrawal button transit login screen`() {
+    fun `tapped withdrawal button show dialog`() {
         //given
-        var wasCalled = false
-        setupMyPageScreen(toLoginScreen = {
-            wasCalled = true
-        })
-
-        //when
-        composeTestRule
-            .onNodeWithTag("WithdrawalButton")
-            .performClick()
-
-        //then
-        assertThat(wasCalled, `is`(true))
-    }
-
-    @Test
-    fun `tapped withdrawal button show snackbar when withdrawal failed`() {
-        //given
-        networkDataSource = FakeErrorUserNetworkDataSource()
         setupMyPageScreen()
 
         //when
@@ -188,22 +170,63 @@ class MyPageScreenKtTest {
 
         //then
         composeTestRule
+            .onNodeWithText("Withdrawal Confirmation")
+            .assertExists()
+    }
+
+    @Test
+    fun `tapped confirm button in dialog transit login screen`() {
+        //given
+        var wasCalled = false
+        setupMyPageScreen(toLoginScreen = { wasCalled = true })
+        composeTestRule
+            .onNodeWithTag("WithdrawalButton")
+            .performClick()
+
+        //when
+        composeTestRule
+            .onNodeWithTag("ConfirmButton")
+            .performClick()
+
+        //then
+        assertThat(wasCalled, `is`(true))
+    }
+
+    @Test
+    fun `tapped confirm button in dialog show snackbar when withdrawal failed`() {
+        //given
+        networkDataSource = FakeErrorUserNetworkDataSource()
+        setupMyPageScreen()
+        composeTestRule
+            .onNodeWithTag("WithdrawalButton")
+            .performClick()
+
+        //when
+        composeTestRule
+            .onNodeWithTag("ConfirmButton")
+            .performClick()
+
+        //then
+        composeTestRule
             .onNodeWithText("Failed to withdrawal")
             .assertExists()
     }
 
     @Test
-    fun `tapped withdrawal button toLoginScreen when unauthorized`() {
+    fun `tapped confirm button in dialog toLoginScreen when unauthorized`() {
         //given
         networkDataSource = mockk<UserNetworkDataSource>(relaxed = true) {
             coEvery { withdrawal(any()) } throws UnauthorizedException()
         }
         var wasCalled = false
         setupMyPageScreen(toLoginScreen = { wasCalled = true })
+        composeTestRule
+            .onNodeWithTag("WithdrawalButton")
+            .performClick()
 
         //when
         composeTestRule
-            .onNodeWithTag("WithdrawalButton")
+            .onNodeWithTag("ConfirmButton")
             .performClick()
 
         //then

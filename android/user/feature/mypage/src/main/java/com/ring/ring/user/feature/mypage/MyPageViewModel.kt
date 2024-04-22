@@ -87,11 +87,16 @@ internal class MyPageViewModel @Inject constructor(
             email = MyPageUiState.Email("", isError = false, isShowSupportingText = false),
             password = MyPageUiState.Password("", isError = false),
             expandedAction = false,
+            showDialog = false,
         )
     }
 
     fun setExpandedAction(expanded: Boolean) {
         _uiState.value = uiState.value.copy(expandedAction = expanded)
+    }
+
+    fun setShowDialog(showDialog: Boolean) {
+        _uiState.value = uiState.value.copy(showDialog = showDialog)
     }
 }
 

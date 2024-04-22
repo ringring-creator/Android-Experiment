@@ -8,6 +8,7 @@ internal data class MyPageUiState(
     val email: Email,
     val password: Password,
     val expandedAction: Boolean,
+    val showDialog: Boolean,
 ) {
     internal data class Email(
         val value: String,

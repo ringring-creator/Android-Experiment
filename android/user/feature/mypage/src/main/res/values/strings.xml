@@ -13,4 +13,8 @@
     <string name="failed_to_edit">Failed to edit</string>
     <string name="failed_to_withdrawal">Failed to withdrawal</string>
     <string name="logout">Logout</string>
+    <string name="withdrawal_confirmation_content">Are you sure you want to withdrawal?\nAfter withdrawal, you will be redirected to the login screen</string>
+    <string name="withdrawal_confirmation">Withdrawal Confirmation</string>
+    <string name="withdrawal_confirmation_yes">Yes</string>
+    <string name="withdrawal_confirmation_no">No</string>
 </resources>

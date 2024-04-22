@@ -31,6 +31,7 @@ class MyPageRepository @Inject constructor(
         val user = localDataSource.getUser()
             ?: throw UnauthorizedException("User information is not stored locally.")
         networkDataSource.withdrawal(user.token)
+        localDataSource.delete()
     }
 
     suspend fun logout() {

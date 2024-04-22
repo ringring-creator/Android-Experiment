@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -51,8 +52,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.composable
 import com.ring.ring.mypage.R
 import com.ring.ring.user.feature.mypage.MyPageEvent.EditError
 import com.ring.ring.user.feature.mypage.MyPageEvent.EditSuccess
@@ -63,23 +62,6 @@ import com.ring.ring.user.feature.mypage.MyPageEvent.WithdrawalError
 import com.ring.ring.user.feature.mypage.MyPageEvent.WithdrawalSuccess
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-
-const val My_PAGE_ROUTE = "MyPageRoute"
-
-fun NavGraphBuilder.myPageScreen(
-    toLoginScreen: () -> Unit,
-    toTodoListScreen: () -> Unit,
-    toMyPageScreen: () -> Unit,
-) {
-    composable(My_PAGE_ROUTE) {
-        MyPageScreen(
-            toLoginScreen = toLoginScreen,
-            toTodoListScreen = toTodoListScreen,
-            toMyPageScreen = toMyPageScreen,
-        )
-    }
-}
-
 
 @Composable
 internal fun MyPageScreen(
@@ -133,12 +115,22 @@ internal fun MyPageScreen(
             },
             snackbarHost = { SnackbarHost(snackbarHostState) },
         ) { paddingValues ->
-            Content(
-                modifier = Modifier.padding(paddingValues),
-                email = uiState.email,
-                password = uiState.password,
-                updater = updater,
-            )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
+                Content(
+                    email = uiState.email,
+                    password = uiState.password,
+                    updater = updater,
+                )
+                WithdrawalDialog(
+                    showDialog = uiState.showDialog,
+                    setShowDialog = updater.setShowDialog,
+                    withdrawal = updater.withdrawal,
+                )
+            }
         }
     }
 }
@@ -267,14 +259,42 @@ private fun SetupSideEffect(
 }
 
 @Composable
+private fun WithdrawalDialog(
+    showDialog: Boolean,
+    setShowDialog: (Boolean) -> Unit,
+    withdrawal: () -> Unit,
+) {
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { setShowDialog(false) },
+            title = {
+                Text(text = stringResource(R.string.withdrawal_confirmation))
+            },
+            text = {
+                Text(text = stringResource(R.string.withdrawal_confirmation_content))
+            },
+            confirmButton = {
+                Button(onClick = withdrawal, modifier = Modifier.testTag("ConfirmButton")) {
+                    Text(text = stringResource(R.string.withdrawal_confirmation_yes))
+                }
+            },
+            dismissButton = {
+                Button(onClick = { setShowDialog(false) }) {
+                    Text(text = stringResource(R.string.withdrawal_confirmation_no))
+                }
+            }
+        )
+    }
+}
+
+@Composable
 private fun Content(
-    modifier: Modifier,
     email: MyPageUiState.Email,
     password: MyPageUiState.Password,
     updater: MyPageUiUpdater,
 ) {
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
             .padding(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -288,7 +308,7 @@ private fun Content(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             EditButton(updater.edit)
-            WithdrawalButton(updater.withdrawal)
+            WithdrawalButton { updater.setShowDialog(true) }
         }
     }
 }
@@ -349,10 +369,10 @@ private fun EditButton(
 
 @Composable
 private fun WithdrawalButton(
-    withdrawal: () -> Unit,
+    showDialog: () -> Unit,
 ) {
     Button(
-        onClick = withdrawal,
+        onClick = showDialog,
         modifier = Modifier.testTag("WithdrawalButton")
     ) { Text(stringResource(R.string.withdrawal)) }
 }
