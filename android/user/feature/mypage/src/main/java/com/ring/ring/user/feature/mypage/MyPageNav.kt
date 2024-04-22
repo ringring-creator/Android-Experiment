@@ -2,6 +2,7 @@ package com.ring.ring.user.feature.mypage
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.ring.ring.user.feature.mypage.view.MyPageScreen
 
 const val MY_PAGE_ROUTE = "MyPageRoute"
 

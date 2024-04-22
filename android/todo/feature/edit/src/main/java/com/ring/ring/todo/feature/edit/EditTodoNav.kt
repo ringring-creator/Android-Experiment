@@ -24,7 +24,7 @@ fun NavGraphBuilder.editTodoScreen(
             type = NavType.LongType
         }),
     ) {
-        EditTodoScreen(
+        com.ring.ring.todo.feature.edit.view.EditTodoScreen(
             toTodoListScreen = toTodoListScreen,
             toLoginScreen = toLoginScreen,
         )
