@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.ring.ring.user.infra.model.User
 import com.ring.ring.user.infra.model.UserLocalDataSource
+import com.ring.ring.util.log.Logger
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -15,7 +16,7 @@ import javax.inject.Singleton
 @Singleton
 class UserDataStoreDataSource @Inject constructor(
     private val dataStore: DataStore<Preferences>,
-    private val logger: com.ring.ring.util.log.Logger,
+    private val logger: Logger,
 ) : UserLocalDataSource {
     override suspend fun save(user: User) {
         try {
@@ -40,6 +41,20 @@ class UserDataStoreDataSource @Inject constructor(
                 .first()
         } catch (e: Throwable) {
             logger.e("DataStoreUserDataSource", "failed to getUser", e)
+            throw e
+        }
+    }
+
+    override suspend fun delete() {
+        try {
+            dataStore.edit {
+                it.remove(USER_ID_KEY)
+                it.remove(EMAIL_KEY)
+                it.remove(PASSWORD_KEY)
+                it.remove(TOKEN_KEY)
+            }
+        } catch (e: Throwable) {
+            logger.e("DataStoreUserDataSource", "failed to delete", e)
             throw e
         }
     }

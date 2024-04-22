@@ -4,6 +4,7 @@ package com.ring.ring.user.feature.mypage
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,12 +16,16 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
@@ -49,6 +54,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.ring.ring.mypage.R
+import com.ring.ring.user.feature.mypage.MyPageEvent.EditError
+import com.ring.ring.user.feature.mypage.MyPageEvent.EditSuccess
+import com.ring.ring.user.feature.mypage.MyPageEvent.LogoutError
+import com.ring.ring.user.feature.mypage.MyPageEvent.LogoutSuccess
+import com.ring.ring.user.feature.mypage.MyPageEvent.UnauthorizedError
+import com.ring.ring.user.feature.mypage.MyPageEvent.WithdrawalError
+import com.ring.ring.user.feature.mypage.MyPageEvent.WithdrawalSuccess
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -111,7 +123,14 @@ internal fun MyPageScreen(
         },
     ) {
         Scaffold(
-            topBar = { TopBar(scope, drawerState) },
+            topBar = {
+                TopBar(
+                    expanded = uiState.expandedAction,
+                    updater = updater,
+                    scope = scope,
+                    drawerState = drawerState
+                )
+            },
             snackbarHost = { SnackbarHost(snackbarHostState) },
         ) { paddingValues ->
             Content(
@@ -126,8 +145,10 @@ internal fun MyPageScreen(
 
 @Composable
 private fun TopBar(
+    expanded: Boolean,
+    updater: MyPageUiUpdater,
     scope: CoroutineScope,
-    drawerState: DrawerState
+    drawerState: DrawerState,
 ) {
     TopAppBar(
         title = {
@@ -136,6 +157,7 @@ private fun TopBar(
                 style = MaterialTheme.typography.headlineLarge
             )
         },
+        modifier = Modifier.padding(start = 8.dp),
         navigationIcon = {
             Icon(
                 Icons.Default.Menu,
@@ -145,8 +167,44 @@ private fun TopBar(
                 }
             )
         },
-        modifier = Modifier.padding(start = 8.dp)
+        actions = {
+            ActionMenu(
+                expanded = expanded,
+                setExpanded = updater.setExpandedAction,
+                logout = updater.logout,
+            )
+        }
     )
+}
+
+@Composable
+fun ActionMenu(
+    expanded: Boolean,
+    setExpanded: (Boolean) -> Unit,
+    logout: () -> Unit,
+) {
+    Box {
+        IconButton(
+            onClick = { setExpanded(true) },
+            modifier = Modifier.testTag("ActionMenuIcon")
+        ) {
+            Icon(
+                imageVector = Icons.Filled.MoreVert,
+                contentDescription = "More options"
+            )
+        }
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { setExpanded(false) },
+        ) {
+            DropdownMenuItem(
+                text = { Text(stringResource(R.string.logout)) },
+                onClick = logout,
+                modifier = Modifier.testTag("LogoutDropdownMenu")
+            )
+        }
+    }
 }
 
 @Composable
@@ -181,26 +239,25 @@ private fun SetupSideEffect(
     LaunchedEffect(Unit) {
         viewModel.event.collect {
             when (it) {
-                MyPageEvent.EditSuccess -> showSnackbar(
+                EditSuccess -> showSnackbar(
                     snackbarHostState,
                     context.getString(R.string.success_to_edit),
                     scope,
                 )
 
-                MyPageEvent.EditError -> showSnackbar(
+                EditError -> showSnackbar(
                     snackbarHostState,
                     context.getString(R.string.failed_to_edit),
                     scope,
                 )
 
-                MyPageEvent.WithdrawalError -> showSnackbar(
+                WithdrawalError -> showSnackbar(
                     snackbarHostState,
                     context.getString(R.string.failed_to_withdrawal),
                     scope,
                 )
 
-                MyPageEvent.WithdrawalSuccess -> toLoginScreen()
-                MyPageEvent.UnauthorizedError -> toLoginScreen()
+                WithdrawalSuccess, UnauthorizedError, LogoutSuccess, LogoutError -> toLoginScreen()
             }
         }
     }

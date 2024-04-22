@@ -32,4 +32,8 @@ class MyPageRepository @Inject constructor(
             ?: throw UnauthorizedException("User information is not stored locally.")
         networkDataSource.withdrawal(user.token)
     }
+
+    suspend fun logout() {
+        localDataSource.delete()
+    }
 }

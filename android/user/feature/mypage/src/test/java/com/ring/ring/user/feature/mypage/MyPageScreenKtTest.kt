@@ -7,6 +7,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import com.ring.ring.network.exception.UnauthorizedException
+import com.ring.ring.user.infra.model.UserLocalDataSource
 import com.ring.ring.user.infra.model.UserNetworkDataSource
 import com.ring.ring.user.infra.test.FakeErrorUserNetworkDataSource
 import com.ring.ring.user.infra.test.FakeUserLocalDataSource
@@ -40,7 +41,7 @@ class MyPageScreenKtTest {
     private var networkDataSource: UserNetworkDataSource = FakeUserNetworkDataSource(
         user = userTestData
     )
-    private var localDataSource = FakeUserLocalDataSource(userTestData)
+    private var localDataSource: UserLocalDataSource = FakeUserLocalDataSource(userTestData)
     private val snackbarHostState = SnackbarHostState()
 
 
@@ -58,6 +59,45 @@ class MyPageScreenKtTest {
         composeTestRule
             .onNodeWithText(userTestData.email.value)
             .assertExists()
+    }
+
+    @Test
+    fun `tapped logout dropdown item transit login screen`() {
+        //given
+        var wasCalled = false
+        setupMyPageScreen(toLoginScreen = { wasCalled = true })
+
+        //when
+        composeTestRule
+            .onNodeWithTag("ActionMenuIcon")
+            .performClick()
+        composeTestRule
+            .onNodeWithTag("LogoutDropdownMenu")
+            .performClick()
+
+        //then
+        assertThat(wasCalled, `is`(true))
+    }
+
+    @Test
+    fun `tapped logout dropdown item transit login screen when logout failed`() {
+        //given
+        localDataSource = mockk<UserLocalDataSource>(relaxed = true) {
+            coEvery { delete() } throws Exception()
+        }
+        var wasCalled = false
+        setupMyPageScreen(toLoginScreen = { wasCalled = true })
+
+        //when
+        composeTestRule
+            .onNodeWithTag("ActionMenuIcon")
+            .performClick()
+        composeTestRule
+            .onNodeWithTag("LogoutDropdownMenu")
+            .performClick()
+
+        //then
+        assertThat(wasCalled, `is`(true))
     }
 
     @Test
@@ -98,7 +138,7 @@ class MyPageScreenKtTest {
     }
 
     @Test
-    fun `tapped editButton toLoginScreen when unauthorized`() {
+    fun `tapped edit button toLoginScreen when unauthorized`() {
         //given
         networkDataSource = mockk<UserNetworkDataSource>(relaxed = true) {
             coEvery { edit(any(), any()) } throws UnauthorizedException()

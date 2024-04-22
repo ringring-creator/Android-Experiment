@@ -5,5 +5,7 @@ sealed class MyPageEvent {
     object EditError : MyPageEvent()
     object WithdrawalSuccess : MyPageEvent()
     object WithdrawalError : MyPageEvent()
+    object LogoutSuccess : MyPageEvent()
+    object LogoutError : MyPageEvent()
     object UnauthorizedError : MyPageEvent()
 }

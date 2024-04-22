@@ -14,4 +14,8 @@ class FakeUserLocalDataSource(
     override suspend fun getUser(): User? {
         return user
     }
+
+    override suspend fun delete() {
+        this.user = null
+    }
 }

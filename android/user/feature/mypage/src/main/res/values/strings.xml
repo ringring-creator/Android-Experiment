@@ -12,4 +12,5 @@
     <string name="success_to_edit">Success to edit</string>
     <string name="failed_to_edit">Failed to edit</string>
     <string name="failed_to_withdrawal">Failed to withdrawal</string>
+    <string name="logout">Logout</string>
 </resources>

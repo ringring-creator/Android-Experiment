@@ -3,6 +3,8 @@ package com.ring.ring.user.feature.mypage
 data class MyPageUiUpdater(
     val setEmail: (email: String) -> Unit,
     val setPassword: (password: String) -> Unit,
+    val setExpandedAction: (expandedAction: Boolean) -> Unit,
+    val logout: () -> Unit,
     val edit: () -> Unit,
     val withdrawal: () -> Unit,
 )
@@ -10,6 +12,8 @@ data class MyPageUiUpdater(
 internal fun toUpdater(viewModel: MyPageViewModel) = MyPageUiUpdater(
     setEmail = viewModel::setEmail,
     setPassword = viewModel::setPassword,
+    setExpandedAction = viewModel::setExpandedAction,
+    logout = viewModel::logout,
     edit = viewModel::edit,
     withdrawal = viewModel::withdrawal,
 )

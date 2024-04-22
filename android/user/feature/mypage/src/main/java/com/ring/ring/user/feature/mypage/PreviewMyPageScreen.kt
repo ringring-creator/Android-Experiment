@@ -31,6 +31,18 @@ internal fun PreviewMyPageScreenWhenDrawerOpen() {
 }
 
 @Preview(
+    group = "normal scenario",
+    showSystemUi = true,
+    apiLevel = 34,
+)
+@Composable
+internal fun PreviewMyPageScreenWhenShowAction() {
+    MyPageScreen(
+        uiState = uiState.copy(expandedAction = true),
+    )
+}
+
+@Preview(
     group = "error scenario",
     showSystemUi = true,
     apiLevel = 34,
@@ -90,7 +102,8 @@ private fun MyPageScreen(
 
 private val uiState: MyPageUiState = MyPageUiState(
     email = MyPageUiState.Email("test@gmail.com", false, false),
-    password = MyPageUiState.Password("Testtest1", false)
+    password = MyPageUiState.Password("Testtest1", false),
+    expandedAction = false,
 )
 
-private val updater: MyPageUiUpdater = MyPageUiUpdater({}, {}, {}, {})
+private val updater: MyPageUiUpdater = MyPageUiUpdater({}, {}, {}, {}, {}, {})

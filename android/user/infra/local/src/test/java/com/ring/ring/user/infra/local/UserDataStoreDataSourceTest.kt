@@ -16,6 +16,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.instanceOf
+import org.hamcrest.CoreMatchers.nullValue
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.After
 import org.junit.Assert.assertThrows
@@ -114,6 +115,46 @@ class UserDataStoreDataSourceTest {
         //then
         assertThat(logger.eWasCalled!!.tag, equalTo("DataStoreUserDataSource"))
         assertThat(logger.eWasCalled!!.msg, equalTo("failed to getUser"))
+        assertThat(logger.eWasCalled!!.tr, instanceOf(IOException::class.java))
+    }
+
+    @Test
+    fun `delete data saved`() = runTest {
+        //given
+        val user = User.generate(
+            id = 1L,
+            email = "email@example.com",
+            password = "Abcdefg1",
+            token = "fakeToken"
+        )
+        subject.save(user)
+        advanceUntilIdle()
+        assertThat(subject.getUser()!!.id, equalTo(user.id))
+
+        //when
+        subject.delete()
+        advanceUntilIdle()
+
+        //then
+        val actual = subject.getUser()
+        assertThat(actual, nullValue())
+    }
+
+    @Test
+    fun `delete write log when failed`() = runTest {
+        //given
+        dataSource = mockk(relaxed = true)
+        setupSubject()
+        coEvery { dataSource.updateData(any()) } throws IOException()
+
+        //when
+        assertThrows(IOException::class.java) {
+            runBlocking { subject.delete() }
+        }
+
+        //then
+        assertThat(logger.eWasCalled!!.tag, equalTo("DataStoreUserDataSource"))
+        assertThat(logger.eWasCalled!!.msg, equalTo("failed to delete"))
         assertThat(logger.eWasCalled!!.tr, instanceOf(IOException::class.java))
     }
 

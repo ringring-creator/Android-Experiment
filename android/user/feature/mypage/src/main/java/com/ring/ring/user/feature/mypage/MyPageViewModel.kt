@@ -38,6 +38,9 @@ internal class MyPageViewModel @Inject constructor(
         }
         _event.trySend(MyPageEvent.WithdrawalError)
     }
+    private val logoutErrorHandler = CoroutineExceptionHandler { _, th ->
+        _event.trySend(MyPageEvent.LogoutError)
+    }
 
     fun getUser() {
         viewModelScope.launch {
@@ -53,6 +56,13 @@ internal class MyPageViewModel @Inject constructor(
 
     fun setPassword(password: String) {
         _uiState.value = uiState.value.replacePassword(password)
+    }
+
+    fun logout() {
+        viewModelScope.launch(logoutErrorHandler) {
+            repository.logout()
+            _event.trySend(MyPageEvent.LogoutSuccess)
+        }
     }
 
     fun edit() {
@@ -76,7 +86,12 @@ internal class MyPageViewModel @Inject constructor(
         return MyPageUiState(
             email = MyPageUiState.Email("", isError = false, isShowSupportingText = false),
             password = MyPageUiState.Password("", isError = false),
+            expandedAction = false,
         )
+    }
+
+    fun setExpandedAction(expanded: Boolean) {
+        _uiState.value = uiState.value.copy(expandedAction = expanded)
     }
 }
 

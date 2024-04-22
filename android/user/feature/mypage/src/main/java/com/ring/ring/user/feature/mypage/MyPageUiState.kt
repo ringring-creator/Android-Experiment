@@ -7,6 +7,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 internal data class MyPageUiState(
     val email: Email,
     val password: Password,
+    val expandedAction: Boolean,
 ) {
     internal data class Email(
         val value: String,
