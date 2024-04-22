@@ -26,16 +26,20 @@ fun App(
         navController,
         startDestination = LOGIN_ROUTE,
     ) {
-        loginScreen(
-            toTodoListScreen = { navController.navigate(TODO_LIST_ROUTE) },
-            toSignUpScreen = { navController.navigate(SIGN_UP_ROUTE) },
-        )
-        signUpScreen(popBackStack = navController::popBackStack)
-        myPageScreen(
-            toLoginScreen = { navController.navigate(LOGIN_ROUTE) },
-        )
+        userScreens(navController)
         todoScreens(navController)
     }
+}
+
+private fun NavGraphBuilder.userScreens(navController: NavHostController) {
+    loginScreen(
+        toTodoListScreen = { navController.navigate(TODO_LIST_ROUTE) },
+        toSignUpScreen = { navController.navigate(SIGN_UP_ROUTE) },
+    )
+    signUpScreen(popBackStack = navController::popBackStack)
+    myPageScreen(
+        toLoginScreen = { navController.navigate(LOGIN_ROUTE) },
+    )
 }
 
 private fun NavGraphBuilder.todoScreens(navController: NavHostController) {
