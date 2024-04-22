@@ -1,5 +1,8 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.ring.ring.user.feature.mypage
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,12 +14,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
@@ -44,14 +49,22 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.ring.ring.mypage.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 const val My_PAGE_ROUTE = "MyPageRoute"
 
 fun NavGraphBuilder.myPageScreen(
     toLoginScreen: () -> Unit,
+    toTodoListScreen: () -> Unit,
+    toMyPageScreen: () -> Unit,
 ) {
     composable(My_PAGE_ROUTE) {
-        MyPageScreen(toLoginScreen = toLoginScreen)
+        MyPageScreen(
+            toLoginScreen = toLoginScreen,
+            toTodoListScreen = toTodoListScreen,
+            toMyPageScreen = toMyPageScreen,
+        )
     }
 }
 
@@ -60,35 +73,45 @@ fun NavGraphBuilder.myPageScreen(
 internal fun MyPageScreen(
     viewModel: MyPageViewModel = hiltViewModel(),
     toLoginScreen: () -> Unit,
+    toTodoListScreen: () -> Unit,
+    toMyPageScreen: () -> Unit,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     MyPageScreen(
         uiState = rememberSignUpUiState(viewModel),
         updater = remember { toUpdater(viewModel) },
+        toTodoListScreen = toTodoListScreen,
+        toMyPageScreen = toMyPageScreen,
         snackbarHostState = snackbarHostState,
     )
 
-    setupSideEffect(viewModel, toLoginScreen, snackbarHostState)
+    SetupSideEffect(viewModel, toLoginScreen, snackbarHostState)
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun MyPageScreen(
     uiState: MyPageUiState,
     updater: MyPageUiUpdater,
+    toTodoListScreen: () -> Unit,
+    toMyPageScreen: () -> Unit,
     snackbarHostState: SnackbarHostState,
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
 ) {
+    val scope: CoroutineScope = rememberCoroutineScope()
+
     ModalNavigationDrawer(
         drawerState = drawerState,
-        drawerContent = { ModalDrawerSheet { DrawerSheet() } },
+        drawerContent = {
+            ModalDrawerSheet {
+                DrawerSheet(
+                    toTodoListScreen = toTodoListScreen,
+                    toMyPageScreen = toMyPageScreen,
+                )
+            }
+        },
     ) {
         Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text(stringResource(R.string.my_page)) },
-                )
-            },
+            topBar = { TopBar(scope, drawerState) },
             snackbarHost = { SnackbarHost(snackbarHostState) },
         ) { paddingValues ->
             Content(
@@ -102,7 +125,53 @@ internal fun MyPageScreen(
 }
 
 @Composable
-private fun setupSideEffect(
+private fun TopBar(
+    scope: CoroutineScope,
+    drawerState: DrawerState
+) {
+    TopAppBar(
+        title = {
+            Text(
+                text = stringResource(R.string.my_page),
+                style = MaterialTheme.typography.headlineLarge
+            )
+        },
+        navigationIcon = {
+            Icon(
+                Icons.Default.Menu,
+                contentDescription = null,
+                modifier = Modifier.clickable {
+                    scope.launch { drawerState.open() }
+                }
+            )
+        },
+        modifier = Modifier.padding(start = 8.dp)
+    )
+}
+
+@Composable
+private fun DrawerSheet(
+    toTodoListScreen: () -> Unit,
+    toMyPageScreen: () -> Unit,
+) {
+    NavigationDrawerItem(
+        icon = { Icon(Icons.Default.CheckCircle, contentDescription = null) },
+        label = { Text(stringResource(R.string.todo)) },
+        selected = false,
+        onClick = toTodoListScreen,
+        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+    )
+    NavigationDrawerItem(
+        icon = { Icon(Icons.Default.Person, contentDescription = null) },
+        label = { Text(stringResource(R.string.my_page)) },
+        selected = true,
+        onClick = toMyPageScreen,
+        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+    )
+}
+
+@Composable
+private fun SetupSideEffect(
     viewModel: MyPageViewModel,
     toLoginScreen: () -> Unit,
     snackbarHostState: SnackbarHostState
@@ -138,24 +207,6 @@ private fun setupSideEffect(
     LaunchedEffect(Unit) {
         viewModel.getUser()
     }
-}
-
-@Composable
-private fun DrawerSheet() {
-    NavigationDrawerItem(
-        icon = { Icon(Icons.Default.CheckCircle, contentDescription = null) },
-        label = { Text(stringResource(R.string.todo)) },
-        selected = true,
-        onClick = {},
-        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-    )
-    NavigationDrawerItem(
-        icon = { Icon(Icons.Default.Person, contentDescription = null) },
-        label = { Text(stringResource(R.string.my_page)) },
-        selected = false,
-        onClick = {},
-        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-    )
 }
 
 @Composable

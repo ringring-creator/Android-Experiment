@@ -1,6 +1,9 @@
 package com.ring.ring.user.feature.mypage
 
+import androidx.compose.material3.DrawerState
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -12,6 +15,19 @@ import androidx.compose.ui.tooling.preview.Preview
 @Composable
 internal fun PreviewMyPageScreen() {
     MyPageScreen(uiState = uiState)
+}
+
+@Preview(
+    group = "normal scenario",
+    showSystemUi = true,
+    apiLevel = 34,
+)
+@Composable
+internal fun PreviewMyPageScreenWhenDrawerOpen() {
+    MyPageScreen(
+        uiState = uiState,
+        drawerState = rememberDrawerState(initialValue = DrawerValue.Open)
+    )
 }
 
 @Preview(
@@ -58,11 +74,17 @@ internal fun PreviewMyPageScreenWhenPasswordInvalid() {
 
 
 @Composable
-private fun MyPageScreen(uiState: MyPageUiState) {
+private fun MyPageScreen(
+    uiState: MyPageUiState,
+    drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
+) {
     MyPageScreen(
         uiState = uiState,
         updater = updater,
+        toTodoListScreen = {},
+        toMyPageScreen = {},
         snackbarHostState = SnackbarHostState(),
+        drawerState = drawerState,
     )
 }
 

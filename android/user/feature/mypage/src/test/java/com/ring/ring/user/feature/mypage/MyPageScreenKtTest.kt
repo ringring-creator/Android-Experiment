@@ -172,6 +172,8 @@ class MyPageScreenKtTest {
 
     private fun setupMyPageScreen(
         toLoginScreen: () -> Unit = {},
+        toTodoListScreen: () -> Unit = {},
+        toMyPageScreen: () -> Unit = {},
     ) {
         composeTestRule.setContent {
             MyPageScreen(
@@ -182,6 +184,8 @@ class MyPageScreenKtTest {
                     ),
                 ),
                 toLoginScreen = toLoginScreen,
+                toTodoListScreen = toTodoListScreen,
+                toMyPageScreen = toMyPageScreen,
                 snackbarHostState = snackbarHostState
             )
         }

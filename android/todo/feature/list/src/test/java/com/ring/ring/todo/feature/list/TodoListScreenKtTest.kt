@@ -193,6 +193,7 @@ class TodoListScreenKtTest {
     }
 
     private fun setupTodoListScreen(
+        toTodoListScreen: () -> Unit = {},
         toCreateTodoScreen: () -> Unit = {},
         toEditTodoScreen: (id: String) -> Unit = {},
         toMyPageScreen: () -> Unit = {},
@@ -207,6 +208,7 @@ class TodoListScreenKtTest {
                         dateUtil = dateUtil
                     ),
                 ),
+                toTodoListScreen = toTodoListScreen,
                 toCreateTodoScreen = toCreateTodoScreen,
                 toEditTodoScreen = toEditTodoScreen,
                 toMyPageScreen = toMyPageScreen,

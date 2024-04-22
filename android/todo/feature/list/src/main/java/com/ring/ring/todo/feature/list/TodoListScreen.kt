@@ -54,6 +54,7 @@ import kotlinx.coroutines.launch
 @Composable
 internal fun TodoListScreen(
     viewModel: TodoListViewModel = hiltViewModel(),
+    toTodoListScreen: () -> Unit,
     toCreateTodoScreen: () -> Unit,
     toEditTodoScreen: (id: String) -> Unit,
     toMyPageScreen: () -> Unit,
@@ -62,6 +63,7 @@ internal fun TodoListScreen(
     TodoListScreen(
         uiState = rememberTodoListUiState(viewModel = viewModel),
         updater = remember { toUpdater(viewModel = viewModel) },
+        toTodoListScreen = toTodoListScreen,
         toCreateTodoScreen = toCreateTodoScreen,
         toEditTodoScreen = toEditTodoScreen,
         toMyPageScreen = toMyPageScreen,
@@ -75,18 +77,21 @@ internal fun TodoListScreen(
 internal fun TodoListScreen(
     uiState: TodoListUiState,
     updater: TodoListUiUpdater,
+    toTodoListScreen: () -> Unit,
     toCreateTodoScreen: () -> Unit,
     toEditTodoScreen: (id: String) -> Unit,
     toMyPageScreen: () -> Unit,
     snackBarHostState: SnackbarHostState,
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
-    scope: CoroutineScope = rememberCoroutineScope(),
 ) {
+    val scope: CoroutineScope = rememberCoroutineScope()
+
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet {
                 DrawerSheet(
+                    toTodoListScreen = toTodoListScreen,
                     toMyPageScreen = toMyPageScreen,
                 )
             }
@@ -210,13 +215,14 @@ private fun TopBar(
 
 @Composable
 private fun DrawerSheet(
+    toTodoListScreen: () -> Unit,
     toMyPageScreen: () -> Unit,
 ) {
     NavigationDrawerItem(
         icon = { Icon(Icons.Default.CheckCircle, contentDescription = null) },
         label = { Text(stringResource(R.string.todo)) },
         selected = true,
-        onClick = {},
+        onClick = toTodoListScreen,
         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
     )
     NavigationDrawerItem(

@@ -36,14 +36,19 @@ private fun NavGraphBuilder.userScreens(navController: NavHostController) {
         toTodoListScreen = { navController.navigate(TODO_LIST_ROUTE) },
         toSignUpScreen = { navController.navigate(SIGN_UP_ROUTE) },
     )
-    signUpScreen(popBackStack = navController::popBackStack)
+    signUpScreen(
+        popBackStack = navController::popBackStack,
+    )
     myPageScreen(
         toLoginScreen = { navController.navigate(LOGIN_ROUTE) },
+        toTodoListScreen = { navController.navigate(TODO_LIST_ROUTE) },
+        toMyPageScreen = { navController.navigate(My_PAGE_ROUTE) },
     )
 }
 
 private fun NavGraphBuilder.todoScreens(navController: NavHostController) {
     todoListScreen(
+        toTodoListScreen = { navController.navigate(TODO_LIST_ROUTE) },
         toCreateTodoScreen = { navController.navigate(CREATE_TODO_ROUTE) },
         toEditTodoScreen = { navController.navigate(EditTodoNav.editRoute(it)) },
         toMyPageScreen = { navController.navigate(My_PAGE_ROUTE) },

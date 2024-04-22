@@ -6,12 +6,14 @@ import androidx.navigation.compose.composable
 const val TODO_LIST_ROUTE = "TodoListRoute"
 
 fun NavGraphBuilder.todoListScreen(
+    toTodoListScreen: () -> Unit,
     toCreateTodoScreen: () -> Unit,
     toEditTodoScreen: (id: String) -> Unit,
     toMyPageScreen: () -> Unit,
 ) {
     composable(TODO_LIST_ROUTE) {
         TodoListScreen(
+            toTodoListScreen = toTodoListScreen,
             toCreateTodoScreen = toCreateTodoScreen,
             toEditTodoScreen = toEditTodoScreen,
             toMyPageScreen = toMyPageScreen,
