@@ -56,6 +56,7 @@ internal fun TodoListScreen(
     viewModel: TodoListViewModel = hiltViewModel(),
     toCreateTodoScreen: () -> Unit,
     toEditTodoScreen: (id: String) -> Unit,
+    toMyPageScreen: () -> Unit,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     TodoListScreen(
@@ -63,6 +64,7 @@ internal fun TodoListScreen(
         updater = remember { toUpdater(viewModel = viewModel) },
         toCreateTodoScreen = toCreateTodoScreen,
         toEditTodoScreen = toEditTodoScreen,
+        toMyPageScreen = toMyPageScreen,
         snackBarHostState = snackbarHostState,
     )
 
@@ -75,14 +77,20 @@ internal fun TodoListScreen(
     updater: TodoListUiUpdater,
     toCreateTodoScreen: () -> Unit,
     toEditTodoScreen: (id: String) -> Unit,
-//    toMyPageScreen: () -> Unit,
+    toMyPageScreen: () -> Unit,
     snackBarHostState: SnackbarHostState,
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
     scope: CoroutineScope = rememberCoroutineScope(),
 ) {
     ModalNavigationDrawer(
         drawerState = drawerState,
-        drawerContent = { ModalDrawerSheet { DrawerSheet() } },
+        drawerContent = {
+            ModalDrawerSheet {
+                DrawerSheet(
+                    toMyPageScreen = toMyPageScreen,
+                )
+            }
+        },
     ) {
         Scaffold(
             topBar = { TopBar(scope, drawerState) },
@@ -201,7 +209,9 @@ private fun TopBar(
 }
 
 @Composable
-private fun DrawerSheet() {
+private fun DrawerSheet(
+    toMyPageScreen: () -> Unit,
+) {
     NavigationDrawerItem(
         icon = { Icon(Icons.Default.CheckCircle, contentDescription = null) },
         label = { Text(stringResource(R.string.todo)) },
@@ -213,7 +223,7 @@ private fun DrawerSheet() {
         icon = { Icon(Icons.Default.Person, contentDescription = null) },
         label = { Text(stringResource(R.string.my_page)) },
         selected = false,
-        onClick = {},
+        onClick = toMyPageScreen,
         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
     )
 }

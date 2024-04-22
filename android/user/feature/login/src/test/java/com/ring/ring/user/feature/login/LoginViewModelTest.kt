@@ -25,7 +25,7 @@ class LoginViewModelTest {
 
     private val savedCredentials = Credentials.issue("email@example.com", "Abcdefg1")
     private var networkDataSource: UserNetworkDataSource = FakeUserNetworkDataSource(
-        credentialsList = mutableListOf(savedCredentials),
+        savedCredentials,
     )
     private var localDataSource = FakeUserLocalDataSource()
 
@@ -51,7 +51,7 @@ class LoginViewModelTest {
                 savedCredentials.password.value
             )
         )
-        val actual = localDataSource.getUser()
+        val actual = localDataSource.getUser()!!
         assertThat(actual.id, equalTo(expect.id))
         assertThat(actual.email, equalTo(Email(savedCredentials.email.value)))
         assertThat(actual.token, equalTo(expect.token))

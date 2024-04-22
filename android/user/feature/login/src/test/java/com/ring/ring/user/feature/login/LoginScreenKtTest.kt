@@ -32,7 +32,7 @@ class LoginScreenKtTest {
     val composeTestRule = createAndroidComposeRule<TestActivity>()
 
     private var savedCredentials = Credentials.issue("email@example.com", "Abcdefg1")
-    private var networkDataSource = FakeUserNetworkDataSource(mutableListOf(savedCredentials))
+    private var networkDataSource = FakeUserNetworkDataSource(savedCredentials)
     private var localDataSource = FakeUserLocalDataSource()
 
     @Before

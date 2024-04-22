@@ -55,7 +55,7 @@ internal fun EditTodoScreen(
         uiState = rememberEditTodoUiState(viewModel = viewModel),
         updater = remember { toEditTodoUiUpdater(viewModel = viewModel) },
         toTodoListScreen = toTodoListScreen,
-        snackBarHostState = snackbarHostState,
+        snackbarHostState = snackbarHostState,
     )
 
     SetupSideEffect(viewModel, toTodoListScreen, toLoginScreen, snackbarHostState)
@@ -67,7 +67,7 @@ internal fun EditTodoScreen(
     uiState: EditTodoUiState,
     updater: EditTodoUiUpdater,
     toTodoListScreen: () -> Unit,
-    snackBarHostState: SnackbarHostState,
+    snackbarHostState: SnackbarHostState,
 ) {
     Scaffold(
         topBar = {
@@ -76,7 +76,7 @@ internal fun EditTodoScreen(
                 navigationIcon = { NavigationIcon(toTodoListScreen) }
             )
         },
-        snackbarHost = { SnackbarHost(snackBarHostState) },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { padding ->
         Content(
             modifier = Modifier

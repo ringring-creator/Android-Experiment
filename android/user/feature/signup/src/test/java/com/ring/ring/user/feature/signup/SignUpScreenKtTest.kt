@@ -38,7 +38,7 @@ class SignUpScreenKtTest {
 
     private val savedCredentials = Credentials.issue("email@example.com", "Abcdefg1")
     private var networkDataSource: UserNetworkDataSource =
-        FakeUserNetworkDataSource(mutableListOf(savedCredentials))
+        FakeUserNetworkDataSource(savedCredentials)
 
     @Before
     fun setUp() {

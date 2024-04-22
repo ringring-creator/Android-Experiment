@@ -1,5 +1,6 @@
 package com.ring.ring.user.feature.mypage
 
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -61,6 +62,7 @@ private fun MyPageScreen(uiState: MyPageUiState) {
     MyPageScreen(
         uiState = uiState,
         updater = updater,
+        snackbarHostState = SnackbarHostState(),
     )
 }
 

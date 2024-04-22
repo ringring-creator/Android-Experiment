@@ -53,7 +53,7 @@ private fun EditTodoScreen(uiState: EditTodoUiState) {
         uiState = uiState,
         updater = updater,
         toTodoListScreen = { },
-        snackBarHostState = SnackbarHostState(),
+        snackbarHostState = SnackbarHostState(),
     )
 }
 

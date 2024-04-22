@@ -41,7 +41,7 @@ class UserController(
         editUser(
             req = EditUser.Req(
                 currentEmail = receiveEmail(call),
-                credentials = call.receive<EditUser.Req.Body>()
+                body = call.receive<EditUser.Req.Body>()
             )
         )
         call.respond(HttpStatusCode.NoContent)

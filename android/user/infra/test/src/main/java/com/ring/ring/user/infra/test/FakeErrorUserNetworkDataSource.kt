@@ -5,11 +5,11 @@ import com.ring.ring.user.infra.model.User
 import com.ring.ring.user.infra.model.UserNetworkDataSource
 
 class FakeErrorUserNetworkDataSource : UserNetworkDataSource {
-    override suspend fun edit(credentials: Credentials) {
+    override suspend fun edit(credentials: Credentials, token: String) {
         throw Exception()
     }
 
-    override suspend fun withdrawal() {
+    override suspend fun withdrawal(token: String) {
         throw Exception()
     }
 

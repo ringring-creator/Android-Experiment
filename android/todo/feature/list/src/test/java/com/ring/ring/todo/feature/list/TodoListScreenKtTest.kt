@@ -195,6 +195,7 @@ class TodoListScreenKtTest {
     private fun setupTodoListScreen(
         toCreateTodoScreen: () -> Unit = {},
         toEditTodoScreen: (id: String) -> Unit = {},
+        toMyPageScreen: () -> Unit = {},
     ) {
         composeTestRule.setContent {
             TodoListScreen(
@@ -208,6 +209,7 @@ class TodoListScreenKtTest {
                 ),
                 toCreateTodoScreen = toCreateTodoScreen,
                 toEditTodoScreen = toEditTodoScreen,
+                toMyPageScreen = toMyPageScreen,
                 snackbarHostState = snackbarHostState,
             )
         }

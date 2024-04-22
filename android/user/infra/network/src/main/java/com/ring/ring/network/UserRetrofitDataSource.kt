@@ -15,7 +15,7 @@ import javax.inject.Singleton
 class UserRetrofitDataSource @Inject constructor(
     private val networkApi: RetrofitUserNetworkApi,
 ) : UserNetworkDataSource {
-    override suspend fun edit(credentials: Credentials) {
+    override suspend fun edit(credentials: Credentials, token: String) {
         return try {
             networkApi.edit(
                 request = EditRequest(
@@ -23,7 +23,8 @@ class UserRetrofitDataSource @Inject constructor(
                         credentials.email.value,
                         credentials.password.value
                     )
-                )
+                ),
+                authorization = "Bearer $token"
             )
         } catch (e: Throwable) {
             throwUnauthorizedExceptionIfNeeded(e)
@@ -31,9 +32,9 @@ class UserRetrofitDataSource @Inject constructor(
         }
     }
 
-    override suspend fun withdrawal() {
+    override suspend fun withdrawal(token: String) {
         return try {
-            networkApi.withdrawal()
+            networkApi.withdrawal(authorization = "Bearer $token")
         } catch (e: Throwable) {
             throwUnauthorizedExceptionIfNeeded(e)
             throw e

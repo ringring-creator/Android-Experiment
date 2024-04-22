@@ -5,26 +5,27 @@ import com.ring.ring.user.infra.model.User
 import com.ring.ring.user.infra.model.UserNetworkDataSource
 
 class FakeUserNetworkDataSource(
-    private var credentialsList: MutableList<Credentials> = mutableListOf(),
+    private var credentials: Credentials? = null,
+    private var user: User? = null,
 ) : UserNetworkDataSource {
-    private var user: User? = null
 
-    override suspend fun edit(credentials: Credentials) {
-        val index = credentialsList.indexOfFirst { it == credentials }
-        credentialsList[index] = credentials
+    override suspend fun edit(credentials: Credentials, token: String) {
+        this.credentials = credentials
+        user = User.generate(1L, token, credentials)
     }
 
-    override suspend fun withdrawal() {
-        credentialsList.removeIf { it.email == user?.email }
+    override suspend fun withdrawal(token: String) {
+        if (user?.token != token) throw Exception()
+        credentials = null
     }
 
     override suspend fun login(credentials: Credentials): User {
-        if (credentialsList.contains(credentials).not()) throw Exception()
+        if (this.credentials != credentials) throw Exception()
         user = User.generate(1L, "fakeToken", credentials)
         return User.generate(1L, "fakeToken", credentials)
     }
 
     override suspend fun signUp(credentials: Credentials) {
-        credentialsList.add(credentials)
+        this.credentials = credentials
     }
 }

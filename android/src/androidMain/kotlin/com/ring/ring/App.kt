@@ -13,6 +13,8 @@ import com.ring.ring.todo.feature.list.TODO_LIST_ROUTE
 import com.ring.ring.todo.feature.list.todoListScreen
 import com.ring.ring.user.feature.login.LOGIN_ROUTE
 import com.ring.ring.user.feature.login.loginScreen
+import com.ring.ring.user.feature.mypage.My_PAGE_ROUTE
+import com.ring.ring.user.feature.mypage.myPageScreen
 import com.ring.ring.user.feature.signup.SIGN_UP_ROUTE
 import com.ring.ring.user.feature.signup.signUpScreen
 
@@ -29,6 +31,9 @@ fun App(
             toSignUpScreen = { navController.navigate(SIGN_UP_ROUTE) },
         )
         signUpScreen(popBackStack = navController::popBackStack)
+        myPageScreen(
+            toLoginScreen = { navController.navigate(LOGIN_ROUTE) },
+        )
         todoScreens(navController)
     }
 }
@@ -36,7 +41,8 @@ fun App(
 private fun NavGraphBuilder.todoScreens(navController: NavHostController) {
     todoListScreen(
         toCreateTodoScreen = { navController.navigate(CREATE_TODO_ROUTE) },
-        toEditTodoScreen = { navController.navigate(EditTodoNav.editRoute(it)) }
+        toEditTodoScreen = { navController.navigate(EditTodoNav.editRoute(it)) },
+        toMyPageScreen = { navController.navigate(My_PAGE_ROUTE) },
     )
     createTodoScreen(
         toTodoListScreen = { navController.navigate(TODO_LIST_ROUTE) },

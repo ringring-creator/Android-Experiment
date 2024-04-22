@@ -63,6 +63,7 @@ dependencies {
     implementation(projects.android.todo.feature.edit)
     implementation(projects.android.user.feature.login)
     implementation(projects.android.user.feature.signup)
+    implementation(projects.android.user.feature.mypage)
 
     implementation(libs.bundles.compose)
     implementation(libs.bundles.hilt)

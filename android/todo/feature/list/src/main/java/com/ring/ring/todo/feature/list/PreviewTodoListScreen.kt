@@ -40,9 +40,9 @@ private fun TodoListScreen(
         updater = updater,
         toCreateTodoScreen = {},
         toEditTodoScreen = {},
+        toMyPageScreen = {},
         snackBarHostState = SnackbarHostState(),
         drawerState = drawerState,
-//        toSignUpScreen = {},
     )
 }
 

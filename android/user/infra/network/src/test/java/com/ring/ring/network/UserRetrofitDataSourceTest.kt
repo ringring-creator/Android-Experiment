@@ -59,10 +59,12 @@ class UserRetrofitDataSourceTest {
 
         //when
         val credentials = Credentials.issue("email@example.com", "Abcdefg1")
-        subject.edit(credentials)
+        val token = "fakeToken"
+        subject.edit(credentials, token)
 
         //then
         val request = mockWebServer.takeRequest()
+        assertThat(request.getHeader("Authorization"), equalTo("Bearer $token"))
         val body = request.body.readUtf8()
         assertThat(body.contains("\"email\":\"${credentials.email.value}\""), `is`(true))
         assertThat(body.contains("\"password\":\"${credentials.password.value}\""), `is`(true))
@@ -82,7 +84,7 @@ class UserRetrofitDataSourceTest {
         //when,then
         Assert.assertThrows(UnauthorizedException::class.java) {
             runBlocking {
-                subject.edit(Credentials.issue("email@example.com", "Abcdefg1"))
+                subject.edit(Credentials.issue("email@example.com", "Abcdefg1"), "fakeToken")
             }
         }
     }
@@ -95,10 +97,12 @@ class UserRetrofitDataSourceTest {
         mockWebServer.enqueue(response)
 
         //when
-        subject.withdrawal()
+        val token = "fakeToken"
+        subject.withdrawal(token)
 
         //then
         val request = mockWebServer.takeRequest()
+        assertThat(request.getHeader("Authorization"), equalTo("Bearer $token"))
         assertThat(request.path, equalTo("/users"))
         assertThat(request.method, equalTo("DELETE"))
     }
@@ -115,7 +119,7 @@ class UserRetrofitDataSourceTest {
         //when,then
         Assert.assertThrows(UnauthorizedException::class.java) {
             runBlocking {
-                subject.withdrawal()
+                subject.withdrawal("fakeToken")
             }
         }
     }

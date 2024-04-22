@@ -23,29 +23,52 @@ import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
 import com.ring.ring.mypage.R
+
+const val My_PAGE_ROUTE = "MyPageRoute"
+
+fun NavGraphBuilder.myPageScreen(
+    toLoginScreen: () -> Unit,
+) {
+    composable(My_PAGE_ROUTE) {
+        MyPageScreen(toLoginScreen = toLoginScreen)
+    }
+}
+
 
 @Composable
 internal fun MyPageScreen(
     viewModel: MyPageViewModel = hiltViewModel(),
+    toLoginScreen: () -> Unit,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     MyPageScreen(
         uiState = rememberSignUpUiState(viewModel),
         updater = remember { toUpdater(viewModel) },
+        snackbarHostState = snackbarHostState,
     )
+
+    setupSideEffect(viewModel, toLoginScreen, snackbarHostState)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,6 +76,7 @@ internal fun MyPageScreen(
 internal fun MyPageScreen(
     uiState: MyPageUiState,
     updater: MyPageUiUpdater,
+    snackbarHostState: SnackbarHostState,
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
 ) {
     ModalNavigationDrawer(
@@ -65,6 +89,7 @@ internal fun MyPageScreen(
                     title = { Text(stringResource(R.string.my_page)) },
                 )
             },
+            snackbarHost = { SnackbarHost(snackbarHostState) },
         ) { paddingValues ->
             Content(
                 modifier = Modifier.padding(paddingValues),
@@ -73,6 +98,45 @@ internal fun MyPageScreen(
                 updater = updater,
             )
         }
+    }
+}
+
+@Composable
+private fun setupSideEffect(
+    viewModel: MyPageViewModel,
+    toLoginScreen: () -> Unit,
+    snackbarHostState: SnackbarHostState
+) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    LaunchedEffect(Unit) {
+        viewModel.event.collect {
+            when (it) {
+                MyPageEvent.EditSuccess -> showSnackbar(
+                    snackbarHostState,
+                    context.getString(R.string.success_to_edit),
+                    scope,
+                )
+
+                MyPageEvent.EditError -> showSnackbar(
+                    snackbarHostState,
+                    context.getString(R.string.failed_to_edit),
+                    scope,
+                )
+
+                MyPageEvent.WithdrawalError -> showSnackbar(
+                    snackbarHostState,
+                    context.getString(R.string.failed_to_withdrawal),
+                    scope,
+                )
+
+                MyPageEvent.WithdrawalSuccess -> toLoginScreen()
+                MyPageEvent.UnauthorizedError -> toLoginScreen()
+            }
+        }
+    }
+    LaunchedEffect(Unit) {
+        viewModel.getUser()
     }
 }
 

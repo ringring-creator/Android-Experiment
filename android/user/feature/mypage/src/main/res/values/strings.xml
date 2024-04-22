@@ -9,4 +9,7 @@
     <string name="email_is_already_registered">Email is already registered</string>
     <string name="edit">Edit</string>
     <string name="withdrawal">Withdrawal</string>
+    <string name="success_to_edit">Success to edit</string>
+    <string name="failed_to_edit">Failed to edit</string>
+    <string name="failed_to_withdrawal">Failed to withdrawal</string>
 </resources>
