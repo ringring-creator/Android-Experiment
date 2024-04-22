@@ -13,9 +13,11 @@ class EditUser(
     override suspend fun execute(req: Req): Res {
         val userId = repository.loadId(req.currentEmail)
             ?: throw UnauthorizedException("This is an unregistered email")
-        repository.save(
-            user = req.body.toUser(userId)
-        )
+        val user = req.body.toUser(userId).let {
+            it.copy(password = Cipher.hashWithSHA256(it.password))
+        }
+
+        repository.save(user = user)
         return Res()
     }
 
