@@ -15,7 +15,6 @@ import com.ring.ring.todo.feature.edit.viewmodel.EditTodoViewModel
 import com.ring.ring.todo.infra.domain.Todo
 import com.ring.ring.todo.infra.domain.TodoNetworkDataSource
 import com.ring.ring.todo.infra.network.exception.UnauthorizedException
-import com.ring.ring.todo.infra.test.FakeErrorTodoNetworkDataSource
 import com.ring.ring.todo.infra.test.FakeTodoNetworkDataSource
 import com.ring.ring.user.infra.test.FakeUserLocalDataSource
 import com.ring.ring.user.infra.test.TestActivity
@@ -94,7 +93,9 @@ class EditTodoScreenKtTest {
     @Test
     fun `show snackbar when get todo failed`() {
         //given,when
-        networkDataSource = FakeErrorTodoNetworkDataSource()
+        networkDataSource = mockk(relaxed = true) {
+            coEvery { fetch(any(), any()) } throws Exception()
+        }
         setupEditTodoScreen()
 
         //then
@@ -168,7 +169,9 @@ class EditTodoScreenKtTest {
     @Test
     fun `tapped editButton show snackbar when edit failed`() {
         //given
-        networkDataSource = FakeErrorTodoNetworkDataSource()
+        networkDataSource = mockk(relaxed = true) {
+            coEvery { update(any(), any()) } throws Exception()
+        }
         setupEditTodoScreen()
         snackbarHostState.currentSnackbarData?.dismiss()
 

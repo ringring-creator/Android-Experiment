@@ -10,7 +10,6 @@ import com.ring.ring.todo.feature.create.viewmodel.CreateTodoRepository
 import com.ring.ring.todo.feature.create.viewmodel.CreateTodoViewModel
 import com.ring.ring.todo.infra.domain.TodoNetworkDataSource
 import com.ring.ring.todo.infra.network.exception.UnauthorizedException
-import com.ring.ring.todo.infra.test.FakeErrorTodoNetworkDataSource
 import com.ring.ring.todo.infra.test.FakeTodoNetworkDataSource
 import com.ring.ring.user.infra.test.FakeUserLocalDataSource
 import com.ring.ring.user.infra.test.TestActivity
@@ -100,7 +99,9 @@ class CreateTodoScreenKtTest {
     @Test
     fun `tapped createButton show snackbar when createTodo fails`() {
         //given
-        networkDataSource = FakeErrorTodoNetworkDataSource()
+        networkDataSource = mockk(relaxed = true) {
+            coEvery { create(any(), any()) } throws Exception()
+        }
         setupCreateTodoScreen()
 
         //when

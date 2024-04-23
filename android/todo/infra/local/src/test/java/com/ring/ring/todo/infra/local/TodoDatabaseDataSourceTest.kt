@@ -5,12 +5,12 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.ring.ring.infra.db.AndroidExperimentDatabase
 import com.ring.ring.todo.infra.domain.Todo
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Instant
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.After
-
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -48,12 +48,12 @@ class TodoDatabaseDataSourceTest {
             done = true,
             deadline = Instant.parse("2021-01-01T00:00:00Z"),
         )
-        subject.upsert(listOf(expected, expected))
 
         //when
-        val actual = subject.load()
+        subject.upsert(listOf(expected, expected))
 
         //then
+        val actual = subject.getTodoListStream().first()
         assertThat(actual.count(), equalTo(2))
         val firstElement = actual.first()
         assertThat(firstElement.id, equalTo(1L))
@@ -74,14 +74,14 @@ class TodoDatabaseDataSourceTest {
             deadline = Instant.parse("2021-01-01T00:00:00Z"),
         )
         subject.upsert(listOf(expected, expected))
-        var numberOfRecords = subject.load().count()
+        var numberOfRecords = subject.getTodoListStream().first().count()
         assertThat(numberOfRecords, equalTo(2))
 
         //when
         subject.deleteAll()
 
         //then
-        numberOfRecords = subject.load().count()
+        numberOfRecords = subject.getTodoListStream().first().count()
         assertThat(numberOfRecords, equalTo(0))
     }
 }

@@ -16,8 +16,6 @@ import com.ring.ring.todo.feature.list.viewmodel.TodoListViewModel
 import com.ring.ring.todo.infra.domain.Todo
 import com.ring.ring.todo.infra.domain.TodoLocalDataSource
 import com.ring.ring.todo.infra.domain.TodoNetworkDataSource
-import com.ring.ring.todo.infra.test.FakeErrorTodoLocalDataSource
-import com.ring.ring.todo.infra.test.FakeErrorTodoNetworkDataSource
 import com.ring.ring.todo.infra.test.FakeTodoLocalDataSource
 import com.ring.ring.todo.infra.test.FakeTodoNetworkDataSource
 import com.ring.ring.user.infra.model.UserLocalDataSource
@@ -28,6 +26,8 @@ import com.ring.ring.util.date.DefaultDateUtil
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
+import io.mockk.coEvery
+import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Instant
 import org.hamcrest.CoreMatchers.equalTo
@@ -79,10 +79,10 @@ class TodoListScreenKtTest {
     @Test
     fun `show snackbar when fail to fetch from repository`() {
         //given,when
-        networkDataSource = FakeErrorTodoNetworkDataSource()
-        localDataSource = FakeErrorTodoLocalDataSource()
+        networkDataSource = mockk(relaxed = true) {
+            coEvery { fetchList(any()) } throws Exception()
+        }
         setupTodoListScreen()
-        println(snackbarHostState.currentSnackbarData)
 
         //then
         composeTestRule

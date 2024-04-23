@@ -6,9 +6,11 @@ import com.ring.ring.todo.feature.list.view.TodoListUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -16,8 +18,13 @@ import javax.inject.Inject
 internal class TodoListViewModel @Inject constructor(
     private val todoRepository: TodoListRepository,
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(TodoListUiState(todoList = emptyList()))
-    val uiState = _uiState.asStateFlow()
+    val uiState: StateFlow<TodoListUiState> = todoRepository.getTodoListStream()
+        .map { TodoListUiState(todoList = it) }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = TodoListUiState(todoList = emptyList())
+        )
 
     private val _event = Channel<TodoListEvent>()
     val event = _event.receiveAsFlow()
@@ -31,30 +38,17 @@ internal class TodoListViewModel @Inject constructor(
 
     fun fetchTodoList() {
         viewModelScope.launch(fetchErrorHandler) {
-            val todoList = todoRepository.list()
-            _uiState.value = uiState.value.copy(todoList = todoList)
             todoRepository.refresh()
         }
     }
 
     fun toggleDone(todoId: Long) {
         viewModelScope.launch(toggleDoneHandler) {
-            val index = findTargetIndex(todoId)
-            val newTodo = getTodoWithToggleDone(index)
-            todoRepository.editDone(newTodo.id, newTodo.done)
-            updateTodoList(index, newTodo)
+            findTodo(todoId)?.done?.not()?.let { newDone ->
+                todoRepository.editDone(todoId, newDone)
+            }
         }
     }
 
-    private fun findTargetIndex(todoId: Long) =
-        uiState.value.todoList.indexOfFirst { it.id == todoId }
-
-    private fun getTodoWithToggleDone(index: Int): TodoListUiState.Todo =
-        uiState.value.todoList[index].copy(done = uiState.value.todoList[index].done.not())
-
-    private fun updateTodoList(index: Int, newTodo: TodoListUiState.Todo) {
-        val newList = uiState.value.todoList.toMutableList()
-        newList[index] = newTodo
-        _uiState.value = uiState.value.copy(todoList = newList)
-    }
+    private fun findTodo(todoId: Long) = uiState.value.todoList.find { it.id == todoId }
 }

@@ -4,7 +4,6 @@ import com.ring.ring.infra.test.MainDispatcherRule
 import com.ring.ring.todo.infra.domain.Todo
 import com.ring.ring.todo.infra.domain.TodoLocalDataSource
 import com.ring.ring.todo.infra.domain.TodoNetworkDataSource
-import com.ring.ring.todo.infra.test.FakeErrorTodoNetworkDataSource
 import com.ring.ring.todo.infra.test.FakeTodoLocalDataSource
 import com.ring.ring.todo.infra.test.FakeTodoNetworkDataSource
 import com.ring.ring.user.infra.model.UserLocalDataSource
@@ -14,6 +13,7 @@ import com.ring.ring.util.date.DefaultDateUtil
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
@@ -97,7 +97,7 @@ class TodoListViewModelTest {
         advanceUntilIdle()
 
         //then
-        val actual = localDataSource.load()
+        val actual = localDataSource.getTodoListStream().first()
 
         assertThat(actual.count(), equalTo(2))
         val firstElement = actual.first()
@@ -112,7 +112,9 @@ class TodoListViewModelTest {
     @Test
     fun `fetchTodoList set todoList fetched from local when network failed`() = runTest {
         //given
-        networkDataSource = FakeErrorTodoNetworkDataSource()
+        networkDataSource = mockk(relaxed = true) {
+            coEvery { fetchList(any()) } throws Exception()
+        }
         setupSubject()
 
         //when
@@ -162,5 +164,6 @@ class TodoListViewModelTest {
                 dateUtil = dateUtil
             ),
         )
+        TestScope(UnconfinedTestDispatcher()).launch { subject.uiState.collect {} }
     }
 }
