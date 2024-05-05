@@ -11,6 +11,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToIndex
+import com.airbnb.mvrx.Mavericks
 import com.ring.ring.todo.feature.list.viewmodel.TodoListRepository
 import com.ring.ring.todo.feature.list.viewmodel.TodoListViewModel
 import com.ring.ring.todo.infra.domain.Todo
@@ -61,6 +62,7 @@ class TodoListScreenKtTest {
 
     @Before
     fun setUp() {
+        Mavericks.initialize(composeTestRule.activity)
         hiltRule.inject()
     }
 
@@ -137,6 +139,7 @@ class TodoListScreenKtTest {
             .onAllNodesWithTag("DoneCheckBox")
             .onFirst()
             .performClick()
+        composeTestRule.waitForIdle()
 
         //then
         runBlocking {
@@ -203,6 +206,7 @@ class TodoListScreenKtTest {
         composeTestRule.setContent {
             TodoListScreen(
                 viewModel = TodoListViewModel(
+                    initialState = TodoListUiState(todoList = emptyList()),
                     todoRepository = TodoListRepository(
                         networkDataSource = networkDataSource,
                         localDataSource = localDataSource,

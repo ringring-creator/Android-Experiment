@@ -70,6 +70,7 @@ dependencies {
     configurations.getByName("kapt").dependencies.add(
         libs.hilt.compiler.get()
     )
+    implementation(libs.mavericks)
 
     debugImplementation(libs.bundles.compose.ui.tool)
 }

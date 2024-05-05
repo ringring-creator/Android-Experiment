@@ -12,6 +12,7 @@ compose-compiler = "1.5.11"
 compose-plugin = "1.6.1"
 kotlin = "1.9.23"
 junit = "4.13.2"
+mavericks = "3.0.9"
 robolectric = "4.11.1"
 retrofit = "2.11.0"
 retrofit-kotlinx-serialization-json = "1.0.0"
@@ -52,6 +53,9 @@ compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
+mavericks = { module = "com.airbnb.android:mavericks", version.ref = "mavericks" }
+mavericks-compose = { module = "com.airbnb.android:mavericks-compose", version.ref = "mavericks" }
+mavericks-hilt = { module = "com.airbnb.android:mavericks-hilt", version.ref = "mavericks" }
 robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 compose-ui-test-junit = { group = "androidx.compose.ui", name = "ui-test-junit4", version.ref = "compose" }
 hilt-android-core = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }

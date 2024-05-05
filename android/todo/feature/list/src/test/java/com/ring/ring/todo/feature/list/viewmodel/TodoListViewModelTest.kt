@@ -1,6 +1,9 @@
 package com.ring.ring.todo.feature.list.viewmodel
 
+import com.airbnb.mvrx.Mavericks
+import com.airbnb.mvrx.withState
 import com.ring.ring.infra.test.MainDispatcherRule
+import com.ring.ring.todo.feature.list.view.TodoListUiState
 import com.ring.ring.todo.infra.domain.Todo
 import com.ring.ring.todo.infra.domain.TodoLocalDataSource
 import com.ring.ring.todo.infra.domain.TodoNetworkDataSource
@@ -70,6 +73,8 @@ class TodoListViewModelTest {
 
     @Before
     fun setUp() {
+        Mavericks.initialize(false)
+
         setupSubject()
     }
 
@@ -80,14 +85,15 @@ class TodoListViewModelTest {
         advanceUntilIdle()
 
         //then
-        val todoList = subject.uiState.value.todoList
-        assertThat(todoList.count(), equalTo(2))
-
-        val firstElement = todoList.first()
-        assertThat(firstElement.id, equalTo(1))
-        assertThat(firstElement.title, equalTo("fakeTitle"))
-        assertThat(firstElement.done, equalTo(false))
-        assertThat(firstElement.deadline, equalTo("2024-01-01"))
+        withState(subject) {
+            val todoList = it.todoList
+            assertThat(todoList.count(), equalTo(2))
+            val firstElement = todoList.first()
+            assertThat(firstElement.id, equalTo(1))
+            assertThat(firstElement.title, equalTo("fakeTitle"))
+            assertThat(firstElement.done, equalTo(false))
+            assertThat(firstElement.deadline, equalTo("2024-01-01"))
+        }
     }
 
     @Test
@@ -122,15 +128,16 @@ class TodoListViewModelTest {
         advanceUntilIdle()
 
         //then
-        val todoList = subject.uiState.value.todoList
-        assertThat(todoList.count(), equalTo(1))
-
-        val firstElement = todoList.first()
-        val expected = localTodoList.first()
-        assertThat(firstElement.id, equalTo(expected.id))
-        assertThat(firstElement.title, equalTo(expected.title))
-        assertThat(firstElement.done, equalTo(expected.done))
-        assertThat(firstElement.deadline, equalTo(dateUtil.format(expected.deadline)))
+        withState(subject) {
+            val todoList = it.todoList
+            assertThat(todoList.count(), equalTo(1))
+            val firstElement = todoList.first()
+            val expected = localTodoList.first()
+            assertThat(firstElement.id, equalTo(expected.id))
+            assertThat(firstElement.title, equalTo(expected.title))
+            assertThat(firstElement.done, equalTo(expected.done))
+            assertThat(firstElement.deadline, equalTo(dateUtil.format(expected.deadline)))
+        }
     }
 
     @Test
@@ -157,6 +164,7 @@ class TodoListViewModelTest {
 
     private fun setupSubject() {
         subject = TodoListViewModel(
+            initialState = TodoListUiState(todoList = emptyList()),
             todoRepository = TodoListRepository(
                 networkDataSource = networkDataSource,
                 localDataSource = localDataSource,
@@ -164,6 +172,6 @@ class TodoListViewModelTest {
                 dateUtil = dateUtil
             ),
         )
-        TestScope(UnconfinedTestDispatcher()).launch { subject.uiState.collect {} }
+//        TestScope(UnconfinedTestDispatcher()).launch { subject.uiState.collect {} }
     }
 }

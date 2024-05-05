@@ -1,13 +1,10 @@
 package com.ring.ring.todo.feature.list.view
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.ring.ring.todo.feature.list.viewmodel.TodoListViewModel
+import com.airbnb.mvrx.MavericksState
 
 internal data class TodoListUiState(
     val todoList: List<Todo>
-) {
+) : MavericksState {
     internal data class Todo(
         val id: Long,
         val title: String,
@@ -16,10 +13,10 @@ internal data class TodoListUiState(
     )
 }
 
-@Composable
-internal fun rememberTodoListUiState(
-    viewModel: TodoListViewModel,
-): TodoListUiState {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    return uiState
-}
+//@Composable
+//internal fun rememberTodoListUiState(
+//    viewModel: TodoListViewModel,
+//): TodoListUiState {
+//    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+//    return uiState
+//}

@@ -1,30 +1,30 @@
 package com.ring.ring.todo.feature.list.viewmodel
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import com.airbnb.mvrx.MavericksViewModel
+import com.airbnb.mvrx.MavericksViewModelFactory
+import com.airbnb.mvrx.ViewModelContext
+import com.airbnb.mvrx.hilt.AssistedViewModelFactory
+import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.ring.ring.todo.feature.list.view.TodoListUiState
-import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-internal class TodoListViewModel @Inject constructor(
+internal class TodoListViewModel @AssistedInject constructor(
+    @Assisted initialState: TodoListUiState,
     private val todoRepository: TodoListRepository,
-) : ViewModel() {
-    val uiState: StateFlow<TodoListUiState> = todoRepository.getTodoListStream()
-        .map { TodoListUiState(todoList = it) }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = TodoListUiState(todoList = emptyList())
-        )
+) : MavericksViewModel<TodoListUiState>(initialState) {
+    init {
+        viewModelScope.launch {
+            todoRepository.getTodoListStream().collect {
+                setState { TodoListUiState(todoList = it) }
+            }
+        }
+    }
 
     private val _event = Channel<TodoListEvent>()
     val event = _event.receiveAsFlow()
@@ -43,12 +43,28 @@ internal class TodoListViewModel @Inject constructor(
     }
 
     fun toggleDone(todoId: Long) {
-        viewModelScope.launch(toggleDoneHandler) {
-            findTodo(todoId)?.done?.not()?.let { newDone ->
-                todoRepository.editDone(todoId, newDone)
+        withState { state ->
+            viewModelScope.launch(toggleDoneHandler) {
+                findTodo(state, todoId)?.done?.not()?.let { newDone ->
+                    todoRepository.editDone(todoId, newDone)
+                }
             }
         }
     }
 
-    private fun findTodo(todoId: Long) = uiState.value.todoList.find { it.id == todoId }
+    private fun findTodo(
+        state: TodoListUiState, todoId: Long
+    ) = state.todoList.find { it.id == todoId }
+
+    @AssistedFactory
+    interface Factory : AssistedViewModelFactory<TodoListViewModel, TodoListUiState> {
+        override fun create(state: TodoListUiState): TodoListViewModel
+    }
+
+    companion object :
+        MavericksViewModelFactory<TodoListViewModel, TodoListUiState> by hiltMavericksViewModelFactory() {
+        override fun initialState(viewModelContext: ViewModelContext): TodoListUiState {
+            return TodoListUiState(todoList = emptyList())
+        }
+    }
 }

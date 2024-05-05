@@ -55,6 +55,9 @@ dependencies {
     kapt(libs.hilt.compiler)
     implementation(libs.bundles.compose.ui.tool)
     implementation(libs.kotlinx.datetime)
+    implementation(libs.mavericks)
+    implementation(libs.mavericks.compose)
+    implementation(libs.mavericks.hilt)
 
     testImplementation(projects.android.infra.test)
     testImplementation(projects.android.todo.infra.test)
