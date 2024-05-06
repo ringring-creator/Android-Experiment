@@ -61,16 +61,20 @@ dependencies {
     implementation(projects.android.todo.feature.list)
     implementation(projects.android.todo.feature.create)
     implementation(projects.android.todo.feature.edit)
+    implementation(projects.android.todo.feature.widget)
     implementation(projects.android.user.feature.login)
     implementation(projects.android.user.feature.signup)
     implementation(projects.android.user.feature.mypage)
 
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation("androidx.hilt:hilt-work:1.2.0")
     implementation(libs.bundles.compose)
     implementation(libs.bundles.hilt)
     configurations.getByName("kapt").dependencies.add(
         libs.hilt.compiler.get()
     )
 
+    implementation(libs.androidx.glance.appwidget)
     debugImplementation(libs.bundles.compose.ui.tool)
 }
 
